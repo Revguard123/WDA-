@@ -50,14 +50,24 @@ export async function GET(req) {
       resolveDescriptions: true,
     });
 
-    const { chosen, stats } = await curateForBuyer(
+    const { chosen, stats, verdicts } = await curateForBuyer(
       rows,
       buyer,
       { disqualify: disqualifyContract, writeWhyLine: whyLine },
-      { minRunwayDays, n: 5 },
+      { minRunwayDays, n: 5, maxCandidates: 12 },
     );
 
-    return Response.json({ ok: true, buyer, engineStats, curationStats: stats, top: chosen });
+    const withDescription = rows.filter((r) => (r.description || '').length > 80).length;
+
+    return Response.json({
+      ok: true,
+      buyer,
+      engineStats,
+      descriptionsResolved: `${withDescription}/${rows.length} rows have >80 chars of description text`,
+      curationStats: stats,
+      sampleVerdicts: (verdicts || []).slice(0, 12),
+      top: chosen,
+    });
   } catch (err) {
     return Response.json({ error: String(err?.message || err) }, { status: 500 });
   }

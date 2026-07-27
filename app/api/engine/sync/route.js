@@ -41,7 +41,7 @@ export async function POST(req) {
       apiKey: process.env.SAM_API_KEY,
       upsert: upsertOpportunities,
       minRunwayDays: niche.minRunwayDays ?? 14,
-      lookbackDays: niche.lookbackDays ?? 365,
+      lookbackDays: niche.lookbackDays ?? 364,
     });
     return Response.json({
       ok: true,

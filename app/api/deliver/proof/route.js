@@ -14,7 +14,7 @@ import { curateForBuyer } from '../../../../lib/match/curate.js';
 import { disqualifyContract, whyLine, deepDive } from '../../../../lib/ai/claude.js';
 import { buildBatchEmailHTML } from '../../../../lib/email/renderBatchEmail.js';
 import { findOrCreateBuyer, incrementBatchesSent } from '../../../../lib/buyers.js';
-import { persistBatch } from '../../../../lib/deliveries.js';
+import { persistBatch, getDeliveredKeys } from '../../../../lib/deliveries.js';
 import { sendBatchEmail } from '../../../../lib/email/resend.js';
 
 export const runtime = 'nodejs';
@@ -34,22 +34,6 @@ const DEFAULT_KEYWORDS = ['construction', 'renovation', 'building', 'repair', 'f
 export async function GET(req) {
   const url = new URL(req.url);
   if (!authorized(req, url)) return Response.json({ error: 'unauthorized' }, { status: 401 });
-
-  // Safe env diagnostic: report non-latin1 chars in Supabase env vars WITHOUT
-  // exposing the secret values (only length + bad char index/code).
-  if (url.searchParams.get('envcheck') === '1') {
-    const report = {};
-    for (const name of ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'SUPABASE_ANON_KEY']) {
-      const v = process.env[name] || '';
-      const bad = [];
-      for (let i = 0; i < v.length; i += 1) {
-        const code = v.charCodeAt(i);
-        if (code > 255) bad.push({ index: i, code });
-      }
-      report[name] = { length: v.length, trimmedLength: v.trim().length, badChars: bad };
-    }
-    return Response.json(report);
-  }
   for (const k of ['SAM_API_KEY', 'ANTHROPIC_API_KEY', 'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY']) {
     if (!process.env[k]) return Response.json({ error: `${k} not set` }, { status: 500 });
   }
@@ -70,6 +54,9 @@ export async function GET(req) {
   try {
     const buyer = await findOrCreateBuyer({ email: buyerEmail, name: url.searchParams.get('name'), niche });
 
+    // Exclude anything already delivered to this buyer so batches backfill fresh.
+    const deliveredKeys = await getDeliveredKeys(buyer.id);
+
     // Pull + curate.
     const { rows } = await runEngineForNiche(buyer, {
       apiKey: process.env.SAM_API_KEY,
@@ -80,7 +67,13 @@ export async function GET(req) {
       rows,
       buyer,
       { disqualify: disqualifyContract, writeWhyLine: whyLine },
-      { minRunwayDays, n: 5, maxCandidates: 12 },
+      {
+        minRunwayDays,
+        n: 5,
+        maxCandidates: 12,
+        deliveredNoticeIds: deliveredKeys.noticeIds,
+        deliveredSolicitations: deliveredKeys.solicitations,
+      },
     );
 
     // Deep-dive for each chosen contract.

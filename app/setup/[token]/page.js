@@ -29,12 +29,12 @@ export default async function SetupPage({ params }) {
       </div>
 
       {exploring ? (
-        <div style={{ marginTop: 20, background: '#eef6f1', border: `1px solid ${UI.green}`, borderRadius: 10, padding: 20 }}>
-          <div style={{ fontWeight: 700, color: UI.ink, fontSize: 16 }}>Ready to see your targets?</div>
+        <div style={{ marginTop: 20, background: '#fdeaf6', border: `1px solid ${UI.line}`, borderLeft: `3px solid ${UI.pink}`, borderRadius: '0 10px 10px 0', padding: 20 }}>
+          <div style={{ fontWeight: 800, color: UI.ink, fontSize: 16 }}>Ready to see your targets?</div>
           <p style={{ color: UI.text, fontSize: 14, margin: '6px 0 14px' }}>
             When your niche looks right, start your free trial and we pull your first five contracts.
           </p>
-          <a href={`/start/${token}`} style={{ display: 'inline-block', background: UI.green, color: '#fff', textDecoration: 'none', fontWeight: 700, padding: '11px 20px', borderRadius: 8, fontSize: 15 }}>
+          <a href={`/start/${token}`} style={{ display: 'inline-block', background: UI.pink, color: '#fff', textDecoration: 'none', fontWeight: 800, padding: '12px 22px', borderRadius: 9, fontSize: 15 }}>
             Continue to Go
           </a>
         </div>

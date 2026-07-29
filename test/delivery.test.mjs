@@ -28,7 +28,7 @@ const CONTRACTS = [
 
 test('email renders brand, cards, why-line, and tokenized links', () => {
   const { subject, html } = buildBatchEmailHTML({ name: 'Jane Doe' }, CONTRACTS, LINKS, { shortfall: 4 });
-  assert.match(subject, /Curated Target Contracts/);
+  assert.match(subject, /The Target Brief/);
   assert.match(html, /War Dogs Academy/);
   assert.match(html, /Secure Room and Restroom Addition/);
   assert.match(html, /Why we picked this/);

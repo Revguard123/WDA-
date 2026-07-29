@@ -36,11 +36,11 @@ export default function GoButton({ token }) {
         onClick={go}
         disabled={status === 'working' || status === 'done'}
         style={{
-          background: UI.green,
+          background: UI.pink,
           color: '#fff',
           border: 'none',
-          borderRadius: 8,
-          padding: '14px 26px',
+          borderRadius: 9,
+          padding: '14px 28px',
           fontSize: 16,
           fontWeight: 800,
           cursor: status === 'working' ? 'default' : 'pointer',
@@ -50,7 +50,7 @@ export default function GoButton({ token }) {
         {status === 'working' ? 'Starting your trial...' : 'Yes, start my free trial'}
       </button>
       {message ? (
-        <div style={{ marginTop: 14, fontSize: 15, color: status === 'error' ? UI.amber : UI.green }}>{message}</div>
+        <div style={{ marginTop: 14, fontSize: 15, color: status === 'error' ? UI.orangeDeep : UI.pinkDeep }}>{message}</div>
       ) : null}
     </div>
   );

@@ -38,12 +38,16 @@ export async function GET(req) {
   const results = [];
   for (const niche of jobs) {
     try {
-      // Cache broadly: no set-aside enforcement, skip description fetches for speed.
+      // Cache broadly: every open contract in the niche, no set-aside filter and
+      // no runway filter (curate is authoritative per buyer and per widen tier),
+      // and skip description fetches for speed. Descriptions are resolved later,
+      // for finalists only.
       const { stats } = await runEngineForNiche(niche, {
         apiKey: process.env.SAM_API_KEY,
         upsert: upsertOpportunities,
         enforceSetAside: false,
         resolveDescriptions: false,
+        minRunwayDays: 0,
       });
       upserted += stats.upserted;
       results.push({ niche: `${niche.naics[0]}/${niche.state || 'any'}`, kept: stats.kept, upserted: stats.upserted });

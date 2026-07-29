@@ -5,6 +5,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { curateForBuyer } from '../lib/match/curate.js';
+import { resolveDescriptionsForRows } from '../lib/sam/engine.js';
 
 const NOW = new Date('2026-07-15T00:00:00Z');
 const DAY = 24 * 60 * 60 * 1000;
@@ -77,4 +78,47 @@ test('a thrown disqualifier call drops that contract rather than passing it thro
   );
   assert.equal(stats.disqualifiedByAI, 1);
   assert.deepEqual(chosen.map((c) => c.notice_id), ['A']);
+});
+
+test('curate resolves descriptions for the capped candidates before the AI pass', async () => {
+  // Candidate rows come in without description text (as they do from the cache).
+  const cacheRows = rows().map((r) => ({ ...r, description: null }));
+  const seen = [];
+  // The resolver fills in description text; the disqualifier records what it saw,
+  // proving the resolve step ran first.
+  const resolveDescriptions = async (candidates) => {
+    for (const op of candidates) op.description = `RESOLVED:${op.notice_id}`;
+  };
+  const disqualify = async (op) => {
+    seen.push(op.description);
+    return { disqualified: false, reason: 'fits' };
+  };
+  const { chosen, stats } = await curateForBuyer(
+    cacheRows,
+    BUYER,
+    { disqualify, writeWhyLine: fakeWhyLine, resolveDescriptions },
+    { now: NOW, minRunwayDays: 14, n: 5 },
+  );
+  assert.ok(stats.descriptionsResolved >= 1);
+  // Every contract the AI judged had its description resolved beforehand.
+  assert.ok(seen.length > 0);
+  assert.ok(seen.every((d) => typeof d === 'string' && d.startsWith('RESOLVED:')));
+  assert.ok(chosen.length > 0);
+});
+
+test('resolveDescriptionsForRows fetches URLs and passes through plain text', async () => {
+  const fetchImpl = async () => ({
+    ok: true,
+    headers: { get: () => 'application/json' },
+    json: async () => ({ description: 'FETCHED TEXT' }),
+  });
+  const rowsIn = [
+    { notice_id: 'U', description: 'https://api.sam.gov/desc/U' }, // URL -> fetched
+    { notice_id: 'T', description: 'already plain text' }, // text -> passthrough
+    { notice_id: 'R', description: null, raw: { description: 'https://api.sam.gov/desc/R' } }, // from raw
+  ];
+  await resolveDescriptionsForRows(rowsIn, { apiKey: 'k', fetchImpl });
+  assert.equal(rowsIn[0].description, 'FETCHED TEXT');
+  assert.equal(rowsIn[1].description, 'already plain text');
+  assert.equal(rowsIn[2].description, 'FETCHED TEXT');
 });

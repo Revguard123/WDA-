@@ -5,6 +5,7 @@
 
 import { listActiveBuyersDue, setNextBatchAt } from '../../../../lib/buyers.js';
 import { runBatchForBuyer } from '../../../../lib/pipeline.js';
+import { resolveBaseUrl } from '../../../../lib/baseUrl.js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -26,7 +27,7 @@ export async function GET(req) {
   if (!authorized(req)) return Response.json({ error: 'unauthorized' }, { status: 401 });
 
   const now = new Date();
-  const base = process.env.APP_BASE_URL || new URL(req.url).origin;
+  const base = resolveBaseUrl({ req });
   const due = await listActiveBuyersDue(now);
 
   const results = [];

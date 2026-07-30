@@ -7,6 +7,7 @@
 import { getBuyerByToken } from '../../../../lib/buyers.js';
 import { getServiceClient } from '../../../../lib/supabase.js';
 import { runBatchForBuyer } from '../../../../lib/pipeline.js';
+import { resolveBaseUrl } from '../../../../lib/baseUrl.js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -45,7 +46,7 @@ export async function POST(req, { params }) {
   // TODO Slice 6: enroll in the Kajabi paid offer here to start the trial clock.
 
   // First batch, now.
-  const base = process.env.APP_BASE_URL || new URL(req.url).origin;
+  const base = resolveBaseUrl({ req });
   try {
     const result = await runBatchForBuyer(claimed, { baseUrl: base, send: true });
     return Response.json({

@@ -13,19 +13,10 @@
 import { createOrGetGrantedBuyer } from '../../../../lib/buyers.js';
 import { buildWelcomeEmailHTML } from '../../../../lib/email/renderWelcomeEmail.js';
 import { sendBatchEmail } from '../../../../lib/email/resend.js';
+import { resolveBaseUrl } from '../../../../lib/baseUrl.js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-function resolveBaseUrl(req) {
-  if (process.env.APP_BASE_URL) return process.env.APP_BASE_URL;
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
-  try {
-    return new URL(req.url).origin;
-  } catch {
-    return '';
-  }
-}
 
 function authorized(req, url) {
   const secret = process.env.KAJABI_WEBHOOK_SECRET;
@@ -92,7 +83,7 @@ export async function POST(req) {
     return Response.json({ error: String(err?.message || err) }, { status: 500 });
   }
 
-  const base = resolveBaseUrl(req);
+  const base = resolveBaseUrl({ req });
   const setupUrl = `${base}/setup/${buyer.access_token}`;
 
   // Only email on first grant, so a replayed webhook does not double-send.

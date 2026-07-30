@@ -6,19 +6,10 @@
 import { getBuyerByEmail } from '../../../lib/buyers.js';
 import { buildAccessEmailHTML } from '../../../lib/email/renderAccessEmail.js';
 import { sendBatchEmail } from '../../../lib/email/resend.js';
+import { resolveBaseUrl } from '../../../lib/baseUrl.js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-function resolveBaseUrl(req) {
-  if (process.env.APP_BASE_URL) return process.env.APP_BASE_URL;
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
-  try {
-    return new URL(req.url).origin;
-  } catch {
-    return '';
-  }
-}
 
 const NEUTRAL = {
   ok: true,
@@ -41,7 +32,7 @@ export async function POST(req) {
   try {
     const buyer = await getBuyerByEmail(email);
     if (buyer && process.env.RESEND_API_KEY) {
-      const base = resolveBaseUrl(req);
+      const base = resolveBaseUrl({ req });
       const token = buyer.access_token;
       const { subject, html } = buildAccessEmailHTML(buyer, {
         contracts: `${base}/contracts/${token}`,

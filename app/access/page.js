@@ -15,8 +15,9 @@ export default function AccessPage() {
           Open your contracts
         </h1>
         <p style={{ color: UI.muted, fontSize: 15, lineHeight: 1.55, marginTop: 0 }}>
-          War Dogs Academy has no logins. Enter the email you enrolled with and we will send your private link straight
-          to your inbox. It works for your contracts, your targeting, and your setup if you have not started yet.
+          War Dogs Academy has no logins. Enter the same email you used to sign up for War Dogs Academy and we will
+          send your private link straight to your inbox. It works for your contracts, your targeting, and your setup if
+          you have not started yet.
         </p>
         <div style={{ marginTop: 18 }}>
           <AccessForm />

@@ -72,7 +72,7 @@ export default function AccessForm() {
         }}
       />
       <div style={{ fontSize: 12.5, color: UI.muted, marginTop: 6, lineHeight: 1.5 }}>
-        Use the email you bought with. We will send your private link there. No password needed.
+        Use the same email you signed up for War Dogs Academy with. We will send your private link there. No password needed.
       </div>
       <button
         type="submit"

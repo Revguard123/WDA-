@@ -5,7 +5,7 @@
 // GET /api/alerts/test?secret=<CRON_SECRET>&to=you@example.com
 //   to  optional; defaults to ALERT_EMAIL. One of the two must be present.
 
-import { sendOpsAlert } from '../../../../lib/alerts.js';
+import { sendOpsAlert, DEFAULT_ALERT_TO } from '../../../../lib/alerts.js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -22,8 +22,10 @@ export async function GET(req) {
   const url = new URL(req.url);
   if (!authorized(req, url)) return Response.json({ error: 'unauthorized' }, { status: 401 });
 
-  const to = url.searchParams.get('to') || process.env.ALERT_EMAIL || null;
-  if (!to) return Response.json({ error: 'no recipient: pass ?to= or set ALERT_EMAIL' }, { status: 400 });
+  // Recipient precedence mirrors the real alert path: explicit ?to=, then
+  // ALERT_EMAIL, then the built-in default (handled inside sendOpsAlert). A bare
+  // call therefore exercises exactly what a real cron alert would send.
+  const to = url.searchParams.get('to') || undefined;
 
   const result = await sendOpsAlert({
     to,
@@ -36,5 +38,6 @@ export async function GET(req) {
     ],
   });
 
-  return Response.json({ ok: true, to, result });
+  const resolvedTo = to || process.env.ALERT_EMAIL || DEFAULT_ALERT_TO;
+  return Response.json({ ok: true, to: resolvedTo, result });
 }

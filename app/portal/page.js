@@ -28,13 +28,13 @@ export default async function PortalPage({ searchParams }) {
   // email round-trip.
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return (
-      <Shell subtitle="Open your contracts.">
+      <Shell subtitle="Welcome back.">
         <div style={{ background: UI.card, border: `1px solid ${UI.line}`, borderRadius: 12, borderTop: `4px solid ${UI.orange}`, padding: 28 }}>
           <h1 style={{ margin: '0 0 8px', fontSize: 24, color: UI.ink, fontFamily: DISPLAY_FONT, letterSpacing: '-0.4px' }}>
-            Open your contracts
+            Access your portal
           </h1>
           <p style={{ color: UI.muted, fontSize: 15, lineHeight: 1.55, marginTop: 0 }}>
-            Enter the email you used to sign up for War Dogs Academy and we will take you straight to your contracts.
+            Enter your War Dogs Academy email and we will take you straight to your contracts. No password needed.
           </p>
           <div style={{ marginTop: 18 }}>
             <PortalEmailForm />
@@ -51,8 +51,8 @@ export default async function PortalPage({ searchParams }) {
   return (
     <Shell subtitle="Your contracts.">
       <div style={{ background: UI.card, border: `1px solid ${UI.line}`, borderRadius: 10, padding: 24, color: UI.text, fontSize: 15, lineHeight: 1.55 }}>
-        We could not find an account for <strong>{email}</strong>. Make sure you are viewing this while signed in with
-        the same email you used to sign up for War Dogs Academy. You can also{' '}
+        We could not find an account for <strong>{email}</strong>. Make sure you are using the email on your War Dogs
+        Academy account. You can also{' '}
         <a href="/access" style={{ color: UI.ink, fontWeight: 700 }}>get your link by email</a>.
       </div>
     </Shell>

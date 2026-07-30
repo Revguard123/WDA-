@@ -46,7 +46,7 @@ export default function PortalEmailForm() {
         }}
       />
       <div style={{ fontSize: 12.5, color: UI.muted, marginTop: 6, lineHeight: 1.5 }}>
-        Use the same email you signed up for War Dogs Academy with.
+        Use the email on your War Dogs Academy account.
       </div>
       <button
         type="submit"

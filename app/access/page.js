@@ -21,8 +21,8 @@ export default function AccessPage() {
         </p>
         <div style={{ background: '#fff3e6', border: `1px solid #ffd9b0`, borderLeft: `3px solid ${UI.orange}`, borderRadius: '0 8px 8px 0', padding: '12px 15px', marginTop: 14 }}>
           <p style={{ color: UI.orangeDeep, fontSize: 13.5, lineHeight: 1.5, margin: 0 }}>
-            If you use a different email than the one you enrolled with, we will not be able to find your account here,
-            and you can only reach your contracts through the links in the emails we send you.
+            Use your War Dogs Academy signup email and you can open your contracts right here. With any other email,
+            this page cannot find you, and you can only reach your contracts through the links in the emails we send you.
           </p>
         </div>
         <div style={{ marginTop: 18 }}>

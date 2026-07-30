@@ -16,12 +16,12 @@ export default function GoButton({ token }) {
       if (!res.ok) throw new Error(data.error || 'Activation failed');
       setStatus('done');
       if (data.alreadyActive) {
-        setMessage('Your trial is already active. Redirecting to your contracts...');
+        setMessage('You are already set up. Taking you to your contracts...');
       } else {
         const n = data.delivered?.inserted?.length ?? 0;
         setMessage(n > 0
-          ? `Trial started. We pulled ${n} target${n === 1 ? '' : 's'} for you. Redirecting...`
-          : 'Trial started. Nothing cleared our screen this moment; we will keep watching. Redirecting...');
+          ? `You are in. We pulled ${n} contract${n === 1 ? '' : 's'} for you. Taking you to them now...`
+          : 'You are in and your niche is live. We could not match contracts to it this cycle. Try broadening your targeting, then check back. Taking you to your contracts...');
       }
       setTimeout(() => { window.location.href = `/contracts/${token}`; }, 1800);
     } catch (err) {
@@ -47,7 +47,7 @@ export default function GoButton({ token }) {
           opacity: status === 'working' || status === 'done' ? 0.75 : 1,
         }}
       >
-        {status === 'working' ? 'Starting your trial...' : 'Yes, start my free trial'}
+        {status === 'working' ? 'Pulling your first contracts...' : 'Yes, start my contracts'}
       </button>
       {message ? (
         <div style={{ marginTop: 14, fontSize: 15, color: status === 'error' ? UI.orangeDeep : UI.pinkDeep }}>{message}</div>

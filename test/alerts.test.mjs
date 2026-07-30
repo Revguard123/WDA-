@@ -6,7 +6,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { sendOpsAlert, renderAlertHTML } from '../lib/alerts.js';
+import { sendOpsAlert, renderAlertHTML, DEFAULT_ALERT_TO } from '../lib/alerts.js';
 
 const ENV_KEYS = ['ALERT_EMAIL', 'ALERT_FROM', 'EMAIL_FROM', 'RESEND_API_KEY'];
 
@@ -35,12 +35,21 @@ function fakeClient(sink) {
   };
 }
 
-test('no-ops when ALERT_EMAIL is not set', async () => {
+test('falls back to the default recipient when ALERT_EMAIL is not set', async () => {
   await withEnv({}, async () => {
     const sink = [];
     const res = await sendOpsAlert({ subject: 's', summary: 'x' }, { client: fakeClient(sink) });
-    assert.equal(res.skipped, 'ALERT_EMAIL not set');
-    assert.equal(sink.length, 0);
+    assert.equal(res.sent, true);
+    assert.equal(sink.length, 1);
+    assert.equal(sink[0].to, DEFAULT_ALERT_TO);
+  });
+});
+
+test('ALERT_EMAIL overrides the default recipient', async () => {
+  await withEnv({ ALERT_EMAIL: 'someone-else@wardogsacademy.com' }, async () => {
+    const sink = [];
+    await sendOpsAlert({ subject: 's', summary: 'x' }, { client: fakeClient(sink) });
+    assert.equal(sink[0].to, 'someone-else@wardogsacademy.com');
   });
 });
 

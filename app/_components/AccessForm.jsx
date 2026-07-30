@@ -1,12 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { UI, BODY_FONT } from '../../lib/ui.js';
 
 export default function AccessForm() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('idle'); // idle | sending | done | error
   const [message, setMessage] = useState('');
+
+  // Pre-fill the email when it is passed in the URL (e.g. Kajabi can inject the
+  // logged-in member's email into the button link), so re-entry is one click.
+  useEffect(() => {
+    try {
+      const q = new URLSearchParams(window.location.search).get('email');
+      if (q && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(q)) setEmail(q);
+    } catch {
+      // no-op: fall back to an empty field
+    }
+  }, []);
 
   async function submit(e) {
     e.preventDefault();

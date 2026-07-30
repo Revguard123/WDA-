@@ -30,7 +30,7 @@ export default async function ContractsPage({ params }) {
       {deliveries.length === 0 ? (
         <div style={{ background: UI.card, border: `1px solid ${UI.line}`, borderRadius: 10, padding: 24, color: UI.muted, fontSize: 15 }}>
           No contracts yet. {buyer.status === 'exploring' ? (
-            <span>Start your trial to get your first five: <a href={`/start/${token}`} style={{ color: UI.ink, fontWeight: 700 }}>Go</a>.</span>
+            <span>Set up your niche to get your first five: <a href={`/setup/${token}`} style={{ color: UI.ink, fontWeight: 700 }}>Set up your niche</a>.</span>
           ) : (
             <span>Your next batch will appear here.</span>
           )}

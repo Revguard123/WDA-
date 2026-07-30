@@ -45,7 +45,13 @@ export default async function PortalPage({ searchParams }) {
   }
 
   const buyer = await getBuyerByEmail(email);
-  if (buyer) redirect(`/contracts/${buyer.access_token}`);
+  if (buyer) {
+    const token = buyer.access_token;
+    // First-timers (not yet activated) go to niche setup first; everyone else
+    // straight to their contracts. This makes the portal button a safe entry
+    // point even if a brand-new member never opened their welcome email.
+    redirect(buyer.status === 'exploring' ? `/setup/${token}` : `/contracts/${token}`);
+  }
 
   // Signed in with an email we do not have an account for.
   return (

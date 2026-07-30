@@ -15,14 +15,14 @@ export default function AccessPage() {
           Open your contracts
         </h1>
         <p style={{ color: UI.muted, fontSize: 15, lineHeight: 1.55, marginTop: 0 }}>
-          War Dogs Academy has no logins. Enter the same email you used to sign up for War Dogs Academy and we will
-          send your private link straight to your inbox. It works for your contracts, your targeting, and your setup if
-          you have not started yet.
+          Enter the email you used to sign up for War Dogs Academy and we will send your private link straight to your
+          inbox. No password, no login.
         </p>
         <div style={{ background: '#fff3e6', border: `1px solid #ffd9b0`, borderLeft: `3px solid ${UI.orange}`, borderRadius: '0 8px 8px 0', padding: '12px 15px', marginTop: 14 }}>
           <p style={{ color: UI.orangeDeep, fontSize: 13.5, lineHeight: 1.5, margin: 0 }}>
-            Use your War Dogs Academy signup email and you can open your contracts right here. With any other email,
-            this page cannot find you, and you can only reach your contracts through the links in the emails we send you.
+            You can reach your contracts two ways: through the links in the emails we send you, and right here in your
+            portal anytime (open the My Products tab in Kajabi and click this product). Just use the same email you
+            enrolled with, that is how we find you.
           </p>
         </div>
         <div style={{ marginTop: 18 }}>

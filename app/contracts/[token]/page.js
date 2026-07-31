@@ -26,7 +26,7 @@ export default async function ContractsPage({ params }) {
     <Shell subtitle="Every target we have sent you, newest first.">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
         {kajabiUrl ? (
-          <a href={kajabiUrl} style={{ color: UI.muted, fontWeight: 700, fontSize: 13, textDecoration: 'none' }}>
+          <a href={kajabiUrl} style={{ display: 'inline-block', color: UI.pinkDeep, fontWeight: 800, fontSize: 13, textDecoration: 'none', border: `1px solid ${UI.pink}`, borderRadius: 8, padding: '7px 13px' }}>
             &larr; Back to my products
           </a>
         ) : (
@@ -42,7 +42,7 @@ export default async function ContractsPage({ params }) {
       </div>
 
       {buyer.naics && buyer.naics.length > 0 ? (
-        <div style={{ background: UI.panel, border: `1px solid ${UI.line}`, borderLeft: `3px solid ${UI.orange}`, borderRadius: '0 8px 8px 0', padding: '12px 14px', marginBottom: 16 }}>
+        <div style={{ background: UI.panel, border: `1px solid ${UI.line}`, borderLeft: `3px solid ${UI.pink}`, borderRadius: '0 8px 8px 0', padding: '12px 14px', marginBottom: 16 }}>
           <div style={{ fontSize: 11.5, color: UI.muted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.7, marginBottom: 8 }}>
             Industries we are searching for you
           </div>
@@ -70,7 +70,7 @@ export default async function ContractsPage({ params }) {
       ) : (
         deliveries.map((c) => (
           <div key={c.notice_id} style={{ background: UI.card, border: `1px solid ${UI.line}`, borderRadius: 10, padding: 20, marginBottom: 14 }}>
-            <div style={{ height: 3, background: UI.gold, borderRadius: 3, marginBottom: 12, width: 48 }} />
+            <div style={{ height: 3, background: UI.pink, borderRadius: 3, marginBottom: 12, width: 40 }} />
             <div style={{ fontSize: 17, fontWeight: 700, color: UI.ink, lineHeight: 1.35 }}>{c.title || 'Untitled solicitation'}</div>
             <div style={{ fontSize: 13, color: UI.muted, marginTop: 4 }}>{c.agency || 'Agency not stated'}</div>
             <div style={{ fontSize: 13, color: UI.muted, marginTop: 8 }}>

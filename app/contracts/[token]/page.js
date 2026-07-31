@@ -24,13 +24,18 @@ export default async function ContractsPage({ params }) {
 
   return (
     <Shell subtitle="Every target we have sent you, newest first.">
-      {kajabiUrl ? (
-        <div style={{ marginBottom: 14 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
+        {kajabiUrl ? (
           <a href={kajabiUrl} style={{ color: UI.muted, fontWeight: 700, fontSize: 13, textDecoration: 'none' }}>
             &larr; Back to my products
           </a>
-        </div>
-      ) : null}
+        ) : (
+          <span />
+        )}
+        <span style={{ fontSize: 12.5, color: UI.muted }}>
+          Account: <strong style={{ color: UI.text }}>{buyer.email}</strong>
+        </span>
+      </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
         <h1 style={{ margin: 0, fontSize: 22, color: UI.ink }}>Your contracts</h1>
         <a href={`/targeting/${token}`} style={{ color: UI.ink, fontWeight: 700, fontSize: 14 }}>Update targeting</a>

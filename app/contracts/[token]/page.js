@@ -36,6 +36,24 @@ export default async function ContractsPage({ params }) {
         <a href={`/targeting/${token}`} style={{ color: UI.ink, fontWeight: 700, fontSize: 14 }}>Update targeting</a>
       </div>
 
+      {buyer.naics && buyer.naics.length > 0 ? (
+        <div style={{ background: UI.panel, border: `1px solid ${UI.line}`, borderLeft: `3px solid ${UI.orange}`, borderRadius: '0 8px 8px 0', padding: '12px 14px', marginBottom: 16 }}>
+          <div style={{ fontSize: 11.5, color: UI.muted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.7, marginBottom: 8 }}>
+            Industries we are searching for you
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {buyer.naics.map((code) => (
+              <span key={code} style={{ display: 'inline-block', fontSize: 13, fontWeight: 700, color: UI.ink, background: '#fff', border: `1px solid ${UI.line}`, borderRadius: 6, padding: '5px 10px' }}>
+                NAICS {code}
+              </span>
+            ))}
+          </div>
+          <div style={{ fontSize: 12.5, color: UI.muted, marginTop: 9 }}>
+            Not right? <a href={`/targeting/${token}`} style={{ color: UI.ink, fontWeight: 700 }}>Update your targeting</a>.
+          </div>
+        </div>
+      ) : null}
+
       {deliveries.length === 0 ? (
         <div style={{ background: UI.card, border: `1px solid ${UI.line}`, borderRadius: 10, padding: 24, color: UI.muted, fontSize: 15 }}>
           No contracts yet. {buyer.status === 'exploring' ? (

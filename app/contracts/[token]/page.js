@@ -20,7 +20,7 @@ export default async function ContractsPage({ params }) {
 
   const deliveries = await listDeliveriesForBuyer(buyer.id);
 
-  const kajabiUrl = process.env.KAJABI_LIBRARY_URL || '';
+  const kajabiUrl = process.env.KAJABI_LIBRARY_URL || 'https://www.wardogsacademy.co/library';
 
   return (
     <Shell subtitle="Every target we have sent you, newest first.">

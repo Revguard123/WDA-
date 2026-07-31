@@ -18,31 +18,23 @@ export default async function SetupPage({ params }) {
       <div style={{ background: UI.card, border: `1px solid ${UI.line}`, borderRadius: 10, padding: 28 }}>
         <h1 style={{ margin: '0 0 6px', fontSize: 22, color: UI.ink }}>Your niche workshop</h1>
         <p style={{ color: UI.muted, fontSize: 15, lineHeight: 1.55, marginTop: 0 }}>
-          The more precisely you describe what you do, the sharper your matches. Saving here sets your targeting.
-          It does not pull contracts. Your first five are pulled when you hit Go.
+          {exploring
+            ? 'Describe your work and pick your industries below. When you hit the button we save your niche and pull your first five contracts right away, it takes about a minute.'
+            : 'Change your niche any time. Updates apply to your next cycle; your current contracts stay put.'}
         </p>
         <NicheForm
           token={token}
           initial={buyer}
-          ctaLabel="Save my niche"
+          ctaLabel={exploring ? 'Save & start my contracts' : 'Save my niche'}
+          activateAfterSave={exploring}
         />
       </div>
 
-      {exploring ? (
-        <div style={{ marginTop: 20, background: '#fdeaf6', border: `1px solid ${UI.line}`, borderLeft: `3px solid ${UI.pink}`, borderRadius: '0 10px 10px 0', padding: 20 }}>
-          <div style={{ fontWeight: 800, color: UI.ink, fontSize: 16 }}>Ready to see your targets?</div>
-          <p style={{ color: UI.text, fontSize: 14, margin: '6px 0 14px' }}>
-            When your niche looks right, start your free trial and we pull your first five contracts.
-          </p>
-          <a href={`/start/${token}`} style={{ display: 'inline-block', background: UI.pink, color: '#fff', textDecoration: 'none', fontWeight: 800, padding: '12px 22px', borderRadius: 9, fontSize: 15 }}>
-            Continue to Go
-          </a>
-        </div>
-      ) : (
+      {!exploring ? (
         <div style={{ marginTop: 20, fontSize: 14, color: UI.muted }}>
-          Your trial is active. <a href={`/contracts/${token}`} style={{ color: UI.ink, fontWeight: 700 }}>See your contracts</a>.
+          Your contracts are active. <a href={`/contracts/${token}`} style={{ color: UI.ink, fontWeight: 700 }}>See your contracts</a>.
         </div>
-      )}
+      ) : null}
     </Shell>
   );
 }

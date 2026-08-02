@@ -22,6 +22,14 @@ export default async function SetupPage({ params }) {
             ? 'Describe your work and pick your industries below. When you hit the button we save your niche and pull your first five contracts right away, it takes about a minute.'
             : 'Change your niche any time. Updates apply to your next cycle; your current contracts stay put.'}
         </p>
+        <div style={{ margin: '2px 0 4px' }}>
+          <a
+            href={`/discover/${token}`}
+            style={{ display: 'inline-block', color: UI.pinkDeep, fontWeight: 800, fontSize: 13.5, textDecoration: 'none', border: `1px solid ${UI.pink}`, borderRadius: 8, padding: '8px 13px' }}
+          >
+            Not sure what to go after? Discover your niche &rarr;
+          </a>
+        </div>
         <NicheForm
           token={token}
           initial={buyer}

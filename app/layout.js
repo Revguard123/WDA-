@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'War Dogs Academy | The Target Brief',
-  description: 'Curated federal contract targets, hand-picked to your niche.',
+  description: 'Curated federal contract targets matched to your niche.',
   icons: {
     icon: '/brand/wda-favicon.png',
     shortcut: '/brand/wda-favicon.png',

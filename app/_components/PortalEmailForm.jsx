@@ -23,12 +23,13 @@ export default function PortalEmailForm() {
   }
 
   return (
-    <form onSubmit={submit}>
+    <form onSubmit={submit} action="/portal" method="GET">
       <label style={{ display: 'block', fontSize: 13, fontWeight: 800, color: UI.ink, margin: '0 0 6px', letterSpacing: 0.2 }}>
         Your email
       </label>
       <input
         type="email"
+        name="email"
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}

@@ -31,7 +31,7 @@ test('email renders brand, cards, why-line, and tokenized links', () => {
   assert.match(subject, /The Target Brief/);
   assert.match(html, /War Dogs Academy/);
   assert.match(html, /Secure Room and Restroom Addition/);
-  assert.match(html, /Why we picked this/);
+  assert.match(html, /Why this is winnable for you/);
   assert.match(html, /https:\/\/app\.example\.com\/d\/tok\/N1/);
   assert.match(html, /https:\/\/app\.example\.com\/targeting\/tok/);
   assert.match(html, /https:\/\/app\.example\.com\/contracts\/tok/);
@@ -42,7 +42,7 @@ test('email renders brand, cards, why-line, and tokenized links', () => {
 test('empty batch renders the no-padding message, not fake cards', () => {
   const { html } = buildBatchEmailHTML({ name: 'Jane' }, [], LINKS, { shortfall: 5 });
   assert.match(html, /rather send you nothing than send you a dud/);
-  assert.ok(!html.includes('Dive Deeper'));
+  assert.ok(!html.includes('See Full Breakdown'));
 });
 
 test('html-escapes contract fields', () => {
@@ -55,10 +55,21 @@ test('partitionRepeats splits by notice_id and solicitation_num', () => {
   const items = [
     { notice_id: 'A', solicitation_num: 'S1' },
     { notice_id: 'B', solicitation_num: 'S2' },
-    { notice_id: 'C', solicitation_num: 'S3' },
+    { notice_id: 'C', solicitation_num: ' s3 ' },
   ];
   const delivered = { noticeIds: new Set(['B']), solicitations: new Set(['S3']) };
   const { fresh, repeats } = partitionRepeats(items, delivered);
   assert.deepEqual(fresh.map((i) => i.notice_id), ['A']);
   assert.deepEqual(repeats.map((i) => i.notice_id).sort(), ['B', 'C']); // B by notice, C by solicitation
+});
+
+test('partitionRepeats blocks duplicate solicitation versions inside the same batch', () => {
+  const items = [
+    { notice_id: 'OLD', solicitation_num: 'FA4626-26-R-0012' },
+    { notice_id: 'NEW', solicitation_num: ' fa4626-26-r-0012 ' },
+    { notice_id: 'NO-SOLI', solicitation_num: '' },
+  ];
+  const { fresh, repeats } = partitionRepeats(items, { noticeIds: new Set(), solicitations: new Set() });
+  assert.deepEqual(fresh.map((i) => i.notice_id), ['OLD', 'NO-SOLI']);
+  assert.deepEqual(repeats.map((i) => i.notice_id), ['NEW']);
 });

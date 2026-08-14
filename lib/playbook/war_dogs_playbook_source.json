@@ -1,0 +1,968 @@
+{
+  "dataset_name": "War Dogs Academy Industry Knowledge Base",
+  "source": "Client-supplied Notion export",
+  "canonical_source_note": "Uses the first Industries database. The duplicate Industries (1) tree, chart CSV duplicates, New Industry placeholder, Untitled placeholder pages, and the empty duplicate Interpreter & Translation Services page are intentionally excluded.",
+  "derivation_policy": "Source-derived content only. No scoring weights, NAICS mappings, hard disqualifiers, or buyer qualification claims are inferred in this file.",
+  "global_guidance": {
+    "competition_bands": {
+      "low": "R&D, Education/Training, Legal Services. Fewer than 2.5 average bids per solicitation.",
+      "medium": "Construction, Healthcare, Logistics, Security. 2.5-4 average bids per solicitation.",
+      "high": "Professional Services, IT/Cybersecurity, Facilities. 4+ average bids per solicitation."
+    },
+    "product_procurement_strategy": "Product procurement is usually awarded based on Lowest Price Technically Acceptable. Agencies want the cheapest vendor who meets the specs. Margins can be slim, but here's the upside — one competitive supplier can fulfill contracts nationwide. Vendors are often ready to ship across the country, which means you can scale fast.\n\nMany brokers overlook the volume game. One good product vendor can let you respond to ten or twenty solicitations every week. Use bid platforms, saved searches, and daily alerts to keep opportunities flowing.",
+    "service_contract_strategy": "Service contracts typically last three to five years. They’re great for recurring, passive income if you maintain the relationship. However, most service providers operate regionally. If you want to perform a contract in another state or region, you’ll need to source a new vendor.\n\nAgencies also value past performance. If you’re brokering services like janitorial or security, start with smaller contracts or offer subcontracting. Build a track record with vendors you trust.",
+    "retention_and_renewals": "The effort is worth it. Perform well on a service contract and many agencies will offer renewals or extensions. One strong vendor relationship can generate revenue for years.",
+    "vendor_diversification": "Never rely on one vendor. If they raise prices or drop out, your entire bid strategy can collapse. Always keep a bench of backup suppliers and contractors ready."
+  },
+  "industries": [
+    {
+      "name": "Professional & Administrative Services",
+      "competition_level": "high",
+      "market_growth": "6-8% Annual",
+      "primary_award_method": "Best Value",
+      "market_value_usd": 130000000000,
+      "summary": "This industry includes the behind-the-scenes expertise and operational support that keeps government agencies running. From staffing and HR to financial services, project management, technical writing, and help desk support, these services help agencies stay compliant, organized, and efficient. For brokers, it’s a flexible category with high demand across nearly every department — ideal for connecting specialized vendors or freelancers with consistent contract needs.",
+      "detailed_description": "Professional & Administrative Services encompass any service where \"people power\" is the deliverable. Federal agencies regularly outsource these to handle surges in hiring, expand specialized skills, or fill short-term gaps. Major customers include GSA, DoD program offices, VA hospitals, diplomatic missions, and large civilian agencies. Contracts range from large IDIQs to small Blanket Purchase Agreements for ad-hoc support.",
+      "broker_guidance": "- Certify subcontractors' credentials - HR consultants need SHRM-CP/PHR, CPAs need active licenses, interpreters need ATA certification\n- Watch Service Contract Act wage determinations - ensure labor rates comply with correct WD classifications\n- Build past performance for Best Value awards - compile case studies for each sub-industry showing successful outcomes\n- Verify small business certifications in SAM.gov for set-aside opportunities\n- Screen subcontractors for security clearance capability - many positions require Public Trust or Secret clearance",
+      "subindustries": [
+        {
+          "name": "IT Help Desk & Technical Support",
+          "description": "Provides Tier 1–3 support for federal users, including troubleshooting hardware, managing tickets, and supporting agency software systems. Contracts often include on-site and remote support.",
+          "broker_guidance": "IT help desk contracts are recurring and scale fast. Agencies want responsive support with strong SLAs and certified techs. Focus on vendors with CompTIA or HDI certifications and experience using tools like ServiceNow or Zendesk. Security clearance is often a plus. This niche offers steady volume under BPAs or IDIQs  great for long-term broker relationships.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Professional & Administrative Services/Sub-Industries/IT Help Desk & Technical Support 20e97366fb9e8132ac63e36a077d408b.md"
+        },
+        {
+          "name": "Interpreter & Translation Services",
+          "description": "Covers both written document translation and live interpretation services for hearings, field operations, and international programs. Common in DHS, DOJ, and USAID.",
+          "broker_guidance": "Languages and certifications matter. Prioritize vendors with court-certified interpreters or ATA-certified translators. Agencies often require fast availability for rare languages under tight deadlines.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Professional & Administrative Services/Sub-Industries/Interpreter & Translation Services 20e97366fb9e81f8bedacfbdc0b0cb7b.md"
+        },
+        {
+          "name": "FOIA and Records Management",
+          "description": "FOIA (Freedom of Information Act) support involves reviewing and redacting sensitive documents. Records management includes archiving, digitizing, and organizing federal data.",
+          "broker_guidance": "This is a specialized niche. Focus on vendors with experience in compliance-heavy roles or those who’ve worked with NARA (National Archives). Redaction and chain-of-custody knowledge are key. Note- As this is a specialized niche, you will find a lot of contractors that are already set up in [sam.gov](http://sam.gov/). That’s not necessarily an end-all. A lot of companies are willing to work with companies like us, so they don’t have to submit contracts on their own. It's very labor-intensive, as you will soon find out.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Professional & Administrative Services/Sub-Industries/FOIA and Records Management 20e97366fb9e8182a89ddae673224006.md"
+        },
+        {
+          "name": "Temporary & Contract Staffing",
+          "description": "This covers the placement of administrative staff, clerks, analysts, and office support roles for federal agencies needing short-term or surge personnel. These are common across VA, DHS, and DOD contracts.",
+          "broker_guidance": "Speed is key. Agencies often award these quickly when there’s a vacancy or project need. Work with staffing firms that can source cleared or credentialed candidates fast and meet background check requirements.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Professional & Administrative Services/Sub-Industries/Temporary & Contract Staffing 20e97366fb9e81d49253c33b25c9e2a2.md"
+        },
+        {
+          "name": "Proposal Writing & Documentation Services",
+          "description": "Agencies outsource help with technical proposals, grant applications, SOPs, and strategic documentation. Writers often work directly with agency teams under short-term task orders.",
+          "broker_guidance": "This is a niche for experienced individuals or boutique firms. Find writers familiar with federal formatting, FAR references, and tight deadlines. Great for brokering individuals over companies. (If your good enough you could even do this yourself)",
+          "source_file": "WAR DOGS ACADEMY/Industries/Professional & Administrative Services/Sub-Industries/Proposal Writing & Documentation Services 20e97366fb9e81e399ecf5129d928181.md"
+        },
+        {
+          "name": "Project Management Support",
+          "description": "Includes scheduling, reporting, coordination, and oversight support across agency programs or construction projects. Often supports internal PMs or supplements agency bandwidth.",
+          "broker_guidance": "Look for vendors with PMP certifications or previous experience in PMO support. These roles are often long-term and embedded within agencies, so reliability and soft skills are just as important as qualifications, so highlight all 3 when building out your proposal.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Professional & Administrative Services/Sub-Industries/Project Management Support 20e97366fb9e81e6a305f5a949b8b0b1.md"
+        },
+        {
+          "name": "Human Resources Services",
+          "description": "Services include recruiting, onboarding, benefits administration, workforce planning, and personnel records management for civilian or military agencies.",
+          "broker_guidance": "Agencies value HR providers who understand federal hiring standards and systems like USAJobs. Focus on firms with SHRM-certified professionals or those who have served other public-sector entities. (The government gives precedence when hiring veterans, so finding an HR firm that focuses on finding veteran jobs is a major plus.)",
+          "source_file": "WAR DOGS ACADEMY/Industries/Professional & Administrative Services/Sub-Industries/Human Resources Services 20e97366fb9e81f1affeec5f7d9f52d5.md"
+        },
+        {
+          "name": "Accounting & Financial Services",
+          "description": "Services include bookkeeping, auditing, financial analysis, and budgeting support for federal finance departments, often tied to grant management or compliance audits.",
+          "broker_guidance": "Certifications matter. Look for CPAs or firms with federal or nonprofit experience. Many contracts require knowledge of OMB Circulars, Uniform Guidance, or agency-specific systems like DELTEK or DAI.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Professional & Administrative Services/Sub-Industries/Accounting & Financial Services 20e97366fb9e81fe8d1dc641e20ab49c.md"
+        }
+      ],
+      "source_file": "WAR DOGS ACADEMY/Industries/Professional & Administrative Services 20e97366fb9e81b2a27ac17f489adf3a.md"
+    },
+    {
+      "name": "Product Supply & Procurement",
+      "competition_level": "medium",
+      "market_growth": "4-6% Annual",
+      "primary_award_method": "LPTA",
+      "market_value_usd": 112000000000,
+      "summary": "This category encompasses the procurement of physical goods, including office equipment, medical supplies, tactical gear, and construction materials. These contracts are often large-volume, fast-moving, and ideal for brokers who understand logistics, compliance, and sourcing. Many products fall under GSA schedules or BPA contracts, but there are always opportunities in open-market buys and emergency procurement.",
+      "detailed_description": "Product Supply & Procurement covers tangible goods purchased through GSA Schedules, DLA contracts, VA eBuy, or agency-specific solicitations. From bulk office stationery to high-end servers and surgical instruments, these are typically awarded under LPTA vehicles. Major contract vehicles include GSA MAS Schedules, SEWP, and DLA Distribution IDIQs.",
+      "broker_guidance": "- Ensure product certifications - PPE must be NIOSH-approved, medical devices need FDA 510(k) clearance, electronics require UL certification\n- Confirm stocking and lead times - price competitiveness requires guaranteed immediate or near-term delivery\n- Verify GSA Schedule compliance including Price Reduction Clause and current Commercial Sales Practice\n- Check CAGE codes for DLA items and ensure vendor registration in Defense Logistics Information Service database\n- Maintain list of small business prime contractors with active certifications for low-value orders under $25K",
+      "subindustries": [
+        {
+          "name": "Office Supplies & Equipment",
+          "description": "Basic office gear like staplers, binders, calculators, shredders, and laminators for government use.",
+          "broker_guidance": "High-volume, low-margin—perfect for vendors who offer bundles or can ship fast. Opportunities spike at fiscal year-end.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Office Supplies & Equipment 20e97366fb9e81c48ce6ceec91c5d16c.md"
+        },
+        {
+          "name": "Computers, Printers, and Peripherals",
+          "description": "Laptops, desktops, monitors, scanners, and accessories for government offices and field use.",
+          "broker_guidance": "Ensure vendors are authorized resellers (especially for Dell, HP, etc.). Expect cybersecurity certifications to be required.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Computers, Printers, and Peripherals 20e97366fb9e81c488d9fd17aaf3c734.md"
+        },
+        {
+          "name": "Office Furniture",
+          "description": "Desks, chairs, filing cabinets, cubicles, and ergonomic equipment",
+          "broker_guidance": "White-glove delivery and installation are often required. GSA vendors dominate, but non-schedule buys happen in remodels or expansions.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Office Furniture 20e97366fb9e8191a0a9fafc2c02b2c9.md"
+        },
+        {
+          "name": "Office Consumables (Paper, Ink, etc.)",
+          "description": "Toner, printer paper, pens, notepads, and routine use items.",
+          "broker_guidance": "This is pure volume. Target vendors that can handle recurring monthly orders and fulfillment across multiple sites.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Office Consumables (Paper, Ink, etc ) 20e97366fb9e8180948cf8616aac2e98.md"
+        },
+        {
+          "name": "Telecommunications Equipment",
+          "description": "Routers, modems, VoIP phones, conferencing systems, and related hardware.",
+          "broker_guidance": "Most agencies prefer bundled tech solutions. Work with IT integrators or VARs who already supply Fortune 500 clients.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Telecommunications Equipment 20e97366fb9e81fbbd0ce5920edda19d.md"
+        },
+        {
+          "name": "PPE (Personal Protective Equipment)",
+          "description": "Masks, gloves, gowns, and face shields, mostly for healthcare and emergency personnel.",
+          "broker_guidance": "Certifications are non-negotiable. Match vendors to urgent buys or stockpile replenishments.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/PPE (Personal Protective Equipment) 20e97366fb9e8158a184c849ae3078fb.md"
+        },
+        {
+          "name": "Surgical & Diagnostic Instruments",
+          "description": "Tools like scalpels, thermometers, otoscopes, and stethoscopes.",
+          "broker_guidance": "These are often BPA/IDIQ buys with recurring cycles. Work with vendors experienced in VA or military clinics.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Surgical & Diagnostic Instruments 20e97366fb9e8100b986d60428da7736.md"
+        },
+        {
+          "name": "Medical Consumables (Bandages, Syringes, etc.)",
+          "description": "High-use disposable supplies needed daily in clinics and hospitals.",
+          "broker_guidance": "Margins are thin, so scale matters. Vendors must have strong inventory and fulfillment systems.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Medical Consumables (Bandages, Syringes, etc ) 20e97366fb9e81b88b73cc6c3966f322.md"
+        },
+        {
+          "name": "Medical Furniture (Beds, Chairs, etc.)",
+          "description": "Hospital beds, exam tables, IV poles, and medical seating.",
+          "broker_guidance": "Ensure vendors offer white-glove delivery and can meet federal facility specs.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Medical Furniture (Beds, Chairs, etc ) 20e97366fb9e81ad9b0ad6748a4e8c13.md"
+        },
+        {
+          "name": "Concrete, Cement, and Aggregates",
+          "description": "Raw materials for infrastructure, base construction, and roads",
+          "broker_guidance": "Regional sourcing is key. Build relationships with quarries and bulk haulers.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Concrete, Cement, and Aggregates 20e97366fb9e812a9df8dda2364ee853.md"
+        },
+        {
+          "name": "Steel & Rebar",
+          "description": "Structural steel and reinforcement bars for heavy construction.",
+          "broker_guidance": "Expect Buy American enforcement. Large buys often tied to military bases or VA expansions.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Steel & Rebar 20e97366fb9e81e8928efc6d0aa9b60c.md"
+        },
+        {
+          "name": "Lumber & Building Supplies",
+          "description": "Framing lumber, plywood, fasteners, and finish trim for facilities.",
+          "broker_guidance": "Local delivery and pricing consistency matter. Work with distributors who can service multi-site orders.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Lumber & Building Supplies 20e97366fb9e8158b0adc0f658f70445.md"
+        },
+        {
+          "name": "Roofing Materials",
+          "description": "Shingles, membrane, flashing, underlayment, and insulation.",
+          "broker_guidance": "Match with GCs bidding re-roof projects or offer bundled materials + labor subs.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Roofing Materials 20e97366fb9e81c2907cdf6d8164169b.md"
+        },
+        {
+          "name": "Electrical & Plumbing Parts",
+          "description": "Wire, conduit, switches, valves, fixtures, and pipe supplies.",
+          "broker_guidance": "Focus on bulk restocks or project-specific kits. Be aware of spec and warranty requirements.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Electrical & Plumbing Parts 20e97366fb9e8146a6aaef6c8e1d93cc.md"
+        },
+        {
+          "name": "Insulation & Drywall",
+          "description": "Fiberglass batts, spray foam, sheetrock, corner beads, and mud.",
+          "broker_guidance": "Coordinate with facility managers or contractors. Logistics is key on large-volume shipments.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Insulation & Drywall 20e97366fb9e8120af8bee36ab6cf71a.md"
+        },
+        {
+          "name": "Trucks, Vans, SUVs",
+          "description": "Light-duty vehicles for agency fleets and on-base transport.",
+          "broker_guidance": "Work with licensed dealers. Many buys are through state schedules or GSA Advantage.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Trucks, Vans, SUVs 20e97366fb9e81918c64ed54d71921c7.md"
+        },
+        {
+          "name": "Utility Vehicles & Trailers",
+          "description": "Flatbeds, box trailers, ATVs, golf carts, and maintenance vehicles.",
+          "broker_guidance": "Agencies often use these for parks, military bases, and VA campuses. Lead time and warranty support matter.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Utility Vehicles & Trailers 20e97366fb9e810ba466d661d7edf516.md"
+        },
+        {
+          "name": "Drones & UAVs",
+          "description": "Used for surveillance, mapping, or tactical response",
+          "broker_guidance": "Must be NDAA-compliant. Ideal for defense, border, and disaster-related bids.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Drones & UAVs 20e97366fb9e81f7960ee55a06807b76.md"
+        },
+        {
+          "name": "Auto Parts (Tires, Batteries, etc.)",
+          "description": "Consumables and repairs for existing government vehicle fleets.",
+          "broker_guidance": "Connect with maintenance facilities. BPAs and fast delivery win here.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Auto Parts (Tires, Batteries, etc ) 20e97366fb9e81cdb05dca00a92b680a.md"
+        },
+        {
+          "name": "Military Vehicles & Tactical Transport",
+          "description": "Humvees, personnel carriers, and modified off-road vehicles.",
+          "broker_guidance": "These contracts are rare and high-value. Partner with defense contractors or FMS suppliers.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Military Vehicles & Tactical Transport 20e97366fb9e8166ac62ca3164b06d24.md"
+        },
+        {
+          "name": "Bulletproof Vests",
+          "description": "Body armor for police, border patrol, and special agents.",
+          "broker_guidance": "Must meet NIJ standards. Many buys go through DOJ or DHS grants.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Bulletproof Vests 20e97366fb9e81f9b349e1467beb3fba.md"
+        },
+        {
+          "name": "Firearms & Ammunition",
+          "description": "Sidearms, rifles, and ammo for qualified law enforcement or military use.",
+          "broker_guidance": "Only work through licensed FFL vendors. Agencies often buy in bulk or through annual qualifications.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Firearms & Ammunition 20e97366fb9e81f3a2c0d2186c18062d.md"
+        },
+        {
+          "name": "Surveillance Cameras & Equipment",
+          "description": "CCTV, mobile surveillance units, and video storage systems.",
+          "broker_guidance": "Bundle with monitoring or security integration partners. Cyber compliance is often required.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Surveillance Cameras & Equipment 20e97366fb9e81d6ade4df306d60e959.md"
+        },
+        {
+          "name": "Riot Gear & Protective Apparel",
+          "description": "Helmets, shields, gloves, and tactical clothing for public safety.",
+          "broker_guidance": "Often bought in preparation for protests, emergencies, or training cycles. Focus on delivery speed and inventory.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement/Sub-Industries/Riot Gear & Protective Apparel 20e97366fb9e81e2b428da0c33c82e36.md"
+        }
+      ],
+      "source_file": "WAR DOGS ACADEMY/Industries/Product Supply & Procurement 20e97366fb9e8102a081f895bb1b2cf3.md"
+    },
+    {
+      "name": "Information Technology & Cybersecurity",
+      "competition_level": "high",
+      "market_growth": "12-15% Annual",
+      "primary_award_method": "Best Value",
+      "market_value_usd": 89000000000,
+      "summary": "This industry powers the digital backbone of government operations. It includes everything from building secure networks and managing cloud infrastructure to developing custom software and protecting sensitive data from cyber threats. Agencies rely on trusted vendors for both day-to-day tech support and long-term modernization projects. It’s a high-demand space with strong budgets and consistent contract flow, but often requires certifications, clearances, and a strong technical track record to compete.",
+      "detailed_description": "IT & Cybersecurity services are among the fastest-growing segments in federal contracting, driven by mandates like CMMC, zero-trust architecture, and cloud-first directives. Agencies procure everything from managed SIEM services to custom application development. Common vehicles include CIO-SP3, Alliant 2, NIH CIO-SP4, and agency-level IDIQs.",
+      "broker_guidance": "- Confirm vendor's corporate facility clearance and individual engineer security clearances for cybersecurity roles\n- Verify CMMC Level 2 for DoD CUI handling or FedRAMP authorization for cloud services - request current ATO letters\n- Ensure software stack is TAA-compliant and check for ITAR/EAR export control violations\n- Prepare for task order competition on GWAC vehicles - gather multiple qualified prime contractors\n- Maintain updated SBA profile documents for small business IT set-asides including 8(a), SDVOSB, HUBZone certifications",
+      "subindustries": [
+        {
+          "name": "Cybersecurity Compliance (NIST, CMMC)",
+          "description": "These services help contractors meet federal cybersecurity standards, especially NIST and CMMC requirements. They’re essential for vendors working with sensitive government data, particularly in defense contracts.",
+          "broker_guidance": "CMMC is becoming mandatory for many DoD contracts. Work with vendors who offer compliance readiness or assessments and understand what level each agency requires.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Information Technology & Cybersecurity/Sub-Industries/Cybersecurity Compliance (NIST, CMMC) 20e97366fb9e817394a9ee1e9647896c.md"
+        },
+        {
+          "name": "Network Infrastructure",
+          "description": "Includes building and securing the networks that agencies use to communicate — cabling, switches, wireless, firewalls, and more. Vital for everything from small offices to secure military bases.",
+          "broker_guidance": "Agencies often use large contract vehicles like GSA EIS. Make sure your vendors can handle federal security standards and are authorized resellers or integrators.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Information Technology & Cybersecurity/Sub-Industries/Network Infrastructure 20e97366fb9e81ea850bf9f5cee4c658.md"
+        },
+        {
+          "name": "Software Development & Integration",
+          "description": "Many agencies need custom software or upgrades to legacy systems. This includes developing apps, integrating databases, and building automation tools",
+          "broker_guidance": "Look for firms with a history of agile development and certifications like CMMI. Software projects can lead to long-term work, so position vendors who can scale.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Information Technology & Cybersecurity/Sub-Industries/Software Development & Integration 20e97366fb9e818f967cfcbc1acd64da.md"
+        },
+        {
+          "name": "Cloud Hosting & Data Management",
+          "description": "Agencies are shifting from physical servers to secure government-approved cloud platforms to store, process, and back up data.",
+          "broker_guidance": "Use vendors with FedRAMP authorization. Understand what security level the agency needs (Moderate vs High) and be prepared to explain pricing models like usage-based billing.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Information Technology & Cybersecurity/Sub-Industries/Cloud Hosting & Data Management 20e97366fb9e814783c8d192e51a7764.md"
+        },
+        {
+          "name": "AI and Machine Learning Services",
+          "description": "AI is being used for analytics, decision-making, automation, and threat detection across government. Many agencies are exploring small-scale pilots.",
+          "broker_guidance": "It’s still an emerging space. Focus on vendors with past performance or partnerships with major AI platforms. Contracts may start small but can grow fast.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Information Technology & Cybersecurity/Sub-Industries/AI and Machine Learning Services 20e97366fb9e81e6a668c2ee312f86b5.md"
+        },
+        {
+          "name": "Hardware & Equipment Procurement",
+          "description": "Covers IT gear like laptops, monitors, routers, and specialty devices. Common for both civilian and defense agencies.",
+          "broker_guidance": "Use resellers with access to GSA, SEWP, or similar vehicles. Make sure vendors comply with sourcing rules like Section 889 and offer solid warranties or support.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Information Technology & Cybersecurity/Sub-Industries/Hardware & Equipment Procurement 20e97366fb9e81a58b71e587a523c3c3.md"
+        },
+        {
+          "name": "Mobile Device Management",
+          "description": "MDM solutions help agencies control and secure phones and tablets — from remote locking to enforcing password policies.",
+          "broker_guidance": "Choose vendors with FedRAMP-approved platforms. Know how many devices the agency manages and whether they need additional features like mobile threat protection.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Information Technology & Cybersecurity/Sub-Industries/Mobile Device Management 20e97366fb9e81c7b87cd95d20a47b39.md"
+        },
+        {
+          "name": "Penetration Testing & Security Audits",
+          "description": "Ethical hackers simulate attacks to find system vulnerabilities. Security audits ensure agencies comply with standards like FISMA or FedRAMP.",
+          "broker_guidance": "Vendors need top-tier certifications and sometimes security clearances. Trust and track record are more important than price in this space.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Information Technology & Cybersecurity/Sub-Industries/Penetration Testing & Security Audits 20e97366fb9e8138bd40c88faf3890f5.md"
+        },
+        {
+          "name": "IT Consulting & Strategy",
+          "description": "Agencies rely on consultants for help with IT modernization, planning, digital transformation, and cybersecurity strategy.",
+          "broker_guidance": "These contracts are competitive. Look for vendors with strong past performance and access to vehicles like GSA. Smaller pilot projects can lead to larger awards if executed well.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Information Technology & Cybersecurity/Sub-Industries/IT Consulting & Strategy 20e97366fb9e8190b532ee0cbd9856c3.md"
+        }
+      ],
+      "source_file": "WAR DOGS ACADEMY/Industries/Information Technology & Cybersecurity 20e97366fb9e817ab5eacefa1b4613a8.md"
+    },
+    {
+      "name": "Construction, Engineering & Specialized Services",
+      "competition_level": "medium",
+      "market_growth": "8-10% Annual",
+      "primary_award_method": "LPTA/Best Value",
+      "market_value_usd": 72000000000,
+      "summary": "This industry covers the planning, building, and upgrading of government facilities and infrastructure. It includes everything from renovating courthouses and military barracks to laying roads, installing HVAC systems, and managing full-scale design-build projects. Agencies like the VA, DoD, GSA, and DOT regularly issue contracts in this space to maintain and expand federal properties. It's a large, competitive industry with high-dollar contracts and a strong need for compliance, bonding, and qualified subcontractors. As a broker, you’ll often work with trade specialists or GC firms that need help navigating federal paperwork and teaming.",
+      "detailed_description": "This category captures everything from erecting new federal buildings to renovating NOAA labs, performing roadwork on military bases, or designing new VA clinics. Major award vehicles include Army Corps MATOCs, NAVFAC IDIQs, Air Force Prime Vendor contracts, and GSA's 3P partnerships. Activities range from high-dollar design-build projects over $100M to smaller task orders under $2M.",
+      "broker_guidance": "- Verify NAICS code exact matching - NAICS 236220 for commercial building, NAICS 237310 for highway construction\n- Confirm bonding capacity with Surety A rating and three years audited financials for Performance and Payment Bonds\n- Ensure architect/engineer firms hold valid AIA or NSPE certifications for Design-Build projects\n- Validate state-specific trade licenses - HVAC, Master Electrician, Journeyman Plumber licenses vary by jurisdiction\n- Address NEPA reviews and Section 106 historic preservation requirements - verify vendor EPA/EH compliance willingness",
+      "subindustries": [
+        {
+          "name": "General Construction (Building, Renovation)",
+          "description": "Covers full construction and renovation of government buildings like offices, barracks, schools, and clinics",
+          "broker_guidance": "Work with licensed general contractors who have bonding capacity. These contracts are often high value but require full compliance with federal safety and labor standards.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Construction, Engineering & Specialized Services/Sub-Industries/General Construction (Building, Renovation) 20e97366fb9e815ebed8e5fd4cc1b856.md"
+        },
+        {
+          "name": "Road & Infrastructure Construction",
+          "description": "Includes building or repairing roads, bridges, sidewalks, parking lots, and related infrastructure on federal land.",
+          "broker_guidance": "Focus on vendors experienced with DOT or Corps of Engineers work. Prevailing wage rules apply and projects often require pre-approved materials.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Construction, Engineering & Specialized Services/Sub-Industries/Road & Infrastructure Construction 20e97366fb9e81899096c38e85a2245b.md"
+        },
+        {
+          "name": "Roofing & Waterproofing",
+          "description": "Involves installing or replacing roofs and ensuring buildings are weatherproofed—common in VA hospitals, base housing, and older federal buildings.",
+          "broker_guidance": "Agencies want vendors with safety records, manufacturer certifications, and warranties. Projects can be seasonal and time-sensitive.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Construction, Engineering & Specialized Services/Sub-Industries/Roofing & Waterproofing 20e97366fb9e81839877df5bdeefaf31.md"
+        },
+        {
+          "name": "Electrical & Wiring",
+          "description": "Includes electrical system installs, lighting upgrades, and rewiring for compliance or renovations.",
+          "broker_guidance": "Look for certified electricians familiar with NEC standards. Projects often tie into energy efficiency programs or facility upgrades.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Construction, Engineering & Specialized Services/Sub-Industries/Electrical & Wiring 20e97366fb9e81288a00d76122a94703.md"
+        },
+        {
+          "name": "HVAC Installations & Repairs",
+          "description": "Covers heating, ventilation, and air conditioning work for government facilities, including maintenance and emergency repairs.",
+          "broker_guidance": "Vendors must follow EPA and OSHA regulations. Energy-efficient systems are often prioritized through federal sustainability goals.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Construction, Engineering & Specialized Services/Sub-Industries/HVAC Installations & Repairs 20e97366fb9e8116a028ff97a8846a83.md"
+        },
+        {
+          "name": "Plumbing",
+          "description": "Involves installing and repairing piping systems for water, gas, and waste in government facilities.",
+          "broker_guidance": "Common on renovations and facility upgrades. Look for vendors licensed in the state where work is performed and familiar with federal facility access protocols.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Construction, Engineering & Specialized Services/Sub-Industries/Plumbing 20e97366fb9e8153a65ec050a930458d.md"
+        },
+        {
+          "name": "Demolition & Site Prep",
+          "description": "Covers clearing land, demolishing structures, and preparing sites for new federal construction.",
+          "broker_guidance": "Safety and environmental regulations are strict. Match with vendors who have experience managing permits and debris disposal.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Construction, Engineering & Specialized Services/Sub-Industries/Demolition & Site Prep 20e97366fb9e815c8b96d1c08a0392a8.md"
+        },
+        {
+          "name": "Masonry & Concrete Services",
+          "description": "Includes bricklaying, foundations, walkways, curbs, and concrete pouring for structural and exterior work.",
+          "broker_guidance": "Federal buyers want vendors with strong QA/QC practices. Durability and finish quality are critical on visible or load-bearing work.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Construction, Engineering & Specialized Services/Sub-Industries/Masonry & Concrete Services 20e97366fb9e8107bf58dd1b2a083f83.md"
+        },
+        {
+          "name": "Modular & Temporary Construction",
+          "description": "Delivers prefabricated or quickly installed buildings for field offices, labs, or disaster response units.",
+          "broker_guidance": "Focus on firms that can handle delivery, install, and removal. Speed and flexibility are the main selling points for these contracts.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Construction, Engineering & Specialized Services/Sub-Industries/Modular & Temporary Construction 20e97366fb9e8186b070f6b028c4135c.md"
+        },
+        {
+          "name": "Design-Build Services",
+          "description": "Combines architecture, engineering, and construction under one contract to streamline federal project delivery.",
+          "broker_guidance": "These contracts require highly experienced teams. Look for firms with integrated design and construction capabilities and federal past performance.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Construction, Engineering & Specialized Services/Sub-Industries/Design-Build Services 20e97366fb9e8180951be1353eec996e.md"
+        },
+        {
+          "name": "Carpentry & Woodworking",
+          "description": "Includes framing, cabinetry, trim work, and specialized wood installations in federal buildings.",
+          "broker_guidance": "Projects are often bundled within renovations. Match with vendors who can work around occupied spaces and meet Buy American requirements.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Construction, Engineering & Specialized Services/Sub-Industries/Carpentry & Woodworking 20e97366fb9e812484d5e64784531cf8.md"
+        },
+        {
+          "name": "Surveying & Mapping",
+          "description": "Provides land surveys, boundary mapping, and site planning support for construction and engineering projects.",
+          "broker_guidance": "Work with firms licensed to operate in the project’s state. Deliverables must meet federal accuracy standards and often involve GIS systems.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Construction, Engineering & Specialized Services/Sub-Industries/Surveying & Mapping 20e97366fb9e81c38f32ce946c9b4938.md"
+        }
+      ],
+      "source_file": "WAR DOGS ACADEMY/Industries/Construction, Engineering & Specialized Services 20e97366fb9e81988674cbc5e0ff327b.md"
+    },
+    {
+      "name": "Healthcare & Medical Services",
+      "competition_level": "medium",
+      "market_growth": "7-9% Annual",
+      "primary_award_method": "Best Value",
+      "market_value_usd": 58000000000,
+      "summary": "This industry supports the delivery of medical care across government-run hospitals, clinics, military treatment facilities, and detention centers. It includes everything from providing healthcare workers and equipment to supporting infrastructure like mobile units, laundry, and telemedicine. Agencies such as the VA, DoD, BOP, HHS, and FEMA frequently issue contracts in this space. As a broker, you'll need to work with vendors who can meet clinical standards, deliver at scale, and often respond quickly in emergencies or ongoing care cycles.",
+      "detailed_description": "Healthcare & Medical Services cover everything from staffing temporary clinicians at VA hospitals to supplying specialized imaging equipment to DoD medical facilities. Vehicles include VA's VHA acquisition tools, DoD's CHCS agreements, NIH CIO-SP4 for health IT, and HHS Purchase Order systems. Patient care emphasis requires strict regulatory compliance including HIPAA, FDA, and JCAHO standards.",
+      "broker_guidance": "- Verify HIPAA compliance with current Risk Assessment, signed Business Associate Agreements, and FIPS 140-2 encryption\n- Ensure FDA 510(k) clearance for DME and surgical instruments, plus current FDA establishment registration\n- Confirm medical staff hold valid state licenses, DEA numbers, VA badge eligibility, and specialty certifications\n- Align vendor SINs with GSA Schedule 70 or 132-56 for healthcare IT and medical services purchases\n- For veterinary services, confirm AAALAC accreditation and CCAC-approved laboratory animal care compliance",
+      "subindustries": [
+        {
+          "name": "Medical Staffing & Temporary Health Personnel",
+          "description": "Provides doctors, nurses, therapists, and specialists on a contract or temporary basis for VA hospitals, military clinics, and federal prisons.",
+          "broker_guidance": "Credentials, background checks, and state licensure are non-negotiable. Work with staffing firms that specialize in healthcare and are used to credentialing and onboarding within federal timelines. Outsourcing to foreign companies can be a great way to lower your bottom line, just make sure they have all the required certificates.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Healthcare & Medical Services/Sub-Industries/Medical Staffing & Temporary Health Personnel 20e97366fb9e81eca78edb667a77fe0b.md"
+        },
+        {
+          "name": "Durable Medical Equipment (DME)",
+          "description": "Includes long-term medical devices like wheelchairs, oxygen machines, CPAP devices, hospital beds, and mobility aids.",
+          "broker_guidance": "Target vendors that are already registered with the VA’s FSS or DAPA. Delivery and service warranties are often bundled, so look for vendors who offer white-glove setup or on-site repairs.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Healthcare & Medical Services/Sub-Industries/Durable Medical Equipment (DME) 20e97366fb9e8105a9aad885ea09a2a9.md"
+        },
+        {
+          "name": "Medical Supplies (PPE, Bandages, etc.)",
+          "description": "Includes gloves, masks, syringes, disinfectants, bandages, and other disposable essentials used daily in federal healthcare settings.",
+          "broker_guidance": "Margins are low, but demand is constant. Work with vendors who can deliver in bulk and meet FDA or NIOSH standards. Best suited for brokers seeking recurring, high-volume deals.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Healthcare & Medical Services/Sub-Industries/Medical Supplies (PPE, Bandages, etc ) 20e97366fb9e8119b92fca98a866b974.md"
+        },
+        {
+          "name": "Health IT & EHR Systems",
+          "description": "Involves the setup, management, or integration of electronic health record (EHR) systems and healthcare data platforms.",
+          "broker_guidance": "Target IT firms with HIPAA-compliant systems. These are complex, high-dollar contracts that often involve teaming with niche consultants.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Healthcare & Medical Services/Sub-Industries/Health IT & EHR Systems 20e97366fb9e81d8b5ebcad91c7d8ded.md"
+        },
+        {
+          "name": "Telemedicine Services",
+          "description": "Telemedicine contracts provide remote healthcare services to veterans, rural patients, or emergency response units using virtual platforms. These services are critical for agencies like the VA, Indian Health Service, and FEMA when in-person care is limited or impractical.",
+          "broker_guidance": "This space is growing fast, but many of the top vendors already have federal relationships or are part of large health systems. Your edge is finding smaller platforms or regional providers that are HIPAA-compliant but haven’t broken into federal yet. Look for agencies posting pilot programs or expansion projects, especially those tied to rural access or behavioral health. Your value comes from simplifying onboarding and connecting these newer providers with the right entry points.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Healthcare & Medical Services/Sub-Industries/Telemedicine Services 20e97366fb9e81d9b32ac88df32943cd.md"
+        },
+        {
+          "name": "Mobile Medical Units",
+          "description": "Portable medical clinics used for field deployments, emergency responses, or rural patient outreach.",
+          "broker_guidance": "Work with manufacturers that specialize in vehicle upfitting. These often include bundled contracts for equipment, staffing, and dispatching support. This is an excellent niche with high margins.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Healthcare & Medical Services/Sub-Industries/Mobile Medical Units 20e97366fb9e81deaa60eae3d41c8ff8.md"
+        },
+        {
+          "name": "Behavioral Health Services",
+          "description": "Covers counseling, therapy, addiction treatment, and psychological evaluations for veterans, inmates, or federal employees.",
+          "broker_guidance": "Licensing is everything. Match with firms that already provide behavioral health under Medicaid, Medicare, or DoD systems",
+          "source_file": "WAR DOGS ACADEMY/Industries/Healthcare & Medical Services/Sub-Industries/Behavioral Health Services 20e97366fb9e819d9cb8e8af9b386e5e.md"
+        },
+        {
+          "name": "Veterinary Services (for government-owned animals)",
+          "description": "Includes medical care for military working dogs, research lab animals, and USDA-controlled livestock.",
+          "broker_guidance": "Niche but consistent. Work with vendors familiar with DoD K9 programs or government research institutions like NIH. On-call or mobile services are a plus.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Healthcare & Medical Services/Sub-Industries/Veterinary Services (for government-owned animals) 20e97366fb9e812d8858e78ee758d5da.md"
+        },
+        {
+          "name": "Surgical & Diagnostic Equipment",
+          "description": "Includes imaging systems, surgical tools, diagnostic machines (like EKGs, X-rays), and sterilization equipment.",
+          "broker_guidance": "Expensive, capital equipment. Agencies expect brand-name products with install, training, and service contracts built in. Great space for brokers who can navigate long sales cycles.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Healthcare & Medical Services/Sub-Industries/Surgical & Diagnostic Equipment 20e97366fb9e81eeb264d57bca81fa8b.md"
+        },
+        {
+          "name": "Hospital Support Services (food, laundry, cleaning)",
+          "description": "Non-clinical services that support the operation of medical facilities — including kitchen staff, linen services, and janitorial work.",
+          "broker_guidance": "Volume is high and contracts often rebid every few years. Match vendors with experience working in healthcare environments where infection control matters.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Healthcare & Medical Services/Sub-Industries/Hospital Support Services (food, laundry, cleaning 20e97366fb9e81cebfaaef68c43d4c7f.md"
+        }
+      ],
+      "source_file": "WAR DOGS ACADEMY/Industries/Healthcare & Medical Services 20e97366fb9e8129a110ca539821caca.md"
+    },
+    {
+      "name": "Operations & Facilities Support",
+      "competition_level": "high",
+      "market_growth": "3-5% Annual",
+      "primary_award_method": "LPTA",
+      "market_value_usd": 48000000000,
+      "summary": "This industry covers the day-to-day services that keep federal buildings, military bases, and government facilities running smoothly. From janitorial work and landscaping to HVAC repairs, pest control, and elevator maintenance, it includes everything related to maintaining, cleaning, and operating government spaces. These contracts are often recurring, location-based, and ideal for brokers who can connect reliable vendors to consistent facility needs.",
+      "detailed_description": "Operations & Facilities Support cover day-to-day upkeep of federal buildings, installations, and campuses including custodial services, landscape management, pest mitigation, minor repairs, and infrastructure support. Many agencies bundle these into Base Operating Support or Integrated Facilities Management agreements. Contracts are typically LPTA with guaranteed performance levels and specific KPIs.",
+      "broker_guidance": "- Match Service Contract Act wage determinations exactly - confirm staff categories align with WD classifications down to labor-hour level\n- Verify state licenses - pest control operators need structural licenses, elevator contractors need state certification and ASME A17.1 compliance\n- Ensure robust QA/QC programs with monthly scorecards and corrective action tracking for performance KPIs\n- Prepare for bundled vs unbundled opportunities - larger bases combine all trades under one prime contractor\n- Check EPA Section 608 certification for HVAC refrigerants and state electrician licenses for electrical work",
+      "subindustries": [
+        {
+          "name": "Janitorial & Cleaning Services",
+          "description": "Routine custodial services for federal offices, courthouses, VA hospitals, and military facilities. Includes daily cleaning, disinfection, and occasional deep cleans.",
+          "broker_guidance": "👉 There's a ton of volume in this space but competition is usually high\n\nExpect dozens of bids per solicitation, especially on SAM or GSA. Focus on brokering vendors with consistent staffing, strong past performance, and the ability to service multiple sites. Great niche for recurring revenue once a foothold is secured.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Operations & Facilities Support/Sub-Industries/Janitorial & Cleaning Services 20e97366fb9e81ceb056f8cecf742e1c.md"
+        },
+        {
+          "name": "Landscaping & Grounds Maintenance",
+          "description": "Lawn care, tree trimming, irrigation maintenance, and snow removal for federal campuses, cemeteries, and base perimeters.",
+          "broker_guidance": "👉 Landscaping contracts are everywhere but they’re highly localized and competitive\n\nFederal agencies award a high number of grounds maintenance contracts especially through the VA and GSA Most go to small businesses near the site so your edge as a broker comes from knowing which vendors are local reliable and ready to respond year-round including for snow and storm cleanup",
+          "source_file": "WAR DOGS ACADEMY/Industries/Operations & Facilities Support/Sub-Industries/Landscaping & Grounds Maintenance 20e97366fb9e81bdadbbc13207ee4006.md"
+        },
+        {
+          "name": "Pest Control",
+          "description": "Extermination and preventive pest management in office buildings, hospitals, military housing, and warehouses.",
+          "broker_guidance": "👉 What makes this niche attractive is the lower competition and clear compliance standards — most solicitations require valid state pest control licenses, proof of technician training, and EPA-compliant products. That creates a barrier for less-prepared vendors, which is where a strong broker brings value.\n\nFocus on vendors who:\n\n- Already serve commercial or institutional clients (schools, hotels, or local gov)\n- Are licensed in the contract’s target state\n- Can provide MSDS sheets and safety plans up front\n- Have experience with IPM (Integrated Pest Management), which many agencies now prefer",
+          "source_file": "WAR DOGS ACADEMY/Industries/Operations & Facilities Support/Sub-Industries/Pest Control 20e97366fb9e81719081cf00297743fb.md"
+        },
+        {
+          "name": "Laundry & Linen Services",
+          "description": "Includes linen cleaning for VA hospitals, correctional facilities, and temporary FEMA housing. Covers bedding, uniforms, scrubs, and towels.",
+          "broker_guidance": "👉 Volume is key. V endors with commercial-scale capacity, fast turnaround, and experience with medical or correctional-grade sanitation do the best work and have the best prices. Your edge is connecting the gov to reliable bulk operators who can deliver consistently.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Operations & Facilities Support/Sub-Industries/Laundry & Linen Services 20e97366fb9e81fd9b13d8787e2ff01c.md"
+        },
+        {
+          "name": "Facilities Maintenance & Repair",
+          "description": "General upkeep of federal buildings including lighting, door repairs, plumbing fixes, and HVAC troubleshooting. Often part of integrated facilities management contracts.",
+          "broker_guidance": "👉 This niche rewards brokers who can combine multiple trades into one offer\nAgencies need a mix of services like lighting, doors, drywall, and plumbing. You’ll stand out by brokering a team of reliable handymen or maintenance pros under a bundled service model.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Operations & Facilities Support/Sub-Industries/Facilities Maintenance & Repair 20e97366fb9e8131a1e9ca18b9668b5a.md"
+        },
+        {
+          "name": "HVAC, Electrical, Plumbing, and Specialized Trades",
+          "description": "Covers licensed mechanical work such as HVAC tune-ups, panel replacements, re-wiring, and emergency plumbing response.",
+          "broker_guidance": "👉 These trades require certified technicians and fast response times\nMost contracts are tied to military bases, VA campuses, or leased GSA buildings. Brokers should focus on subs who are licensed, bonded, and can meet government safety protocols on short notice. Look for companies that service commercial clients, they usually have wholesale pricing, whereas residential companies don’t.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Operations & Facilities Support/Sub-Industries/HVAC, Electrical, Plumbing, and Specialized Trades 20e97366fb9e8184b5b2c5cfacac5356.md"
+        },
+        {
+          "name": "Elevator Maintenance",
+          "description": "Inspection, repair, and 24/7 emergency service of elevator systems in federal facilities, VA hospitals, and courthouses.",
+          "broker_guidance": "These contracts go to vendors with specific certifications and documented inspection records. If you can secure a partner that’s already servicing municipal or hospital elevators, this is a great long-term play. Otis and Schindler are big players in this game. They are open to teaming arrangements.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Operations & Facilities Support/Sub-Industries/Elevator Maintenance 20e97366fb9e81c382c3e60cb6e1de06.md"
+        },
+        {
+          "name": "Waste Management & Recycling",
+          "description": "Covers garbage collection, hazardous waste disposal, e-waste handling, and the implementation of recycling programs.",
+          "broker_guidance": "👉 Things to Know as a Broker:\n\nThis niche is logistics-heavy with strict compliance. Most agencies want local vendors who can handle recurring pickups, provide disposal logs, and follow EPA or OSHA rules. Focus on matching regional haulers to federal sites nearby — proximity often wins.\n\nMedical or hazardous waste requires extra licensing, so get ahead of that paperwork early. For general waste, pricing is usually by ton or per pickup. You can also bundle waste with janitorial or facility services to create more attractive offers. Green vendors get priority. If your vendor recycles or tracks landfill diversion, highlight that in your bid. It's a great selling point in technical evaluations.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Operations & Facilities Support/Sub-Industries/Waste Management & Recycling 20e97366fb9e81ebae48ed13c293f445.md"
+        },
+        {
+          "name": "Snow Removal & Outdoor Maintenance",
+          "description": "Seasonal contracts for plowing, salting, walkway clearing, and outdoor upkeep on military bases, VA facilities, and border installations.",
+          "broker_guidance": "These contracts are highly seasonal and time-sensitive. Agencies issue them ahead of winter and expect fast, reliable service — often with guaranteed response times after snowfall. Brokers should work with vendors that have their own plows, salt trucks, and 24/7 crews on standby.\nMany contracts are regional, covering multiple federal buildings in a city or county. Pricing is often structured per event, per inch of snow, or as a flat monthly rate for seasonal coverage.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Operations & Facilities Support/Sub-Industries/Snow Removal & Outdoor Maintenance 20e97366fb9e817398c7fd783c673cfb.md"
+        }
+      ],
+      "source_file": "WAR DOGS ACADEMY/Industries/Operations & Facilities Support 20e97366fb9e81e0bffec90c4702e618.md"
+    },
+    {
+      "name": "Logistics, Transportation & Supply Chain",
+      "competition_level": "medium",
+      "market_growth": "5-7% Annual",
+      "primary_award_method": "Best Value",
+      "market_value_usd": 42000000000,
+      "summary": "This industry manages how goods, vehicles, and people move across the government ecosystem. From delivering disaster relief supplies to relocating military families, these services are essential to federal operations. Contracts range from bulk freight shipments and warehousing to last-mile deliveries and fleet maintenance. It’s a fast-moving space that rewards vendors with strong coordination, speed, and reliability. As a broker, you’ll be matching agencies with providers who can handle time-sensitive, high-volume, or specialized transport needs.",
+      "detailed_description": "Logistics, Transportation & Supply Chain services focus on moving people and goods whether shipping DLA-managed materiel to combat zones, staging relief convoys, or managing GSA fleet vehicles. The Department of Transportation, DLA, DoD, and FEMA are primary customers. Contracts include long-term IDIQ Requirements Contracts and ad-hoc Disaster Response BPAs.",
+      "broker_guidance": "- Verify MilRun credentials and current DUNS plus CAGE code in Active status in SAM.gov with Active NCAGE\n- Ensure DOT HM-126F training for hazardous materials handlers plus active HM license and carrier authorization\n- Confirm USPPI documentation for overseas shipping and correct export licenses for ITAR/EAR-sensitive cargo\n- Check GSA G-Fleet certification for auto-dealer partners offering maintenance at GSA Advantage pricing\n- Verify 24/7 surge capacity with tiered network of carriers and warehouses across multiple regions for disaster relief",
+      "subindustries": [
+        {
+          "name": "Freight & Cargo Shipping",
+          "description": "Involves moving large shipments of goods, equipment, or materials between government locations by truck, rail, or container.",
+          "broker_guidance": "Federal freight often requires specialized logistics like secure handling or temperature control. Use vendors familiar with military or FEMA shipments",
+          "source_file": "WAR DOGS ACADEMY/Industries/Logistics, Transportation & Supply Chain/Sub-Industries/Freight & Cargo Shipping 20e97366fb9e8104b24cee8ddcbc7378.md"
+        },
+        {
+          "name": "Courier & Delivery Services",
+          "description": "Covers smaller, often time-sensitive deliveries between government offices or remote facilities.",
+          "broker_guidance": "These contracts favor vendors with tracking capabilities and flexible routes. USPS isn’t always used, so private couriers are in demand.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Logistics, Transportation & Supply Chain/Sub-Industries/Courier & Delivery Services 20e97366fb9e81578f01e717fe1d683e.md"
+        },
+        {
+          "name": "Warehousing & Inventory Management",
+          "description": "Provides space and systems for storing, organizing, and managing government-owned goods.",
+          "broker_guidance": "Offer vendors with secure, climate-controlled facilities and barcode or RFID tracking. Inventory accuracy is a key performance metric.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Logistics, Transportation & Supply Chain/Sub-Industries/Warehousing & Inventory Management 20e97366fb9e81d28b0ccf6b7002003d.md"
+        },
+        {
+          "name": "Vehicle Fleet Management",
+          "description": "Includes maintenance, repair, fueling, and tracking of government vehicle fleets.",
+          "broker_guidance": "Match agencies with vendors who can support large fleets and offer telematics or preventative maintenance programs.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Logistics, Transportation & Supply Chain/Sub-Industries/Vehicle Fleet Management 20e97366fb9e819ea116c18df8849072.md"
+        },
+        {
+          "name": "Transportation Management Consulting",
+          "description": "Offers planning, analysis, and optimization of government transport systems, especially for logistics-heavy agencies.",
+          "broker_guidance": "Use firms that understand federal routing, compliance, and reporting standards. Ideal for DOT or DLA projects.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Logistics, Transportation & Supply Chain/Sub-Industries/Transportation Management Consulting 20e97366fb9e81bab327cc69f850e8e0.md"
+        },
+        {
+          "name": "Air & Maritime Logistics",
+          "description": "Handles overseas or long-distance shipping by air or sea for agencies like DoD and USAID.",
+          "broker_guidance": "Focus on vendors with TSA clearance or experience handling customs paperwork and port access. Often used in humanitarian or military supply chains.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Logistics, Transportation & Supply Chain/Sub-Industries/Air & Maritime Logistics 20e97366fb9e81ff9054f5216337e2b8.md"
+        },
+        {
+          "name": "Moving Services (for relocation, military)",
+          "description": "Manages relocations for military families, civilian staff, or federal offices.",
+          "broker_guidance": "Requires vendors who are GSA-approved or registered with the Defense Personal Property Program (DP3). White-glove service is often expected.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Logistics, Transportation & Supply Chain/Sub-Industries/Moving Services (for relocation, military) 20e97366fb9e81229751f45e4071c472.md"
+        },
+        {
+          "name": "Supply Chain Optimization",
+          "description": "Supply Chain Optimization",
+          "broker_guidance": "Consultants should offer data-driven insights. Ideal for brokers who can connect firms with proven tech tools or logistics platforms.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Logistics, Transportation & Supply Chain/Sub-Industries/Supply Chain Optimization 20e97366fb9e81b4ad86d10491ed7be4.md"
+        },
+        {
+          "name": "Disaster Relief Logistics",
+          "description": "Delivers emergency supplies like food, water, and medical kits during natural disasters or crises.",
+          "broker_guidance": "Must move fast. FEMA buys in bulk and prefers vendors who can mobilize within 24–48 hours. Prepositioned inventory is a huge plus.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Logistics, Transportation & Supply Chain/Sub-Industries/Disaster Relief Logistics 20e97366fb9e811bbc4edad917462fba.md"
+        }
+      ],
+      "source_file": "WAR DOGS ACADEMY/Industries/Logistics, Transportation & Supply Chain 20e97366fb9e8184b54cefa182d68644.md"
+    },
+    {
+      "name": "Research & Development",
+      "competition_level": "low",
+      "market_growth": "10-12% Annual",
+      "primary_award_method": "Best Value",
+      "market_value_usd": 28000000000,
+      "summary": "This industry supports the government’s pursuit of innovation, scientific advancement, and operational efficiency. Contracts span across defense, health, tech, and energy — often awarded to universities, private labs, or cutting-edge startups. Many opportunities are tied to SBIR/STTR programs, pilot programs, or large-scale innovation grants. Brokers who understand how to package niche technical capabilities or connect non-traditional vendors can unlock long-term, high-value partnerships.",
+      "detailed_description": "Research & Development contracts fund basic science, applied research, and prototype demonstrations. Agencies include DoD (DARPA, ONR, Army Research Lab), DOE national labs, NASA, NIH, and NSF. Vehicles include SBIR/STTR awards, Broad Agency Announcements, and large multi-agency R&D IDIQs. Competition is lower than average but technical rigor is extremely high.",
+      "broker_guidance": "- Verify SBIR/STTR eligibility - firms must be US-owned, for-profit, under 500 employees with valid SBA SAM profile\n- Assemble university partners and subject matter experts to craft compelling 5-page technical whitepapers\n- Understand IP and data rights distinctions - guide clients on Government Purpose License vs Unlimited Rights\n- Ensure valid IRB or IACUC protocols for human or animal subjects research with proper institutional approvals\n- Coordinate NDAA or CRADA teaming arrangements in advance for multi-site consortium proposals",
+      "subindustries": [
+        {
+          "name": "Scientific Research Services",
+          "description": "Includes laboratory research, environmental studies, biomedical research, and defense-related science.",
+          "broker_guidance": "Universities dominate here, but boutique labs and private researchers often go overlooked. Look for niche expertise and help navigate grant-backed solicitations.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Research & Development/Sub-Industries/Scientific Research Services 20e97366fb9e817fa7f8d2059a4dfde0.md"
+        },
+        {
+          "name": "Product Development (Tech, Health, Military)",
+          "description": "Developing specialized tools, software, devices, or hardware for government use.",
+          "broker_guidance": "Great space for startups and innovation firms. Your value is helping them enter GovCon via pilot programs or sub-award teaming.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Research & Development/Sub-Industries/Product Development (Tech, Health, Military) 20e97366fb9e81f0b1ffc6c34d9369e5.md"
+        },
+        {
+          "name": "Prototype Testing & Evaluation",
+          "description": "Testing new products, vehicles, weapons systems, or software for functionality, compliance, and deployment readiness.",
+          "broker_guidance": "Connect with testing labs, engineering firms, or QA consultants. Many vendors don’t realize these services are separately contracted.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Research & Development/Sub-Industries/Prototype Testing & Evaluation 20e97366fb9e81fa9c37c8544ecc7e37.md"
+        },
+        {
+          "name": "Innovation & AI Development",
+          "description": "Cutting-edge software, predictive systems, automation tools, or AI platforms for agency operations.",
+          "broker_guidance": "High growth, high complexity. Match up smaller AI developers with innovation grants or tech modernization contracts.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Research & Development/Sub-Industries/Innovation & AI Development 20e97366fb9e81a692d0c18919a5aa27.md"
+        },
+        {
+          "name": "Government-funded R&D Initiatives",
+          "description": "Research funded under SBIR/STTR, ARPA, or federal innovation challenges.",
+          "broker_guidance": "Learn the grant system. Brokers here help connect inventors or small firms with compliance-ready partners or serve as the bridge for commercialization.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Research & Development/Sub-Industries/Government-funded R&D Initiatives 20e97366fb9e8147971aff4ae66180ac.md"
+        },
+        {
+          "name": "Feasibility Studies & Pilot Programs",
+          "description": "Early-stage evaluations to determine if a program, product, or policy is viable before scaling.",
+          "broker_guidance": "Agencies love data-backed decisions. Focus on vendors who can quickly gather results and adapt — especially in public health, infrastructure, or tech trials.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Research & Development/Sub-Industries/Feasibility Studies & Pilot Programs 20e97366fb9e81ff8b8cee1d3be626f2.md"
+        }
+      ],
+      "source_file": "WAR DOGS ACADEMY/Industries/Research & Development 20e97366fb9e8183a9dcf63a612c0e00.md"
+    },
+    {
+      "name": "Security & Protective Services",
+      "competition_level": "medium",
+      "market_growth": "6-8% Annual",
+      "primary_award_method": "Best Value",
+      "market_value_usd": 25000000000,
+      "summary": "This industry supports the physical safety, threat detection, and emergency preparedness of government personnel and property. Contracts range from on-site security and surveillance to supplying tactical gear and managing fire safety systems. Agencies like the Department of Homeland Security, VA, DoD, and federal courthouses rely heavily on these services. As a broker, expect high competition and a strong emphasis on licensing, past performance, and compliance with federal security standards.",
+      "detailed_description": "Security & Protective Services include all tasks that protect people or assets from armed guard details at federal facilities to installing CCTV cameras or supplying ballistic vests to DoD units. Agencies include DHS, DoD, VA, DOJ, and state/local law enforcement grants. Contracts require strict security clearances, controlled substance licensing for firearms, and adherence to U.S. Marshals Service standards.",
+      "broker_guidance": "- Verify state private security licenses (Class A or G level) plus current Type 07 FFL for firearms and ammunition handling\n- Ensure NISPOM compliance for facility clearance and minimum Secret clearances for DoD cleared facility contracts\n- Confirm DoD/UL 2050 certified control panels and NIJ standards compliance for ballistic materials and electronic systems\n- Maintain $2M General Liability and $1M Worker's Compensation insurance with U.S. Government as Additional Insured\n- Establish roster of cleared, fully vetted guards to meet KPI requirements like 5-minute alarm response times",
+      "subindustries": [
+        {
+          "name": "Armed & Unarmed Guard Services",
+          "description": "Provides security personnel to guard federal buildings, parking lots, entry points, and events.",
+          "broker_guidance": "Guard firms must meet strict licensing and training requirements. Many contracts require union labor and cleared personnel. These contracts tend to have lower competition but higher requirements for past performance.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Security & Protective Services/Sub-Industries/Armed & Unarmed Guard Services 20e97366fb9e812d95e8f17074001496.md"
+        },
+        {
+          "name": "Surveillance System Installation & Monitoring",
+          "description": "Installs and monitors cameras, sensors, and intrusion detection systems at government facilities.",
+          "broker_guidance": "Federal agencies prefer vendors with experience in secure environments. Make sure systems meet federal encryption and storage requirements.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Security & Protective Services/Sub-Industries/Surveillance System Installation & Monitoring 20e97366fb9e817da3f1d20851395269.md"
+        },
+        {
+          "name": "Physical Security Systems (Access Control, Alarm Systems)",
+          "description": "Includes badge readers, turnstiles, emergency alarms, and secure entry tech.",
+          "broker_guidance": "Vendors must offer integration with federal ID systems (like PIV cards). Contracts often require ongoing maintenance after installation, which is a great way to secure passive income.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Security & Protective Services/Sub-Industries/Physical Security Systems (Access Control, Alarm S 20e97366fb9e8122a8e1fc131aedbdb5.md"
+        },
+        {
+          "name": "K9 Units & Security Dogs",
+          "description": "Trained dogs are used for the detection of explosives, narcotics, or patrolling high-security areas.",
+          "broker_guidance": "Agencies typically require handlers to be certified. These contracts are niche and high-trust, prioritizing experience and handler credentials. This field is small, but relationships are key. We see that a lot of these contracts are sole-sourced due to a lack of suitable bidders.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Security & Protective Services/Sub-Industries/K9 Units & Security Dogs 20e97366fb9e81f480dfdcfe3a2e00e8.md"
+        },
+        {
+          "name": "Executive & VIP Protection",
+          "description": "Personal security for federal officials, diplomats, or visiting foreign dignitaries.",
+          "broker_guidance": "Match with firms experienced in private security and diplomatic protection. Many contracts require personnel with a military or law enforcement background.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Security & Protective Services/Sub-Industries/Executive & VIP Protection 20e97366fb9e81338662c9d6d82e7f05.md"
+        },
+        {
+          "name": "Background Screening & Vetting Services",
+          "description": "Handles criminal, credit, and security clearance background checks for employees or vendors.",
+          "broker_guidance": "Work with firms familiar with OPM or DoD vetting systems. Accuracy and turnaround times are key differentiators. These contracts are very scalable as the sub can perform them remotely in many instances.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Security & Protective Services/Sub-Industries/Background Screening & Vetting Services 20e97366fb9e810d9880dba0e63af3b0.md"
+        },
+        {
+          "name": "Tactical Gear & Ballistics Supply",
+          "description": "Provides vests, helmets, riot shields, and protective gear for police, federal agents, and emergency responders.",
+          "broker_guidance": "Focus on NIJ-compliant products and vendors with rapid fulfillment capacity. Agencies prefer contracts where bulk orders can be quickly deployed.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Security & Protective Services/Sub-Industries/Tactical Gear & Ballistics Supply 20e97366fb9e8185a7ffc8071590d1de.md"
+        },
+        {
+          "name": "Firearms & Ammunition Supply",
+          "description": "This sub-industry focuses on providing pistols, rifles, shotguns, specialty weapons (like less-lethal systems), and a wide range of ammunition to federal agencies such as the FBI, DEA, ATF, DHS, and military branches. Contracts can include initial bulk purchases, training weapons, or recurring ammo restocks.",
+          "broker_guidance": "Firearms and ammunition contracts are tightly regulated. You must broker through properly licensed FFL (Federal Firearms License) dealers. Many opportunities are restricted to law enforcement-only distributors or vendors on specific GSA schedules. Expect slow vetting and approval timelines, but high-dollar awards. Past performance and strict compliance documentation are critical, especially with anti-terrorism and Buy American requirements. Agencies often prefer vendors who can include secure delivery and chain-of-custody documentation.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Security & Protective Services/Sub-Industries/Firearms & Ammunition Supply 20e97366fb9e815584b6de98b6014187.md"
+        },
+        {
+          "name": "Fire Safety Services (Inspection, Safety Equipment)",
+          "description": "Involves fire alarm testing, extinguisher maintenance, and supplying fire suppression equipment.",
+          "broker_guidance": "Vendors must be NFPA-compliant and often certified by state fire marshals. This work is recurring, making it great for long-term broker relationships",
+          "source_file": "WAR DOGS ACADEMY/Industries/Security & Protective Services/Sub-Industries/Fire Safety Services (Inspection, Safety Equipment 20e97366fb9e816fb3a0f00b0512f09b.md"
+        }
+      ],
+      "source_file": "WAR DOGS ACADEMY/Industries/Security & Protective Services 20e97366fb9e81ce830acd89a017f552.md"
+    },
+    {
+      "name": "Education, Training & Development",
+      "competition_level": "low",
+      "market_growth": "6-8% Annual",
+      "primary_award_method": "Best Value",
+      "market_value_usd": 18000000000,
+      "summary": "This industry focuses on equipping federal employees, military personnel, and contractors with the skills they need to perform safely, effectively, and in compliance with laws and regulations. It includes everything from classroom-style compliance training to virtual simulations for tactical readiness. Agencies like the DoD, DHS, VA, and civilian departments issue recurring contracts in this space. As a broker, the opportunity lies in matching specialized training vendors with high-demand, recurring needs, especially in digital formats, compliance topics, and underserved communities.",
+      "detailed_description": "Education & Training contracts range from one-day OSHA-10 compliance courses to multi-year military training academies. Agencies such as DoD, VA, HHS, and GSA procure instructor-led and eLearning solutions. Common vehicles include IDIQs, GSA Schedule 874, and agency BRMAs for certified training with emphasis on accredited curriculum and instructor credentials.",
+      "broker_guidance": "- Verify instructor certifications - OSHA authorized trainer certificates, APICS supply chain certifications, medical credentials for clinical training\n- Confirm Top Secret or TS/SCI clearances for specialized Defense training with current investigation recency\n- Ensure LMS is Section 508 compliant and eLearning modules adhere to SCORM 1.2/2004 or xAPI standards\n- Validate accredited status with AMA for physicians or ANCC for nurses for CEU/CME credit requirements\n- Line up small business partners to meet 30% subcontracting goals on full-and-open training IDIQs",
+      "subindustries": [
+        {
+          "name": "Compliance Training (OSHA, HIPAA, etc.)",
+          "description": "Provides legally required training for workplace safety, data privacy, and healthcare standards across federal agencies.",
+          "broker_guidance": "Target vendors that already serve private-sector hospitals or manufacturing and help them pivot to federal. These contracts are often bundled into onboarding or facility compliance programs.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Education, Training & Development/Sub-Industries/Compliance Training (OSHA, HIPAA, etc ) 20e97366fb9e814db32aeee2681ec45e.md"
+        },
+        {
+          "name": "Cybersecurity Training",
+          "description": "Delivers training on phishing, secure file use, password protocols, and advanced cyber hygiene for federal employees.",
+          "broker_guidance": "Works best with small IT firms or certified trainers who want to grow into GovCon. Look for recurring task orders tied to agency IT rollouts or compliance refreshers.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Education, Training & Development/Sub-Industries/Cybersecurity Training 20e97366fb9e81768124f52b8f93f949.md"
+        },
+        {
+          "name": "Military & Tactical Training",
+          "description": "Includes firearms training, combat readiness, survival tactics, and mission simulation for law enforcement or military units.",
+          "broker_guidance": "This space is competitive. Your best bet is niche training firms or former military instructors not yet registered in SAM. Credentials matter — DoD favors prior service backgrounds.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Education, Training & Development/Sub-Industries/Military & Tactical Training 20e97366fb9e8117b83bd6a2ca91d4db.md"
+        },
+        {
+          "name": "Leadership & Management Development",
+          "description": "Helps federal supervisors and leaders build strategic thinking, communication, and team leadership skills.",
+          "broker_guidance": "Agencies often look for soft-skills vendors during leadership transitions or restructuring. Great space for coaches and corporate trainers trying to break into federal.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Education, Training & Development/Sub-Industries/Leadership & Management Development 20e97366fb9e8111910cd68a4a5cbf90.md"
+        },
+        {
+          "name": "Workforce Development (Job Readiness, Soft Skills)",
+          "description": "Covers resume writing, interview prep, workplace behavior, and job training for transitioning service members or underserved groups.",
+          "broker_guidance": "Many of these contracts are funded through workforce grants or economic development programs. Focus on nonprofits or community colleges with proven programs.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Education, Training & Development/Sub-Industries/Workforce Development (Job Readiness, Soft Skills) 20e97366fb9e814892c2d128137517ee.md"
+        },
+        {
+          "name": "DEI Training (Diversity, Equity, Inclusion)",
+          "description": "Offers training on unconscious bias, inclusive leadership, and equitable workplace culture.",
+          "broker_guidance": "Best sourced through consultants with past experience in corporate DEI. Contracts often appear during agency restructuring, onboarding rollouts, or after public audits.This has had a strong reduction in funding under the current Trump administration.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Education, Training & Development/Sub-Industries/DEI Training (Diversity, Equity, Inclusion) 20e97366fb9e819eac9de79a72b36926.md"
+        },
+        {
+          "name": "Language & Cultural Training",
+          "description": "Teaches foreign language skills and cultural awareness to military, diplomatic, or intelligence personnel.",
+          "broker_guidance": "Ideal for boutique language companies or regional experts. Look for DoD and DHS training contracts with urgent foreign language needs (Arabic, Mandarin, Russian, etc.). Upwork and Fiverr can be a good place to start when looking for possible experts in this field.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Education, Training & Development/Sub-Industries/Language & Cultural Training 20e97366fb9e81c89b2ac7cb48cc1713.md"
+        },
+        {
+          "name": "Technical & Vocational Training",
+          "description": "Covers welding, electrical, automotive, and other skilled trades, often for prisons, veteran rehab, or military transition programs.",
+          "broker_guidance": "Covers welding, electrical, automotive, and other skilled trades, often for prisons, veteran rehab, or military transition programs.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Education, Training & Development/Sub-Industries/Technical & Vocational Training 20e97366fb9e81998fe7fad346beed2e.md"
+        },
+        {
+          "name": "Online Course Development & E-Learning",
+          "description": "Builds custom digital courses and modules for onboarding, skills training, and compliance",
+          "broker_guidance": "Digital-first vendors with SCORM or LMS experience are in demand. Most agencies prefer platforms that integrate with existing learning systems like Cornerstone or Moodle.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Education, Training & Development/Sub-Industries/Online Course Development & E-Learning 20e97366fb9e812f8fa5e2f3f7ee9ded.md"
+        },
+        {
+          "name": "Simulation & Virtual Reality Training Solutions",
+          "description": "Delivers immersive training experiences for tactical readiness, disaster response, or technical operations using VR/AR.",
+          "broker_guidance": "Niche but high-paying. Match vendors with defense agencies or emergency preparedness offices. Focus on those with previous DoD or simulation-based training experience.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Education, Training & Development/Sub-Industries/Simulation & Virtual Reality Training Solutions 20e97366fb9e81bbbdd0f6e6019f0d50.md"
+        }
+      ],
+      "source_file": "WAR DOGS ACADEMY/Industries/Education, Training & Development 20e97366fb9e815b89f8c38bc75f7c10.md"
+    },
+    {
+      "name": "Environmental, Energy & Sustainability Services",
+      "competition_level": "medium",
+      "market_growth": "10-15% Annual",
+      "primary_award_method": "Best Value",
+      "market_value_usd": 12000000000,
+      "summary": "This industry focuses on protecting natural resources, enhancing the sustainability of federal facilities, and ensuring compliance with environmental laws. It includes waste disposal, clean energy, pollution control, and consulting on EPA and state environmental standards. Government agencies like the EPA, DoD, GSA, and FEMA fund these services to meet environmental mandates and climate-related goals. As a broker, this is a niche space where technical expertise, safety certifications, and regulatory knowledge are essential for vendor success.",
+      "detailed_description": "Environmental & Energy Services include remediation of contaminated sites, compliance with EPA rules, installation of solar PV systems on federal facilities, and environmental consulting. Agencies such as EPA, DOE National Labs, DoD BRAC cleanup, and DOI procure these services under IDIQs that emphasize technical qualifications and specialized licenses with strict environmental compliance requirements.",
+      "broker_guidance": "- Verify EPA RCRA ID number and current permits for hazardous waste, plus NPDES permits for water treatment discharge\n- Ensure state-specific licenses for asbestos/lead abatement with AHERA certification and OSHA 29 CFR 1926.1101 compliance\n- Confirm NABCEP certification for solar vendors and compliance with FEMP guidelines and E.O. 14057 net-zero standards\n- Address NEPA and ESA compliance timelines - ensure contractor can complete EAs/EISs and obtain USFWS Biological Opinions\n- Prepare for Performance-Based Remediation metrics with specific cleanup level achievements and schedule penalty risks",
+      "subindustries": [
+        {
+          "name": "Hazardous Waste Management",
+          "description": "Covers the collection, transport, and disposal of hazardous materials from labs, bases, hospitals, and disaster zones",
+          "broker_guidance": "Look for vendors with HAZMAT certifications and federal disposal permits. Contracts often include strict compliance checks and require fast response capabilities.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Environmental, Energy & Sustainability Services/Sub-Industries/Hazardous Waste Management 20e97366fb9e810ab681c069c6be54c8.md"
+        },
+        {
+          "name": "Recycling Programs & Services",
+          "description": "Manages paper, e-waste, plastic, and other recyclable materials for federal buildings and facilities.",
+          "broker_guidance": "Agencies seek vendors who track sustainability metrics. Focus on long-term, facility-wide contracts tied to government green initiatives.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Environmental, Energy & Sustainability Services/Sub-Industries/Recycling Programs & Services 20e97366fb9e81c99096e55dfd9a6c75.md"
+        },
+        {
+          "name": "Water Treatment & Wastewater Management",
+          "description": "Provides clean water systems or treats wastewater at military bases, rural areas, and federal facilities",
+          "broker_guidance": "Target vendors with EPA or state certifications. Most contracts require testing, ongoing monitoring, and compliance with Clean Water Act regulations.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Environmental, Energy & Sustainability Services/Sub-Industries/Water Treatment & Wastewater Management 20e97366fb9e81b997cafe340833a9f8.md"
+        },
+        {
+          "name": "Solar & Renewable Energy Services",
+          "description": "Includes solar panel installation, wind energy systems, and renewable infrastructure for federal buildings.",
+          "broker_guidance": "Great for brokers working with small energy firms. Look for opportunities under DOE or GSA green building initiatives and Energy Savings Performance Contracts (ESPCs).",
+          "source_file": "WAR DOGS ACADEMY/Industries/Environmental, Energy & Sustainability Services/Sub-Industries/Solar & Renewable Energy Services 20e97366fb9e810aba72f041a35e663a.md"
+        },
+        {
+          "name": "Stormwater Management Systems",
+          "description": "Designs and maintains drainage, filtration, and flood control systems for federal facilities and roads.",
+          "broker_guidance": "Focus on engineers or contractors familiar with EPA stormwater regulations and site permitting. Often bundled with broader construction work.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Environmental, Energy & Sustainability Services/Sub-Industries/Stormwater Management Systems 20e97366fb9e81159895f910569d3c7c.md"
+        },
+        {
+          "name": "Environmental Consulting & Compliance",
+          "description": "Advises agencies on environmental law compliance, permitting, environmental impact statements, and audits",
+          "broker_guidance": "Match with consultants experienced in NEPA, CERCLA, or EPA projects. Niche but lucrative space if your vendor understands federal reporting standards.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Environmental, Energy & Sustainability Services/Sub-Industries/Environmental Consulting & Compliance 20e97366fb9e81f79562f32c8b1181dd.md"
+        },
+        {
+          "name": "Energy Efficiency Audits & Solutions",
+          "description": "Evaluates buildings to reduce energy use through retrofits, smart systems, and efficiency upgrades.",
+          "broker_guidance": "Great entry point for smaller energy firms. Target agencies are upgrading older buildings or military bases. Experience with ENERGY STAR or LEED helps.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Environmental, Energy & Sustainability Services/Sub-Industries/Energy Efficiency Audits & Solutions 20e97366fb9e819fad26c754ed30be08.md"
+        },
+        {
+          "name": "Air Quality Control & Monitoring",
+          "description": "Tests and manages indoor and outdoor air quality, including ventilation systems and pollutant detection.",
+          "broker_guidance": "Common in schools, hospitals, and VA facilities. Look for vendors with OSHA and EPA compliance experience.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Environmental, Energy & Sustainability Services/Sub-Industries/Air Quality Control & Monitoring 20e97366fb9e81d9aa10cb79956e967f.md"
+        },
+        {
+          "name": "Mold & Asbestos Remediation",
+          "description": "Removes hazardous substances from older buildings or disaster-impacted areas.",
+          "broker_guidance": "High liability work. Vendors need state certifications, insurance, and disposal capabilities. Often bid as part of emergency response or renovation packages.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Environmental, Energy & Sustainability Services/Sub-Industries/Mold & Asbestos Remediation 20e97366fb9e81cba5bff3de26fc9801.md"
+        },
+        {
+          "name": "Landfill & Waste Disposal",
+          "description": "Covers landfill operations or hauling non-hazardous waste from federal sites.",
+          "broker_guidance": "Focus on local vendors with DoD or GSA experience. Ideal for long-term, recurring hauling contracts on military installations or remote bases.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Environmental, Energy & Sustainability Services/Sub-Industries/Landfill & Waste Disposal 20e97366fb9e818ba4b6c04f2dcfcf44.md"
+        }
+      ],
+      "source_file": "WAR DOGS ACADEMY/Industries/Environmental, Energy & Sustainability Services 20e97366fb9e81cd9034c7153e8620d8.md"
+    },
+    {
+      "name": "Marketing, Communications & Media",
+      "competition_level": "medium",
+      "market_growth": "4-6% Annual",
+      "primary_award_method": "Best Value",
+      "market_value_usd": 8000000000,
+      "summary": "This industry covers how the government communicates with the public, promotes programs, manages its image, and educates internal or external audiences. While some work is done in-house, agencies often contract out creative services due to shifting project demands. This is a strong lane for brokers who can connect media-savvy vendors with high-trust agencies, especially at the state and federal program level.",
+      "detailed_description": "Marketing, Communications & Media services help agencies convey their mission, recruit talent, or launch public awareness campaigns. Customers include State Department, DHS, VA, and Commerce for various outreach initiatives. Contracts are often awarded under Best Value with agencies prioritizing creativity, past campaign success, and data-driven measurement over pure price competition.",
+      "broker_guidance": "- Confirm NAICS registration for 541890 Other Services Related to Advertising or 541820 Public Relations Agencies\n- Ensure GSA AIMS compliance including Social Media Policy Section 508 requirements and creative scoring criteria\n- Verify vendor willingness to grant government unlimited rights for final deliverables including video, graphics, and music\n- Confirm GDPR compliance for international campaigns involving European audiences or personal data collection\n- Verify 8(a) certification status for sole-source awards up to $7.5M for digital marketing firms",
+      "subindustries": [
+        {
+          "name": "Public Relations & Media Outreach",
+          "description": "Managing an agency’s public image, press releases, and media inquiries",
+          "broker_guidance": "Agencies look for firms with government PR experience. Crisis PR and bilingual support are added advantages.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Marketing, Communications & Media/Sub-Industries/Public Relations & Media Outreach 20e97366fb9e81e0a023d8c354f3a95e.md"
+        },
+        {
+          "name": "Market Research & Surveys",
+          "description": "Gathering data to support policy, community needs, or program effectiveness.",
+          "broker_guidance": "Many local firms are capable but not in GovCon yet. Focus on data collection firms with analytics capacity.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Marketing, Communications & Media/Sub-Industries/Market Research & Surveys 20e97366fb9e81f093fff6c3f5a95413.md"
+        },
+        {
+          "name": "Advertising & Digital Campaigns",
+          "description": "Running outreach campaigns across social media, digital platforms, and traditional advertising.",
+          "broker_guidance": "Running outreach campaigns across social media, digital platforms, and traditional advertising.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Marketing, Communications & Media/Sub-Industries/Advertising & Digital Campaigns 20e97366fb9e8130a0bfd4f6df08f35b.md"
+        },
+        {
+          "name": "Graphic Design & Branding",
+          "description": "Creating logos, layouts, signage, and internal graphics for government use.",
+          "broker_guidance": "Micro-purchase friendly. Great entry point for creative freelancers or boutique studios.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Marketing, Communications & Media/Sub-Industries/Graphic Design & Branding 20e97366fb9e816fbdd9f77e5f8cec57.md"
+        },
+        {
+          "name": "Content Creation (Video, Blog Posts)",
+          "description": "Video production, copywriting, blog content, or agency newsletter development",
+          "broker_guidance": "Video production, copywriting, blog content, or agency newsletter development",
+          "source_file": "WAR DOGS ACADEMY/Industries/Marketing, Communications & Media/Sub-Industries/Content Creation (Video, Blog Posts) 20e97366fb9e810181bfc3ab63c19e42.md"
+        },
+        {
+          "name": "Event Management & Conference Services",
+          "description": "Planning logistics for public meetings, government expos, or inter-agency trainings.",
+          "broker_guidance": "Look for hospitality or event vendors near DC or state capitals. Many agencies outsource fully.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Marketing, Communications & Media/Sub-Industries/Event Management & Conference Services 20e97366fb9e81bc83a0cf1f5a6b343d.md"
+        },
+        {
+          "name": "Crisis Communication & Reputation Management",
+          "description": "Messaging strategy during emergencies, scandals, or fast-changing situations.",
+          "broker_guidance": "This is trust-based. Find experienced professionals from law, public safety, or corporate backgrounds.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Marketing, Communications & Media/Sub-Industries/Crisis Communication & Reputation Management 20e97366fb9e814b93ded0498a2f222e.md"
+        },
+        {
+          "name": "Translation & Multilingual Services",
+          "description": "Translating government materials into other languages or providing live interpreters.",
+          "broker_guidance": "Focus on community-focused agencies. Demand spikes during disaster response, elections, and census seasons.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Marketing, Communications & Media/Sub-Industries/Translation & Multilingual Services 20e97366fb9e8128be2ddf74d772d119.md"
+        }
+      ],
+      "source_file": "WAR DOGS ACADEMY/Industries/Marketing, Communications & Media 20e97366fb9e813198b3dc87734c889f.md"
+    },
+    {
+      "name": "Legal & Compliance Services",
+      "competition_level": "low",
+      "market_growth": "5-7% Annual",
+      "primary_award_method": "Best Value",
+      "market_value_usd": 6000000000,
+      "summary": "This category supports the government’s need for transparency, proper documentation, and legal oversight. These contracts are often service-based, require high trust, and may fall under professional services set-asides. Many smaller agencies outsource these functions to stay compliant with federal law, FOIA mandates, and grant regulations. Brokers who understand how to position niche professional firms can carve out profitable and low-competition relationships here.",
+      "detailed_description": "Legal & Compliance Services cover advisory and hands-on support to ensure agencies follow laws, regulations, and internal policies. This includes FOIA processing at EPA, IT security audits at DoD facilities, and contract administration support. Major customers include DOJ, Treasury, GSA Office of General Counsel, and agency IG offices. Contracts emphasize subject-matter expertise and proven compliance outcomes.",
+      "broker_guidance": "- Verify attorneys are active in good standing with U.S. State Bar and confirm DOJ Panel counsel admission if required\n- Ensure CIPP/US or CISA/CISM certifications for IT security and privacy audits with current CISSP or CISA credentials\n- Confirm FOIA and Privacy Act Certification completion via DOJ Office of Information Policy with current certificate\n- Align billing rates with OPM General Schedule equivalents or GSA MAS Legal BDAs for paralegals through partners\n- Establish ethical walls and gather written Conflict of Interest statements for vendors with prior agency litigation history",
+      "subindustries": [
+        {
+          "name": "Regulatory & Compliance Consulting",
+          "description": "Includes advising agencies on how to stay in line with federal, state, or industry-specific regulations like HIPAA, FAR, or Title IX.",
+          "broker_guidance": "Great space for specialized firms. Your job is connecting niche consultants with agencies needing quick or ongoing compliance support.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Legal & Compliance Services/Sub-Industries/Regulatory & Compliance Consulting 20e97366fb9e818a8412d0ebe588ee4d.md"
+        },
+        {
+          "name": "FOIA & Records Management Services",
+          "description": "Services that manage Freedom of Information Act responses, public record digitization, and document retention compliance.",
+          "broker_guidance": "Many small clerical firms can do this but haven’t broken into GovCon. It's a repeat-need space that benefits from reliable staffing.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Legal & Compliance Services/Sub-Industries/FOIA & Records Management Services 20e97366fb9e81d58cecc1113deee7c6.md"
+        },
+        {
+          "name": "Audit Services (Financial, IT Security)",
+          "description": "Third-party audits of agency financials, cybersecurity protocols, or program compliance.",
+          "broker_guidance": "Third-party audits of agency financials, cybersecurity protocols, or program compliance.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Legal & Compliance Services/Sub-Industries/Audit Services (Financial, IT Security) 20e97366fb9e8155acb6c339d4ae954e.md"
+        },
+        {
+          "name": "Legal Research & Documentation",
+          "description": "Support tasks like preparing legal memos, reviewing case law, or managing court-related documentation.",
+          "broker_guidance": "Paralegal firms or freelance legal researchers often fly under the radar but are capable. Perfect for micro-purchase or low-value buys.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Legal & Compliance Services/Sub-Industries/Legal Research & Documentation 20e97366fb9e814789a7d2fd7956874c.md"
+        },
+        {
+          "name": "Contract & Grant Management",
+          "description": "Handling compliance, reporting, and deliverables for awarded federal contracts or grants.",
+          "broker_guidance": "Great niche for PM consultants. Many agencies seek help managing what they already won, not just new awards.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Legal & Compliance Services/Sub-Industries/Contract & Grant Management 20e97366fb9e810a902afff3a6fa75de.md"
+        },
+        {
+          "name": "Dispute Resolution & Mediation",
+          "description": "Neutral third-party services for resolving agency disputes, contract issues, or community conflicts.",
+          "broker_guidance": "This is relationship-based. Connect certified mediators or legal consultants who specialize in public sector cases.",
+          "source_file": "WAR DOGS ACADEMY/Industries/Legal & Compliance Services/Sub-Industries/Dispute Resolution & Mediation 20e97366fb9e81d1808ef391d129f283.md"
+        }
+      ],
+      "source_file": "WAR DOGS ACADEMY/Industries/Legal & Compliance Services 20e97366fb9e81958a2effa08b5dd3fc.md"
+    }
+  ]
+}

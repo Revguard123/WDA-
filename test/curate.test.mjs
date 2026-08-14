@@ -29,6 +29,14 @@ function rows() {
   ];
 }
 
+function duplicateSolicitationRows() {
+  return [
+    { notice_id: 'OLD', solicitation_num: 'FA4626-26-R-0012', naics: '561720', set_aside_type: 'SDVOSBC', title: 'Repair MAF and Base Fire Alarms - DSN/CSN, IDIQ', description: 'structured cabling', response_deadline: at(21), raw: { ...pop('SC'), modifiedDate: '2026-08-01T00:00:00Z' } },
+    { notice_id: 'NEW', solicitation_num: ' fa4626-26-r-0012 ', naics: '561720', set_aside_type: 'SDVOSBC', title: 'Repair MAF and Base Fire Alarms - DSN/CSN, IDIQ', description: 'structured cabling updated', response_deadline: at(30), raw: { ...pop('SC'), modifiedDate: '2026-08-03T00:00:00Z' } },
+    { notice_id: 'OTHER', solicitation_num: 'FA4626-26-R-0099', naics: '561720', set_aside_type: 'SDVOSBC', title: 'Repair MAF and Base Fire Alarms - DSN/CSN, IDIQ', description: 'different procurement', response_deadline: at(30), raw: pop('SC') },
+  ];
+}
+
 // Fake AI: disqualify anything whose title mentions construction.
 const fakeDisqualify = async (op) => ({
   disqualified: /construction/i.test(op.title || ''),
@@ -65,6 +73,69 @@ test('curate runs hard filters, AI disqualification, ranking, and why-lines', as
   }
 });
 
+test('curate can return fewer than five valid opportunities without padding', async () => {
+  const { chosen, stats } = await curateForBuyer(
+    rows().filter((r) => ['A', 'B'].includes(r.notice_id)),
+    BUYER,
+    { disqualify: async () => ({ disqualified: false }), writeWhyLine: fakeWhyLine },
+    { now: NOW, minRunwayDays: 14, n: 5 },
+  );
+  assert.equal(chosen.length, 2);
+  assert.equal(stats.shortfall, 3);
+});
+
+test('curate collapses same solicitation_num versions before AI review', async () => {
+  const reviewed = [];
+  const { chosen, stats } = await curateForBuyer(
+    duplicateSolicitationRows(),
+    BUYER,
+    {
+      disqualify: async (op) => {
+        reviewed.push(op.notice_id);
+        return { disqualified: false };
+      },
+      writeWhyLine: fakeWhyLine,
+    },
+    { now: NOW, minRunwayDays: 14, n: 5 },
+  );
+  assert.equal(stats.procurementDedupe.removed, 1);
+  assert.equal(stats.procurementDedupe.duplicateGroups[0].kept_notice_id, 'NEW');
+  assert.deepEqual(reviewed.sort(), ['NEW', 'OTHER']);
+  assert.equal(chosen.length, 2);
+  assert.equal(new Set(chosen.map((c) => c.procurement_identity)).size, chosen.length);
+});
+
+test('previously delivered solicitation blocks a later notice_id version', async () => {
+  const reviewed = [];
+  const { chosen, stats } = await curateForBuyer(
+    [{ notice_id: 'NEW', solicitation_num: ' fa4626-26-r-0012 ', naics: '561720', set_aside_type: 'SDVOSBC', title: 'New notice version', description: 'janitorial', response_deadline: at(30), raw: pop('SC') }],
+    BUYER,
+    {
+      disqualify: async (op) => {
+        reviewed.push(op.notice_id);
+        return { disqualified: false };
+      },
+      writeWhyLine: fakeWhyLine,
+    },
+    { now: NOW, minRunwayDays: 14, n: 5, deliveredSolicitations: new Set(['FA4626-26-R-0012']) },
+  );
+  assert.equal(stats.hardFilter.droppedRepeat, 1);
+  assert.equal(reviewed.length, 0);
+  assert.equal(chosen.length, 0);
+});
+
+test('curate can return fewer than five when procurement dedupe removes duplicate versions', async () => {
+  const { chosen, stats } = await curateForBuyer(
+    duplicateSolicitationRows().slice(0, 2),
+    BUYER,
+    { disqualify: async () => ({ disqualified: false }), writeWhyLine: fakeWhyLine },
+    { now: NOW, minRunwayDays: 14, n: 5 },
+  );
+  assert.equal(stats.procurementDedupe.removed, 1);
+  assert.equal(chosen.length, 1);
+  assert.equal(stats.shortfall, 4);
+});
+
 test('a thrown disqualifier call drops that contract rather than passing it through', async () => {
   const throwing = async (op) => {
     if (op.notice_id === 'B') throw new Error('api timeout');
@@ -78,6 +149,99 @@ test('a thrown disqualifier call drops that contract rather than passing it thro
   );
   assert.equal(stats.disqualifiedByAI, 1);
   assert.deepEqual(chosen.map((c) => c.notice_id), ['A']);
+});
+
+test('needs_validation from AI remains eligible and is counted separately', async () => {
+  const disqualify = async () => ({
+    decision: 'needs_validation',
+    disqualified: false,
+    reason_category: 'certification_license',
+    reason: 'Certification should be verified before bidding.',
+  });
+  const { chosen, stats, verdicts } = await curateForBuyer(
+    rows().filter((r) => ['A', 'B'].includes(r.notice_id)),
+    BUYER,
+    { disqualify, writeWhyLine: fakeWhyLine },
+    { now: NOW, minRunwayDays: 14, n: 5 },
+  );
+  assert.equal(stats.disqualifiedByAI, 0);
+  assert.equal(stats.needsValidationByAI, 2);
+  assert.equal(stats.eligible, 2);
+  assert.equal(stats.aiValidationCategories.certification_license, 2);
+  assert.equal(chosen.length, 2);
+  assert.ok(verdicts.every((v) => v.decision === 'needs_validation' && !v.disqualified));
+});
+
+test('explicit capability mismatch can still hard-disqualify', async () => {
+  const disqualify = async (op) => /Construction/i.test(op.title)
+    ? { decision: 'disqualified', disqualified: true, reason_category: 'scope_mismatch', reason: 'Construction is outside janitorial targeting.' }
+    : { decision: 'eligible', disqualified: false, reason_category: 'other', reason: 'Fits.' };
+  const { chosen, stats } = await curateForBuyer(
+    rows(),
+    BUYER,
+    { disqualify, writeWhyLine: fakeWhyLine },
+    { now: NOW, minRunwayDays: 14, n: 5 },
+  );
+  assert.equal(stats.disqualifiedByAI, 1);
+  assert.equal(stats.aiRejectionCategories.scope_mismatch, 1);
+  assert.deepEqual(chosen.map((c) => c.notice_id).sort(), ['A', 'B']);
+});
+
+test('known missing mandatory qualification can hard-disqualify', async () => {
+  const buyer = { ...BUYER, missing_qualifications: ['bonding'] };
+  const disqualify = async () => ({
+    decision: 'disqualified',
+    disqualified: true,
+    reason_category: 'bonding',
+    reason: 'Buyer is known to lack mandatory bonding.',
+  });
+  const { chosen, stats } = await curateForBuyer(
+    rows().filter((r) => r.notice_id === 'A'),
+    buyer,
+    { disqualify, writeWhyLine: fakeWhyLine },
+    { now: NOW, minRunwayDays: 14, n: 5 },
+  );
+  assert.equal(stats.disqualifiedByAI, 1);
+  assert.equal(stats.aiRejectionCategories.bonding, 1);
+  assert.equal(chosen.length, 0);
+});
+
+test('unknown license bonding clearance and past performance do not automatically disqualify', async () => {
+  const categories = ['certification_license', 'bonding', 'clearance', 'past_performance'];
+  let i = 0;
+  const disqualify = async () => ({
+    decision: 'needs_validation',
+    disqualified: false,
+    reason_category: categories[i++ % categories.length],
+    reason: 'Requirement should be verified.',
+  });
+  const testRows = rows().filter((r) => ['A', 'B', 'C'].includes(r.notice_id));
+  const { chosen, stats } = await curateForBuyer(
+    testRows,
+    BUYER,
+    { disqualify, writeWhyLine: fakeWhyLine },
+    { now: NOW, minRunwayDays: 14, n: 5 },
+  );
+  assert.equal(stats.disqualifiedByAI, 0);
+  assert.equal(stats.needsValidationByAI, 3);
+  assert.equal(stats.eligible, 3);
+  assert.equal(chosen.length, 3);
+});
+
+test('truly unrelated opportunity is still rejected', async () => {
+  const unrelated = [{ notice_id: 'Z', naics: '561720', set_aside_type: '', title: 'Cafeteria food supply', description: 'Provide food products and cafeteria supplies.', response_deadline: at(30), raw: pop('SC') }];
+  const { chosen, stats } = await curateForBuyer(
+    unrelated,
+    BUYER,
+    {
+      disqualify: async () => ({ decision: 'disqualified', disqualified: true, reason_category: 'product_service_mismatch', reason: 'Food products are unrelated to janitorial services.' }),
+      writeWhyLine: fakeWhyLine,
+    },
+    { now: NOW, minRunwayDays: 14, n: 5 },
+  );
+  assert.equal(stats.disqualifiedByAI, 1);
+  assert.equal(stats.aiRejectionCategories.product_service_mismatch, 1);
+  assert.equal(chosen.length, 0);
 });
 
 test('curate resolves descriptions for the capped candidates before the AI pass', async () => {

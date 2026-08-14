@@ -1,0 +1,2820 @@
+{
+  "metadata": {
+    "playbook_source": "Client-supplied War Dogs Playbook/Notion export",
+    "naics_source": "U.S. Census Bureau 2022 NAICS",
+    "naics_workbook_filename": "us_census_2022_naics_complete_reference.xlsx",
+    "mapping_provenance": "Application machine-proposed sub-industry to NAICS associations; not human-reviewed or client-approved.",
+    "record_count": 130
+  },
+  "mappings": [
+    {
+      "subindustry_id": "professional-and-administrative-services-it-help-desk-and-technical-support",
+      "subindustry_name": "IT Help Desk & Technical Support",
+      "industry_name": "Professional & Administrative Services",
+      "codes": [
+        "541519",
+        "541513"
+      ],
+      "official_titles": [
+        "Other Computer Related Services",
+        "Computer Facilities Management Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Help desk and managed support can fall under computer-related services or facilities management."
+    },
+    {
+      "subindustry_id": "professional-and-administrative-services-interpreter-and-translation-services",
+      "subindustry_name": "Interpreter & Translation Services",
+      "industry_name": "Professional & Administrative Services",
+      "codes": [
+        "541930"
+      ],
+      "official_titles": [
+        "Translation and Interpretation Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct Census title alignment."
+    },
+    {
+      "subindustry_id": "professional-and-administrative-services-foia-and-records-management",
+      "subindustry_name": "FOIA and Records Management",
+      "industry_name": "Professional & Administrative Services",
+      "codes": [
+        "561410"
+      ],
+      "official_titles": [
+        "Document Preparation Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Document preparation/redaction support is the closest official service code."
+    },
+    {
+      "subindustry_id": "professional-and-administrative-services-temporary-and-contract-staffing",
+      "subindustry_name": "Temporary & Contract Staffing",
+      "industry_name": "Professional & Administrative Services",
+      "codes": [
+        "561320"
+      ],
+      "official_titles": [
+        "Temporary Help Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct Census title alignment to temporary help services."
+    },
+    {
+      "subindustry_id": "professional-and-administrative-services-proposal-writing-and-documentation-services",
+      "subindustry_name": "Proposal Writing & Documentation Services",
+      "industry_name": "Professional & Administrative Services",
+      "codes": [
+        "561410",
+        "541990"
+      ],
+      "official_titles": [
+        "Document Preparation Services",
+        "All Other Professional, Scientific, and Technical Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Documentation support spans document preparation and other professional services."
+    },
+    {
+      "subindustry_id": "professional-and-administrative-services-project-management-support",
+      "subindustry_name": "Project Management Support",
+      "industry_name": "Professional & Administrative Services",
+      "codes": [
+        "541611",
+        "541618"
+      ],
+      "official_titles": [
+        "Administrative Management and General Management Consulting Services",
+        "Other Management Consulting Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Project management support is consulting-like and context-specific."
+    },
+    {
+      "subindustry_id": "professional-and-administrative-services-human-resources-services",
+      "subindustry_name": "Human Resources Services",
+      "industry_name": "Professional & Administrative Services",
+      "codes": [
+        "541612"
+      ],
+      "official_titles": [
+        "Human Resources Consulting Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct human resources consulting alignment."
+    },
+    {
+      "subindustry_id": "professional-and-administrative-services-accounting-and-financial-services",
+      "subindustry_name": "Accounting & Financial Services",
+      "industry_name": "Professional & Administrative Services",
+      "codes": [
+        "541219",
+        "541211"
+      ],
+      "official_titles": [
+        "Other Accounting Services",
+        "Offices of Certified Public Accountants"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Accounting support can be CPA offices or other accounting services."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-office-supplies-and-equipment",
+      "subindustry_name": "Office Supplies & Equipment",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [
+        "424120",
+        "423420"
+      ],
+      "official_titles": [
+        "Stationery and Office Supplies Merchant Wholesalers",
+        "Office Equipment Merchant Wholesalers"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Office supplies and office equipment are separate official wholesaler industries."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-computers-printers-and-peripherals",
+      "subindustry_name": "Computers, Printers, and Peripherals",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [
+        "423430"
+      ],
+      "official_titles": [
+        "Computer and Computer Peripheral Equipment and Software Merchant Wholesalers"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct computer/peripheral wholesaler alignment."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-office-furniture",
+      "subindustry_name": "Office Furniture",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [
+        "423210"
+      ],
+      "official_titles": [
+        "Furniture Merchant Wholesalers"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct furniture wholesaler alignment."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-office-consumables-paper-ink-etc",
+      "subindustry_name": "Office Consumables (Paper, Ink, etc.)",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [
+        "424120",
+        "424130"
+      ],
+      "official_titles": [
+        "Stationery and Office Supplies Merchant Wholesalers",
+        "Industrial and Personal Service Paper Merchant Wholesalers"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Stationery/paper supplies and paper wholesalers both apply depending on item."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-telecommunications-equipment",
+      "subindustry_name": "Telecommunications Equipment",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [
+        "423690",
+        "334220",
+        "334290"
+      ],
+      "official_titles": [
+        "Other Electronic Parts and Equipment Merchant Wholesalers",
+        "Radio and Television Broadcasting and Wireless Communications Equipment Manufacturing",
+        "Other Communications Equipment Manufacturing"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Telecom supply may be wholesaling or communications equipment manufacturing."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-ppe-personal-protective-equipment",
+      "subindustry_name": "PPE (Personal Protective Equipment)",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "423450",
+        "423850",
+        "315990"
+      ],
+      "candidate_titles": [
+        "Medical, Dental, and Hospital Equipment and Supplies Merchant Wholesalers",
+        "Service Establishment Equipment and Supplies Merchant Wholesalers",
+        "Apparel Accessories and Other Apparel Manufacturing"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "medical_vs_general_ppe"
+      ],
+      "mapping_notes": "PPE depends on medical, service-establishment, or apparel category."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-surgical-and-diagnostic-instruments",
+      "subindustry_name": "Surgical & Diagnostic Instruments",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [
+        "339112",
+        "325413",
+        "334510"
+      ],
+      "official_titles": [
+        "Surgical and Medical Instrument Manufacturing",
+        "In-Vitro Diagnostic Substance Manufacturing",
+        "Electromedical and Electrotherapeutic Apparatus Manufacturing"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Surgical instruments, diagnostic substances, and electromedical apparatus are distinct official industries."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-medical-consumables-bandages-syringes-etc",
+      "subindustry_name": "Medical Consumables (Bandages, Syringes, etc.)",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [
+        "423450",
+        "339113"
+      ],
+      "official_titles": [
+        "Medical, Dental, and Hospital Equipment and Supplies Merchant Wholesalers",
+        "Surgical Appliance and Supplies Manufacturing"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Medical supplies can be wholesale supply or surgical appliance/supplies manufacturing."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-medical-furniture-beds-chairs-etc",
+      "subindustry_name": "Medical Furniture (Beds, Chairs, etc.)",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [
+        "423450",
+        "337127"
+      ],
+      "official_titles": [
+        "Medical, Dental, and Hospital Equipment and Supplies Merchant Wholesalers",
+        "Institutional Furniture Manufacturing"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Hospital equipment wholesaling and institutional furniture both align depending on item."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-concrete-cement-and-aggregates",
+      "subindustry_name": "Concrete, Cement, and Aggregates",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [
+        "327320",
+        "327310",
+        "423320"
+      ],
+      "official_titles": [
+        "Ready-Mix Concrete Manufacturing",
+        "Cement Manufacturing",
+        "Brick, Stone, and Related Construction Material Merchant Wholesalers"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Concrete/cement materials span manufacturing and construction material wholesaling."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-steel-and-rebar",
+      "subindustry_name": "Steel & Rebar",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [
+        "423510",
+        "331110"
+      ],
+      "official_titles": [
+        "Metal Service Centers and Other Metal Merchant Wholesalers",
+        "Iron and Steel Mills and Ferroalloy Manufacturing"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Steel/rebar supply can be metal service centers or iron and steel mills."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-lumber-and-building-supplies",
+      "subindustry_name": "Lumber & Building Supplies",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [
+        "423310",
+        "423390"
+      ],
+      "official_titles": [
+        "Lumber, Plywood, Millwork, and Wood Panel Merchant Wholesalers",
+        "Other Construction Material Merchant Wholesalers"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Lumber and other construction materials are separate wholesaler industries."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-roofing-materials",
+      "subindustry_name": "Roofing Materials",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [
+        "423330"
+      ],
+      "official_titles": [
+        "Roofing, Siding, and Insulation Material Merchant Wholesalers"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct roofing/siding/insulation material wholesaler alignment."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-electrical-and-plumbing-parts",
+      "subindustry_name": "Electrical & Plumbing Parts",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [
+        "423610",
+        "423720"
+      ],
+      "official_titles": [
+        "Electrical Apparatus and Equipment, Wiring Supplies, and Related Equipment Merchant Wholesalers",
+        "Plumbing and Heating Equipment and Supplies (Hydronics) Merchant Wholesalers"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Electrical and plumbing parts are separate official wholesaler industries."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-insulation-and-drywall",
+      "subindustry_name": "Insulation & Drywall",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "423330",
+        "238310"
+      ],
+      "candidate_titles": [
+        "Roofing, Siding, and Insulation Material Merchant Wholesalers",
+        "Drywall and Insulation Contractors"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "product_vs_installation"
+      ],
+      "mapping_notes": "Could be materials supply or drywall/insulation contracting."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-trucks-vans-suvs",
+      "subindustry_name": "Trucks, Vans, SUVs",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [
+        "423110",
+        "336110",
+        "336120"
+      ],
+      "official_titles": [
+        "Automobile and Other Motor Vehicle Merchant Wholesalers",
+        "Automobile and Light Duty Motor Vehicle Manufacturing",
+        "Heavy Duty Truck Manufacturing"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Vehicle supply can be wholesale or vehicle manufacturing."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-utility-vehicles-and-trailers",
+      "subindustry_name": "Utility Vehicles & Trailers",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [
+        "423860",
+        "336212",
+        "532120"
+      ],
+      "official_titles": [
+        "Transportation Equipment and Supplies (except Motor Vehicle) Merchant Wholesalers",
+        "Truck Trailer Manufacturing",
+        "Truck, Utility Trailer, and RV (Recreational Vehicle) Rental and Leasing"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Utility vehicles/trailers can be supply, trailer manufacturing, or rental/leasing."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-drones-and-uavs",
+      "subindustry_name": "Drones & UAVs",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "336411",
+        "334511"
+      ],
+      "candidate_titles": [
+        "Aircraft Manufacturing",
+        "Search, Detection, Navigation, Guidance, Aeronautical, and Nautical System and Instrument Manufacturing"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "aircraft_platform_vs_sensor_payload"
+      ],
+      "mapping_notes": "UAVs may map to aircraft manufacturing or navigation/search equipment depending on product."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-auto-parts-tires-batteries-etc",
+      "subindustry_name": "Auto Parts (Tires, Batteries, etc.)",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [
+        "423120",
+        "423130",
+        "335910"
+      ],
+      "official_titles": [
+        "Motor Vehicle Supplies and New Parts Merchant Wholesalers",
+        "Tire and Tube Merchant Wholesalers",
+        "Battery Manufacturing"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Auto parts, tires, and batteries are separate official industries."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-military-vehicles-and-tactical-transport",
+      "subindustry_name": "Military Vehicles & Tactical Transport",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [
+        "336992",
+        "423860"
+      ],
+      "official_titles": [
+        "Military Armored Vehicle, Tank, and Tank Component Manufacturing",
+        "Transportation Equipment and Supplies (except Motor Vehicle) Merchant Wholesalers"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Military armored vehicles and transportation equipment supply both align."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-bulletproof-vests",
+      "subindustry_name": "Bulletproof Vests",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "315990",
+        "339920"
+      ],
+      "candidate_titles": [
+        "Apparel Accessories and Other Apparel Manufacturing",
+        "Sporting and Athletic Goods Manufacturing"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "needs_review",
+      "required_context": [
+        "protective_apparel_classification"
+      ],
+      "mapping_notes": "Existing proposed candidates are not sufficiently supported by title-level evidence for production use; additional classification review required."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-firearms-and-ammunition",
+      "subindustry_name": "Firearms & Ammunition",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [
+        "332994",
+        "332992",
+        "332993"
+      ],
+      "official_titles": [
+        "Small Arms, Ordnance, and Ordnance Accessories Manufacturing",
+        "Small Arms Ammunition Manufacturing",
+        "Ammunition (except Small Arms) Manufacturing"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Small arms and ammunition have separate official manufacturing codes."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-surveillance-cameras-and-equipment",
+      "subindustry_name": "Surveillance Cameras & Equipment",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [
+        "334310",
+        "334290",
+        "423690"
+      ],
+      "official_titles": [
+        "Audio and Video Equipment Manufacturing",
+        "Other Communications Equipment Manufacturing",
+        "Other Electronic Parts and Equipment Merchant Wholesalers"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Surveillance equipment may be AV/electronic equipment manufacturing or wholesaling."
+    },
+    {
+      "subindustry_id": "product-supply-and-procurement-riot-gear-and-protective-apparel",
+      "subindustry_name": "Riot Gear & Protective Apparel",
+      "industry_name": "Product Supply & Procurement",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "315990",
+        "339920"
+      ],
+      "candidate_titles": [
+        "Apparel Accessories and Other Apparel Manufacturing",
+        "Sporting and Athletic Goods Manufacturing"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "needs_review",
+      "required_context": [
+        "protective_apparel_classification"
+      ],
+      "mapping_notes": "Existing proposed candidates are not sufficiently supported by title-level evidence for production use; additional classification review required."
+    },
+    {
+      "subindustry_id": "information-technology-and-cybersecurity-cybersecurity-compliance-nist-cmmc",
+      "subindustry_name": "Cybersecurity Compliance (NIST, CMMC)",
+      "industry_name": "Information Technology & Cybersecurity",
+      "codes": [
+        "541519",
+        "541690"
+      ],
+      "official_titles": [
+        "Other Computer Related Services",
+        "Other Scientific and Technical Consulting Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Cyber compliance services are not a named six-digit title; computer-related/professional technical consulting are closest."
+    },
+    {
+      "subindustry_id": "information-technology-and-cybersecurity-network-infrastructure",
+      "subindustry_name": "Network Infrastructure",
+      "industry_name": "Information Technology & Cybersecurity",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "541512",
+        "238210"
+      ],
+      "candidate_titles": [
+        "Computer Systems Design Services",
+        "Electrical Contractors and Other Wiring Installation Contractors"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "design_vs_installation"
+      ],
+      "mapping_notes": "Network design versus physical cabling/installation changes the NAICS."
+    },
+    {
+      "subindustry_id": "information-technology-and-cybersecurity-software-development-and-integration",
+      "subindustry_name": "Software Development & Integration",
+      "industry_name": "Information Technology & Cybersecurity",
+      "codes": [
+        "541511",
+        "541512"
+      ],
+      "official_titles": [
+        "Custom Computer Programming Services",
+        "Computer Systems Design Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Custom programming and systems design both apply."
+    },
+    {
+      "subindustry_id": "information-technology-and-cybersecurity-cloud-hosting-and-data-management",
+      "subindustry_name": "Cloud Hosting & Data Management",
+      "industry_name": "Information Technology & Cybersecurity",
+      "codes": [
+        "518210"
+      ],
+      "official_titles": [
+        "Computing Infrastructure Providers, Data Processing, Web Hosting, and Related Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct web hosting/data processing infrastructure alignment."
+    },
+    {
+      "subindustry_id": "information-technology-and-cybersecurity-ai-and-machine-learning-services",
+      "subindustry_name": "AI and Machine Learning Services",
+      "industry_name": "Information Technology & Cybersecurity",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "541511",
+        "541715"
+      ],
+      "candidate_titles": [
+        "Custom Computer Programming Services",
+        "Research and Development in the Physical, Engineering, and Life Sciences (except Nanotechnology and Biotechnology)"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "software_delivery_vs_research"
+      ],
+      "mapping_notes": "AI work may be software implementation or R&D."
+    },
+    {
+      "subindustry_id": "information-technology-and-cybersecurity-hardware-and-equipment-procurement",
+      "subindustry_name": "Hardware & Equipment Procurement",
+      "industry_name": "Information Technology & Cybersecurity",
+      "codes": [
+        "423430"
+      ],
+      "official_titles": [
+        "Computer and Computer Peripheral Equipment and Software Merchant Wholesalers"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Computer/peripheral wholesaler alignment."
+    },
+    {
+      "subindustry_id": "information-technology-and-cybersecurity-mobile-device-management",
+      "subindustry_name": "Mobile Device Management",
+      "industry_name": "Information Technology & Cybersecurity",
+      "codes": [
+        "541519",
+        "541512"
+      ],
+      "official_titles": [
+        "Other Computer Related Services",
+        "Computer Systems Design Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "MDM is computer-related support/systems design."
+    },
+    {
+      "subindustry_id": "information-technology-and-cybersecurity-penetration-testing-and-security-audits",
+      "subindustry_name": "Penetration Testing & Security Audits",
+      "industry_name": "Information Technology & Cybersecurity",
+      "codes": [
+        "541519",
+        "541690"
+      ],
+      "official_titles": [
+        "Other Computer Related Services",
+        "Other Scientific and Technical Consulting Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Security testing is computer-related/professional technical consulting."
+    },
+    {
+      "subindustry_id": "information-technology-and-cybersecurity-it-consulting-and-strategy",
+      "subindustry_name": "IT Consulting & Strategy",
+      "industry_name": "Information Technology & Cybersecurity",
+      "codes": [
+        "541512",
+        "541519"
+      ],
+      "official_titles": [
+        "Computer Systems Design Services",
+        "Other Computer Related Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "IT strategy is systems design or other computer-related services."
+    },
+    {
+      "subindustry_id": "construction-engineering-and-specialized-services-general-construction-building-renovation",
+      "subindustry_name": "General Construction (Building, Renovation)",
+      "industry_name": "Construction, Engineering & Specialized Services",
+      "codes": [
+        "236220"
+      ],
+      "official_titles": [
+        "Commercial and Institutional Building Construction"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Commercial/institutional building construction is the closest federal facility construction code."
+    },
+    {
+      "subindustry_id": "construction-engineering-and-specialized-services-road-and-infrastructure-construction",
+      "subindustry_name": "Road & Infrastructure Construction",
+      "industry_name": "Construction, Engineering & Specialized Services",
+      "codes": [
+        "237310",
+        "237990",
+        "237110"
+      ],
+      "official_titles": [
+        "Highway, Street, and Bridge Construction",
+        "Other Heavy and Civil Engineering Construction",
+        "Water and Sewer Line and Related Structures Construction"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Road, heavy civil, and water/sewer infrastructure are separate codes."
+    },
+    {
+      "subindustry_id": "construction-engineering-and-specialized-services-roofing-and-waterproofing",
+      "subindustry_name": "Roofing & Waterproofing",
+      "industry_name": "Construction, Engineering & Specialized Services",
+      "codes": [
+        "238160",
+        "238990"
+      ],
+      "official_titles": [
+        "Roofing Contractors",
+        "All Other Specialty Trade Contractors"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Roofing is direct; waterproofing may fall under other specialty trades."
+    },
+    {
+      "subindustry_id": "construction-engineering-and-specialized-services-electrical-and-wiring",
+      "subindustry_name": "Electrical & Wiring",
+      "industry_name": "Construction, Engineering & Specialized Services",
+      "codes": [
+        "238210"
+      ],
+      "official_titles": [
+        "Electrical Contractors and Other Wiring Installation Contractors"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct title alignment."
+    },
+    {
+      "subindustry_id": "construction-engineering-and-specialized-services-hvac-installations-and-repairs",
+      "subindustry_name": "HVAC Installations & Repairs",
+      "industry_name": "Construction, Engineering & Specialized Services",
+      "codes": [
+        "238220"
+      ],
+      "official_titles": [
+        "Plumbing, Heating, and Air-Conditioning Contractors"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct plumbing/heating/air-conditioning contractor alignment."
+    },
+    {
+      "subindustry_id": "construction-engineering-and-specialized-services-plumbing",
+      "subindustry_name": "Plumbing",
+      "industry_name": "Construction, Engineering & Specialized Services",
+      "codes": [
+        "238220"
+      ],
+      "official_titles": [
+        "Plumbing, Heating, and Air-Conditioning Contractors"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct title alignment."
+    },
+    {
+      "subindustry_id": "construction-engineering-and-specialized-services-demolition-and-site-prep",
+      "subindustry_name": "Demolition & Site Prep",
+      "industry_name": "Construction, Engineering & Specialized Services",
+      "codes": [
+        "238910"
+      ],
+      "official_titles": [
+        "Site Preparation Contractors"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Site preparation contractors include demolition/site prep."
+    },
+    {
+      "subindustry_id": "construction-engineering-and-specialized-services-masonry-and-concrete-services",
+      "subindustry_name": "Masonry & Concrete Services",
+      "industry_name": "Construction, Engineering & Specialized Services",
+      "codes": [
+        "238140",
+        "238110"
+      ],
+      "official_titles": [
+        "Masonry Contractors",
+        "Poured Concrete Foundation and Structure Contractors"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Masonry and poured concrete are distinct specialty trades."
+    },
+    {
+      "subindustry_id": "construction-engineering-and-specialized-services-modular-and-temporary-construction",
+      "subindustry_name": "Modular & Temporary Construction",
+      "industry_name": "Construction, Engineering & Specialized Services",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "332311",
+        "236220"
+      ],
+      "candidate_titles": [
+        "Prefabricated Metal Building and Component Manufacturing",
+        "Commercial and Institutional Building Construction"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "modular_product_vs_site_construction"
+      ],
+      "mapping_notes": "Could be prefabricated building components or building construction services."
+    },
+    {
+      "subindustry_id": "construction-engineering-and-specialized-services-design-build-services",
+      "subindustry_name": "Design-Build Services",
+      "industry_name": "Construction, Engineering & Specialized Services",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "236220",
+        "541330",
+        "541310"
+      ],
+      "candidate_titles": [
+        "Commercial and Institutional Building Construction",
+        "Engineering Services",
+        "Architectural Services"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "prime_construction_vs_design_services"
+      ],
+      "mapping_notes": "Design-build mixes construction, engineering, and architectural scope."
+    },
+    {
+      "subindustry_id": "construction-engineering-and-specialized-services-carpentry-and-woodworking",
+      "subindustry_name": "Carpentry & Woodworking",
+      "industry_name": "Construction, Engineering & Specialized Services",
+      "codes": [
+        "238350"
+      ],
+      "official_titles": [
+        "Finish Carpentry Contractors"
+      ],
+      "candidate_codes": [
+        "321911"
+      ],
+      "candidate_titles": [
+        "Wood Window and Door Manufacturing"
+      ],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [
+        "manufacturing_branch"
+      ],
+      "mapping_notes": "War Dogs source describes framing, cabinetry, trim work, and specialized wood installations; Finish Carpentry Contractors is the primary/canonical search code. Wood Window and Door Manufacturing is retained only as a non-default future branch."
+    },
+    {
+      "subindustry_id": "construction-engineering-and-specialized-services-surveying-and-mapping",
+      "subindustry_name": "Surveying & Mapping",
+      "industry_name": "Construction, Engineering & Specialized Services",
+      "codes": [
+        "541370",
+        "541360"
+      ],
+      "official_titles": [
+        "Surveying and Mapping (except Geophysical) Services",
+        "Geophysical Surveying and Mapping Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Surveying/mapping can be geophysical or non-geophysical."
+    },
+    {
+      "subindustry_id": "healthcare-and-medical-services-medical-staffing-and-temporary-health-personnel",
+      "subindustry_name": "Medical Staffing & Temporary Health Personnel",
+      "industry_name": "Healthcare & Medical Services",
+      "codes": [
+        "561320"
+      ],
+      "official_titles": [
+        "Temporary Help Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [
+        "profession_specific_direct_practitioner_contracting"
+      ],
+      "mapping_notes": "War Dogs source describes temporary/contract healthcare personnel and healthcare staffing firms; Temporary Help Services is the primary mapping. Direct practitioner contracting requires profession-specific classification later."
+    },
+    {
+      "subindustry_id": "healthcare-and-medical-services-durable-medical-equipment-dme",
+      "subindustry_name": "Durable Medical Equipment (DME)",
+      "industry_name": "Healthcare & Medical Services",
+      "codes": [
+        "423450"
+      ],
+      "official_titles": [
+        "Medical, Dental, and Hospital Equipment and Supplies Merchant Wholesalers"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Medical/dental/hospital equipment wholesaler alignment."
+    },
+    {
+      "subindustry_id": "healthcare-and-medical-services-medical-supplies-ppe-bandages-etc",
+      "subindustry_name": "Medical Supplies (PPE, Bandages, etc.)",
+      "industry_name": "Healthcare & Medical Services",
+      "codes": [
+        "423450",
+        "339113"
+      ],
+      "official_titles": [
+        "Medical, Dental, and Hospital Equipment and Supplies Merchant Wholesalers",
+        "Surgical Appliance and Supplies Manufacturing"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Medical supply wholesale and surgical supplies manufacturing both align."
+    },
+    {
+      "subindustry_id": "healthcare-and-medical-services-health-it-and-ehr-systems",
+      "subindustry_name": "Health IT & EHR Systems",
+      "industry_name": "Healthcare & Medical Services",
+      "codes": [
+        "541512",
+        "541511"
+      ],
+      "official_titles": [
+        "Computer Systems Design Services",
+        "Custom Computer Programming Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "EHR systems are systems design/custom programming."
+    },
+    {
+      "subindustry_id": "healthcare-and-medical-services-telemedicine-services",
+      "subindustry_name": "Telemedicine Services",
+      "industry_name": "Healthcare & Medical Services",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "621999",
+        "621399"
+      ],
+      "candidate_titles": [
+        "All Other Miscellaneous Ambulatory Health Care Services",
+        "Offices of All Other Miscellaneous Health Practitioners"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "clinical_service_type"
+      ],
+      "mapping_notes": "Telemedicine depends on clinical provider type."
+    },
+    {
+      "subindustry_id": "healthcare-and-medical-services-mobile-medical-units",
+      "subindustry_name": "Mobile Medical Units",
+      "industry_name": "Healthcare & Medical Services",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "621910",
+        "423450"
+      ],
+      "candidate_titles": [
+        "Ambulance Services",
+        "Medical, Dental, and Hospital Equipment and Supplies Merchant Wholesalers"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "needs_review",
+      "required_context": [
+        "portable_clinic_service_model"
+      ],
+      "mapping_notes": "Portable/mobile clinics may bundle vehicle upfitting, equipment, staffing, and dispatch; do not default to Ambulance Services or equipment supply without additional review."
+    },
+    {
+      "subindustry_id": "healthcare-and-medical-services-behavioral-health-services",
+      "subindustry_name": "Behavioral Health Services",
+      "industry_name": "Healthcare & Medical Services",
+      "codes": [
+        "621330",
+        "624190"
+      ],
+      "official_titles": [
+        "Offices of Mental Health Practitioners (except Physicians)",
+        "Other Individual and Family Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Mental health practitioners and individual/family services both align depending on service model."
+    },
+    {
+      "subindustry_id": "healthcare-and-medical-services-veterinary-services-for-government-owned-animals",
+      "subindustry_name": "Veterinary Services (for government-owned animals)",
+      "industry_name": "Healthcare & Medical Services",
+      "codes": [
+        "541940"
+      ],
+      "official_titles": [
+        "Veterinary Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct title alignment."
+    },
+    {
+      "subindustry_id": "healthcare-and-medical-services-surgical-and-diagnostic-equipment",
+      "subindustry_name": "Surgical & Diagnostic Equipment",
+      "industry_name": "Healthcare & Medical Services",
+      "codes": [
+        "339112",
+        "334510",
+        "325413"
+      ],
+      "official_titles": [
+        "Surgical and Medical Instrument Manufacturing",
+        "Electromedical and Electrotherapeutic Apparatus Manufacturing",
+        "In-Vitro Diagnostic Substance Manufacturing"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Equipment/instruments/diagnostic substances are separate official industries."
+    },
+    {
+      "subindustry_id": "healthcare-and-medical-services-hospital-support-services-food-laundry-cleaning",
+      "subindustry_name": "Hospital Support Services (food, laundry, cleaning)",
+      "industry_name": "Healthcare & Medical Services",
+      "codes": [
+        "722310",
+        "812320",
+        "561720"
+      ],
+      "official_titles": [
+        "Food Service Contractors",
+        "Drycleaning and Laundry Services (except Coin-Operated)",
+        "Janitorial Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Hospital support combines food, laundry, and janitorial services."
+    },
+    {
+      "subindustry_id": "operations-and-facilities-support-janitorial-and-cleaning-services",
+      "subindustry_name": "Janitorial & Cleaning Services",
+      "industry_name": "Operations & Facilities Support",
+      "codes": [
+        "561720"
+      ],
+      "official_titles": [
+        "Janitorial Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct title alignment."
+    },
+    {
+      "subindustry_id": "operations-and-facilities-support-landscaping-and-grounds-maintenance",
+      "subindustry_name": "Landscaping & Grounds Maintenance",
+      "industry_name": "Operations & Facilities Support",
+      "codes": [
+        "561730"
+      ],
+      "official_titles": [
+        "Landscaping Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct landscaping services alignment."
+    },
+    {
+      "subindustry_id": "operations-and-facilities-support-pest-control",
+      "subindustry_name": "Pest Control",
+      "industry_name": "Operations & Facilities Support",
+      "codes": [
+        "561710"
+      ],
+      "official_titles": [
+        "Exterminating and Pest Control Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct exterminating/pest control alignment."
+    },
+    {
+      "subindustry_id": "operations-and-facilities-support-laundry-and-linen-services",
+      "subindustry_name": "Laundry & Linen Services",
+      "industry_name": "Operations & Facilities Support",
+      "codes": [
+        "812320",
+        "812331"
+      ],
+      "official_titles": [
+        "Drycleaning and Laundry Services (except Coin-Operated)",
+        "Linen Supply"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Laundry and linen supply are separate official industries."
+    },
+    {
+      "subindustry_id": "operations-and-facilities-support-facilities-maintenance-and-repair",
+      "subindustry_name": "Facilities Maintenance & Repair",
+      "industry_name": "Operations & Facilities Support",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "561210",
+        "811310"
+      ],
+      "candidate_titles": [
+        "Facilities Support Services",
+        "Commercial and Industrial Machinery and Equipment (except Automotive and Electronic) Repair and Maintenance"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "facility_support_vs_equipment_repair"
+      ],
+      "mapping_notes": "Facilities support versus equipment repair depends on scope."
+    },
+    {
+      "subindustry_id": "operations-and-facilities-support-hvac-electrical-plumbing-and-specialized-trades",
+      "subindustry_name": "HVAC, Electrical, Plumbing, and Specialized Trades",
+      "industry_name": "Operations & Facilities Support",
+      "codes": [
+        "238220",
+        "238210",
+        "238990"
+      ],
+      "official_titles": [
+        "Plumbing, Heating, and Air-Conditioning Contractors",
+        "Electrical Contractors and Other Wiring Installation Contractors",
+        "All Other Specialty Trade Contractors"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Multiple specialty trade contractors are intentionally bundled."
+    },
+    {
+      "subindustry_id": "operations-and-facilities-support-elevator-maintenance",
+      "subindustry_name": "Elevator Maintenance",
+      "industry_name": "Operations & Facilities Support",
+      "codes": [
+        "811310"
+      ],
+      "official_titles": [
+        "Commercial and Industrial Machinery and Equipment (except Automotive and Electronic) Repair and Maintenance"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Industrial/commercial machinery repair is closest for elevator maintenance."
+    },
+    {
+      "subindustry_id": "operations-and-facilities-support-waste-management-and-recycling",
+      "subindustry_name": "Waste Management & Recycling",
+      "industry_name": "Operations & Facilities Support",
+      "codes": [
+        "562111",
+        "562920",
+        "562998"
+      ],
+      "official_titles": [
+        "Solid Waste Collection",
+        "Materials Recovery Facilities",
+        "All Other Miscellaneous Waste Management Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Collection, recovery, and miscellaneous waste services all align."
+    },
+    {
+      "subindustry_id": "operations-and-facilities-support-snow-removal-and-outdoor-maintenance",
+      "subindustry_name": "Snow Removal & Outdoor Maintenance",
+      "industry_name": "Operations & Facilities Support",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "561730",
+        "488490"
+      ],
+      "candidate_titles": [
+        "Landscaping Services",
+        "Other Support Activities for Road Transportation"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "grounds_vs_roadway"
+      ],
+      "mapping_notes": "Outdoor maintenance may be landscaping or road support depending on setting."
+    },
+    {
+      "subindustry_id": "logistics-transportation-and-supply-chain-freight-and-cargo-shipping",
+      "subindustry_name": "Freight & Cargo Shipping",
+      "industry_name": "Logistics, Transportation & Supply Chain",
+      "codes": [
+        "484121",
+        "484122",
+        "488510"
+      ],
+      "official_titles": [
+        "General Freight Trucking, Long-Distance, Truckload",
+        "General Freight Trucking, Long-Distance, Less Than Truckload",
+        "Freight Transportation Arrangement"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Freight can be trucking or freight arrangement."
+    },
+    {
+      "subindustry_id": "logistics-transportation-and-supply-chain-courier-and-delivery-services",
+      "subindustry_name": "Courier & Delivery Services",
+      "industry_name": "Logistics, Transportation & Supply Chain",
+      "codes": [
+        "492110"
+      ],
+      "official_titles": [
+        "Couriers and Express Delivery Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct title alignment."
+    },
+    {
+      "subindustry_id": "logistics-transportation-and-supply-chain-warehousing-and-inventory-management",
+      "subindustry_name": "Warehousing & Inventory Management",
+      "industry_name": "Logistics, Transportation & Supply Chain",
+      "codes": [
+        "493110",
+        "493190"
+      ],
+      "official_titles": [
+        "General Warehousing and Storage",
+        "Other Warehousing and Storage"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "General and other warehousing/storage apply depending on inventory."
+    },
+    {
+      "subindustry_id": "logistics-transportation-and-supply-chain-vehicle-fleet-management",
+      "subindustry_name": "Vehicle Fleet Management",
+      "industry_name": "Logistics, Transportation & Supply Chain",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "811111",
+        "811198",
+        "541614"
+      ],
+      "candidate_titles": [
+        "General Automotive Repair",
+        "All Other Automotive Repair and Maintenance",
+        "Process, Physical Distribution, and Logistics Consulting Services"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "maintenance_vs_management_consulting"
+      ],
+      "mapping_notes": "Fleet management may be repair/maintenance or logistics consulting."
+    },
+    {
+      "subindustry_id": "logistics-transportation-and-supply-chain-transportation-management-consulting",
+      "subindustry_name": "Transportation Management Consulting",
+      "industry_name": "Logistics, Transportation & Supply Chain",
+      "codes": [
+        "541614"
+      ],
+      "official_titles": [
+        "Process, Physical Distribution, and Logistics Consulting Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct logistics consulting alignment."
+    },
+    {
+      "subindustry_id": "logistics-transportation-and-supply-chain-air-and-maritime-logistics",
+      "subindustry_name": "Air & Maritime Logistics",
+      "industry_name": "Logistics, Transportation & Supply Chain",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "481112",
+        "481212",
+        "483111",
+        "483113",
+        "483211",
+        "488510"
+      ],
+      "candidate_titles": [
+        "Scheduled Freight Air Transportation",
+        "Nonscheduled Chartered Freight Air Transportation",
+        "Deep Sea Freight Transportation",
+        "Coastal and Great Lakes Freight Transportation",
+        "Inland Water Freight Transportation",
+        "Freight Transportation Arrangement"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "air_vs_maritime",
+        "scheduled_vs_chartered",
+        "carrier_vs_freight_arrangement"
+      ],
+      "mapping_notes": "Air and maritime logistics should not automatically select every carrier code; final selection depends on mode and operating model."
+    },
+    {
+      "subindustry_id": "logistics-transportation-and-supply-chain-moving-services-for-relocation-military",
+      "subindustry_name": "Moving Services (for relocation, military)",
+      "industry_name": "Logistics, Transportation & Supply Chain",
+      "codes": [
+        "484210"
+      ],
+      "official_titles": [
+        "Used Household and Office Goods Moving"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct used household/office goods moving alignment."
+    },
+    {
+      "subindustry_id": "logistics-transportation-and-supply-chain-supply-chain-optimization",
+      "subindustry_name": "Supply Chain Optimization",
+      "industry_name": "Logistics, Transportation & Supply Chain",
+      "codes": [
+        "541614"
+      ],
+      "official_titles": [
+        "Process, Physical Distribution, and Logistics Consulting Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct logistics consulting alignment."
+    },
+    {
+      "subindustry_id": "logistics-transportation-and-supply-chain-disaster-relief-logistics",
+      "subindustry_name": "Disaster Relief Logistics",
+      "industry_name": "Logistics, Transportation & Supply Chain",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "488510",
+        "541614",
+        "624230"
+      ],
+      "candidate_titles": [
+        "Freight Transportation Arrangement",
+        "Process, Physical Distribution, and Logistics Consulting Services",
+        "Emergency and Other Relief Services"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "freight_vs_consulting_vs_relief_service"
+      ],
+      "mapping_notes": "Disaster logistics may be freight arrangement, logistics consulting, or emergency relief services."
+    },
+    {
+      "subindustry_id": "research-and-development-scientific-research-services",
+      "subindustry_name": "Scientific Research Services",
+      "industry_name": "Research & Development",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "541715",
+        "541714",
+        "541713"
+      ],
+      "candidate_titles": [
+        "Research and Development in the Physical, Engineering, and Life Sciences (except Nanotechnology and Biotechnology)",
+        "Research and Development in Biotechnology (except Nanobiotechnology)",
+        "Research and Development in Nanotechnology"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "research_domain"
+      ],
+      "mapping_notes": "Research field determines physical science, biotech, or nanotech code."
+    },
+    {
+      "subindustry_id": "research-and-development-product-development-tech-health-military",
+      "subindustry_name": "Product Development (Tech, Health, Military)",
+      "industry_name": "Research & Development",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "541715",
+        "541714",
+        "541511"
+      ],
+      "candidate_titles": [
+        "Research and Development in the Physical, Engineering, and Life Sciences (except Nanotechnology and Biotechnology)",
+        "Research and Development in Biotechnology (except Nanobiotechnology)",
+        "Custom Computer Programming Services"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "research_vs_software_delivery"
+      ],
+      "mapping_notes": "Product development could be R&D or software delivery."
+    },
+    {
+      "subindustry_id": "research-and-development-prototype-testing-and-evaluation",
+      "subindustry_name": "Prototype Testing & Evaluation",
+      "industry_name": "Research & Development",
+      "codes": [
+        "541380",
+        "541715"
+      ],
+      "official_titles": [
+        "Testing Laboratories and Services",
+        "Research and Development in the Physical, Engineering, and Life Sciences (except Nanotechnology and Biotechnology)"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Testing labs and R&D both align."
+    },
+    {
+      "subindustry_id": "research-and-development-innovation-and-ai-development",
+      "subindustry_name": "Innovation & AI Development",
+      "industry_name": "Research & Development",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "541511",
+        "541715"
+      ],
+      "candidate_titles": [
+        "Custom Computer Programming Services",
+        "Research and Development in the Physical, Engineering, and Life Sciences (except Nanotechnology and Biotechnology)"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "software_delivery_vs_research"
+      ],
+      "mapping_notes": "AI development may be software or R&D."
+    },
+    {
+      "subindustry_id": "research-and-development-government-funded-r-and-d-initiatives",
+      "subindustry_name": "Government-funded R&D Initiatives",
+      "industry_name": "Research & Development",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "541715",
+        "541714",
+        "541720"
+      ],
+      "candidate_titles": [
+        "Research and Development in the Physical, Engineering, and Life Sciences (except Nanotechnology and Biotechnology)",
+        "Research and Development in Biotechnology (except Nanobiotechnology)",
+        "Research and Development in the Social Sciences and Humanities"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "research_domain"
+      ],
+      "mapping_notes": "R&D topic determines official industry code."
+    },
+    {
+      "subindustry_id": "research-and-development-feasibility-studies-and-pilot-programs",
+      "subindustry_name": "Feasibility Studies & Pilot Programs",
+      "industry_name": "Research & Development",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "541611",
+        "541690",
+        "541715"
+      ],
+      "candidate_titles": [
+        "Administrative Management and General Management Consulting Services",
+        "Other Scientific and Technical Consulting Services",
+        "Research and Development in the Physical, Engineering, and Life Sciences (except Nanotechnology and Biotechnology)"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "study_domain"
+      ],
+      "mapping_notes": "Feasibility studies may be management, scientific consulting, or R&D."
+    },
+    {
+      "subindustry_id": "security-and-protective-services-armed-and-unarmed-guard-services",
+      "subindustry_name": "Armed & Unarmed Guard Services",
+      "industry_name": "Security & Protective Services",
+      "codes": [
+        "561612"
+      ],
+      "official_titles": [
+        "Security Guards and Patrol Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct title alignment."
+    },
+    {
+      "subindustry_id": "security-and-protective-services-surveillance-system-installation-and-monitoring",
+      "subindustry_name": "Surveillance System Installation & Monitoring",
+      "industry_name": "Security & Protective Services",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "561621",
+        "238210"
+      ],
+      "candidate_titles": [
+        "Security Systems Services (except Locksmiths)",
+        "Electrical Contractors and Other Wiring Installation Contractors"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "monitoring_vs_installation"
+      ],
+      "mapping_notes": "Security systems service versus electrical installation depends on scope."
+    },
+    {
+      "subindustry_id": "security-and-protective-services-physical-security-systems-access-control-alarm-systems",
+      "subindustry_name": "Physical Security Systems (Access Control, Alarm Systems)",
+      "industry_name": "Security & Protective Services",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "561621",
+        "423610",
+        "334290"
+      ],
+      "candidate_titles": [
+        "Security Systems Services (except Locksmiths)",
+        "Electrical Apparatus and Equipment, Wiring Supplies, and Related Equipment Merchant Wholesalers",
+        "Other Communications Equipment Manufacturing"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "service_vs_supply_vs_manufacturing"
+      ],
+      "mapping_notes": "Systems service, equipment supply, or manufacturing depends on delivery model."
+    },
+    {
+      "subindustry_id": "security-and-protective-services-k9-units-and-security-dogs",
+      "subindustry_name": "K9 Units & Security Dogs",
+      "industry_name": "Security & Protective Services",
+      "codes": [
+        "561612"
+      ],
+      "official_titles": [
+        "Security Guards and Patrol Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "War Dogs source describes detection/patrol/security K9 work with certified handlers; Security Guards and Patrol Services is the canonical search mapping. Animal-care/training classifications are outside this security-service scope."
+    },
+    {
+      "subindustry_id": "security-and-protective-services-executive-and-vip-protection",
+      "subindustry_name": "Executive & VIP Protection",
+      "industry_name": "Security & Protective Services",
+      "codes": [
+        "561612"
+      ],
+      "official_titles": [
+        "Security Guards and Patrol Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Security guards/patrol services is closest official security service code."
+    },
+    {
+      "subindustry_id": "security-and-protective-services-background-screening-and-vetting-services",
+      "subindustry_name": "Background Screening & Vetting Services",
+      "industry_name": "Security & Protective Services",
+      "codes": [
+        "561611"
+      ],
+      "official_titles": [
+        "Investigation and Personal Background Check Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct investigation/background check alignment."
+    },
+    {
+      "subindustry_id": "security-and-protective-services-tactical-gear-and-ballistics-supply",
+      "subindustry_name": "Tactical Gear & Ballistics Supply",
+      "industry_name": "Security & Protective Services",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "423990",
+        "339920",
+        "315990"
+      ],
+      "candidate_titles": [
+        "Other Miscellaneous Durable Goods Merchant Wholesalers",
+        "Sporting and Athletic Goods Manufacturing",
+        "Apparel Accessories and Other Apparel Manufacturing"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "apparel_vs_equipment"
+      ],
+      "mapping_notes": "Gear/ballistics supply depends on item class."
+    },
+    {
+      "subindustry_id": "security-and-protective-services-firearms-and-ammunition-supply",
+      "subindustry_name": "Firearms & Ammunition Supply",
+      "industry_name": "Security & Protective Services",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "332994",
+        "332992",
+        "332993",
+        "423990"
+      ],
+      "candidate_titles": [
+        "Small Arms, Ordnance, and Ordnance Accessories Manufacturing",
+        "Small Arms Ammunition Manufacturing",
+        "Ammunition (except Small Arms) Manufacturing",
+        "Other Miscellaneous Durable Goods Merchant Wholesalers"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "firearms_or_small_arms",
+        "small_arms_ammunition",
+        "other_ammunition",
+        "dealer_distributor_vs_manufacturer"
+      ],
+      "mapping_notes": "Firearms and ammunition supply should not automatically select all manufacturing/distributor candidates; final selection depends on item and role."
+    },
+    {
+      "subindustry_id": "security-and-protective-services-fire-safety-services-inspection-safety-equipment",
+      "subindustry_name": "Fire Safety Services (Inspection, Safety Equipment)",
+      "industry_name": "Security & Protective Services",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "541350"
+      ],
+      "candidate_titles": [
+        "Building Inspection Services"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "inspection_vs_equipment_supply",
+        "fire_safety_equipment_classification"
+      ],
+      "mapping_notes": "Building Inspection Services is retained only for the inspection branch. Fire-safety equipment supply requires additional classification review; medical equipment wholesaling was removed."
+    },
+    {
+      "subindustry_id": "education-training-and-development-compliance-training-osha-hipaa-etc",
+      "subindustry_name": "Compliance Training (OSHA, HIPAA, etc.)",
+      "industry_name": "Education, Training & Development",
+      "codes": [
+        "611430",
+        "611710"
+      ],
+      "official_titles": [
+        "Professional and Management Development Training",
+        "Educational Support Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Professional training and educational support both align."
+    },
+    {
+      "subindustry_id": "education-training-and-development-cybersecurity-training",
+      "subindustry_name": "Cybersecurity Training",
+      "industry_name": "Education, Training & Development",
+      "codes": [
+        "611420"
+      ],
+      "official_titles": [
+        "Computer Training"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Computer training alignment."
+    },
+    {
+      "subindustry_id": "education-training-and-development-military-and-tactical-training",
+      "subindustry_name": "Military & Tactical Training",
+      "industry_name": "Education, Training & Development",
+      "codes": [
+        "611699",
+        "611430"
+      ],
+      "official_titles": [
+        "All Other Miscellaneous Schools and Instruction",
+        "Professional and Management Development Training"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Other schools/instruction and professional training both align."
+    },
+    {
+      "subindustry_id": "education-training-and-development-leadership-and-management-development",
+      "subindustry_name": "Leadership & Management Development",
+      "industry_name": "Education, Training & Development",
+      "codes": [
+        "611430"
+      ],
+      "official_titles": [
+        "Professional and Management Development Training"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct professional/management training alignment."
+    },
+    {
+      "subindustry_id": "education-training-and-development-workforce-development-job-readiness-soft-skills",
+      "subindustry_name": "Workforce Development (Job Readiness, Soft Skills)",
+      "industry_name": "Education, Training & Development",
+      "codes": [
+        "624310",
+        "611430"
+      ],
+      "official_titles": [
+        "Vocational Rehabilitation Services",
+        "Professional and Management Development Training"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Vocational rehabilitation and professional development both align depending program."
+    },
+    {
+      "subindustry_id": "education-training-and-development-dei-training-diversity-equity-inclusion",
+      "subindustry_name": "DEI Training (Diversity, Equity, Inclusion)",
+      "industry_name": "Education, Training & Development",
+      "codes": [
+        "611430"
+      ],
+      "official_titles": [
+        "Professional and Management Development Training"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Professional/management development training alignment."
+    },
+    {
+      "subindustry_id": "education-training-and-development-language-and-cultural-training",
+      "subindustry_name": "Language & Cultural Training",
+      "industry_name": "Education, Training & Development",
+      "codes": [
+        "611630",
+        "611430"
+      ],
+      "official_titles": [
+        "Language Schools",
+        "Professional and Management Development Training"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Language schools plus professional training depending scope."
+    },
+    {
+      "subindustry_id": "education-training-and-development-technical-and-vocational-training",
+      "subindustry_name": "Technical & Vocational Training",
+      "industry_name": "Education, Training & Development",
+      "codes": [
+        "611519"
+      ],
+      "official_titles": [
+        "Other Technical and Trade Schools"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct technical/trade schools alignment."
+    },
+    {
+      "subindustry_id": "education-training-and-development-online-course-development-and-e-learning",
+      "subindustry_name": "Online Course Development & E-Learning",
+      "industry_name": "Education, Training & Development",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "611710",
+        "541511"
+      ],
+      "candidate_titles": [
+        "Educational Support Services",
+        "Custom Computer Programming Services"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "content_development_vs_software_platform"
+      ],
+      "mapping_notes": "Course development service versus software platform build changes code."
+    },
+    {
+      "subindustry_id": "education-training-and-development-simulation-and-virtual-reality-training-solutions",
+      "subindustry_name": "Simulation & Virtual Reality Training Solutions",
+      "industry_name": "Education, Training & Development",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "541511",
+        "611430"
+      ],
+      "candidate_titles": [
+        "Custom Computer Programming Services",
+        "Professional and Management Development Training"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "software_vs_training_service"
+      ],
+      "mapping_notes": "VR solution may be software development or training service."
+    },
+    {
+      "subindustry_id": "environmental-energy-and-sustainability-services-hazardous-waste-management",
+      "subindustry_name": "Hazardous Waste Management",
+      "industry_name": "Environmental, Energy & Sustainability Services",
+      "codes": [
+        "562112",
+        "562211"
+      ],
+      "official_titles": [
+        "Hazardous Waste Collection",
+        "Hazardous Waste Treatment and Disposal"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Hazardous waste collection and treatment/disposal both align."
+    },
+    {
+      "subindustry_id": "environmental-energy-and-sustainability-services-recycling-programs-and-services",
+      "subindustry_name": "Recycling Programs & Services",
+      "industry_name": "Environmental, Energy & Sustainability Services",
+      "codes": [
+        "562920",
+        "562998"
+      ],
+      "official_titles": [
+        "Materials Recovery Facilities",
+        "All Other Miscellaneous Waste Management Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Materials recovery and miscellaneous waste services align."
+    },
+    {
+      "subindustry_id": "environmental-energy-and-sustainability-services-water-treatment-and-wastewater-management",
+      "subindustry_name": "Water Treatment & Wastewater Management",
+      "industry_name": "Environmental, Energy & Sustainability Services",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "221310",
+        "221320",
+        "237110"
+      ],
+      "candidate_titles": [
+        "Water Supply and Irrigation Systems",
+        "Sewage Treatment Facilities",
+        "Water and Sewer Line and Related Structures Construction"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "water_supply_operations",
+        "wastewater_treatment",
+        "construction"
+      ],
+      "mapping_notes": "War Dogs source includes clean-water systems and wastewater; final code depends on supply/operations, wastewater treatment, or construction."
+    },
+    {
+      "subindustry_id": "environmental-energy-and-sustainability-services-solar-and-renewable-energy-services",
+      "subindustry_name": "Solar & Renewable Energy Services",
+      "industry_name": "Environmental, Energy & Sustainability Services",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "221114",
+        "221115",
+        "238210",
+        "541690"
+      ],
+      "candidate_titles": [
+        "Solar Electric Power Generation",
+        "Wind Electric Power Generation",
+        "Electrical Contractors and Other Wiring Installation Contractors",
+        "Other Scientific and Technical Consulting Services"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "generation_vs_installation_vs_consulting",
+        "solar_vs_wind_generation"
+      ],
+      "mapping_notes": "Renewable services may be generation, installation, or consulting; generation must distinguish solar from wind."
+    },
+    {
+      "subindustry_id": "environmental-energy-and-sustainability-services-stormwater-management-systems",
+      "subindustry_name": "Stormwater Management Systems",
+      "industry_name": "Environmental, Energy & Sustainability Services",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "237110",
+        "541620"
+      ],
+      "candidate_titles": [
+        "Water and Sewer Line and Related Structures Construction",
+        "Environmental Consulting Services"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "construction_vs_consulting"
+      ],
+      "mapping_notes": "Construction/structures versus environmental consulting."
+    },
+    {
+      "subindustry_id": "environmental-energy-and-sustainability-services-environmental-consulting-and-compliance",
+      "subindustry_name": "Environmental Consulting & Compliance",
+      "industry_name": "Environmental, Energy & Sustainability Services",
+      "codes": [
+        "541620"
+      ],
+      "official_titles": [
+        "Environmental Consulting Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct environmental consulting alignment."
+    },
+    {
+      "subindustry_id": "environmental-energy-and-sustainability-services-energy-efficiency-audits-and-solutions",
+      "subindustry_name": "Energy Efficiency Audits & Solutions",
+      "industry_name": "Environmental, Energy & Sustainability Services",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "541690",
+        "238210"
+      ],
+      "candidate_titles": [
+        "Other Scientific and Technical Consulting Services",
+        "Electrical Contractors and Other Wiring Installation Contractors"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "audit_vs_installation"
+      ],
+      "mapping_notes": "Audit/consulting versus implementation/installation."
+    },
+    {
+      "subindustry_id": "environmental-energy-and-sustainability-services-air-quality-control-and-monitoring",
+      "subindustry_name": "Air Quality Control & Monitoring",
+      "industry_name": "Environmental, Energy & Sustainability Services",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "541620",
+        "334519"
+      ],
+      "candidate_titles": [
+        "Environmental Consulting Services",
+        "Other Measuring and Controlling Device Manufacturing"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "monitoring_service_vs_equipment"
+      ],
+      "mapping_notes": "Environmental consulting/monitoring versus instrument manufacturing/supply."
+    },
+    {
+      "subindustry_id": "environmental-energy-and-sustainability-services-mold-and-asbestos-remediation",
+      "subindustry_name": "Mold & Asbestos Remediation",
+      "industry_name": "Environmental, Energy & Sustainability Services",
+      "codes": [
+        "562910"
+      ],
+      "official_titles": [
+        "Remediation Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct remediation services alignment."
+    },
+    {
+      "subindustry_id": "environmental-energy-and-sustainability-services-landfill-and-waste-disposal",
+      "subindustry_name": "Landfill & Waste Disposal",
+      "industry_name": "Environmental, Energy & Sustainability Services",
+      "codes": [
+        "562212",
+        "562219"
+      ],
+      "official_titles": [
+        "Solid Waste Landfill",
+        "Other Nonhazardous Waste Treatment and Disposal"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Solid waste landfill and other nonhazardous disposal both align."
+    },
+    {
+      "subindustry_id": "marketing-communications-and-media-public-relations-and-media-outreach",
+      "subindustry_name": "Public Relations & Media Outreach",
+      "industry_name": "Marketing, Communications & Media",
+      "codes": [
+        "541820"
+      ],
+      "official_titles": [
+        "Public Relations Agencies"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct public relations alignment."
+    },
+    {
+      "subindustry_id": "marketing-communications-and-media-market-research-and-surveys",
+      "subindustry_name": "Market Research & Surveys",
+      "industry_name": "Marketing, Communications & Media",
+      "codes": [
+        "541910"
+      ],
+      "official_titles": [
+        "Marketing Research and Public Opinion Polling"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct marketing research/public opinion polling alignment."
+    },
+    {
+      "subindustry_id": "marketing-communications-and-media-advertising-and-digital-campaigns",
+      "subindustry_name": "Advertising & Digital Campaigns",
+      "industry_name": "Marketing, Communications & Media",
+      "codes": [
+        "541810",
+        "541613"
+      ],
+      "official_titles": [
+        "Advertising Agencies",
+        "Marketing Consulting Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Advertising agencies and marketing consulting both align."
+    },
+    {
+      "subindustry_id": "marketing-communications-and-media-graphic-design-and-branding",
+      "subindustry_name": "Graphic Design & Branding",
+      "industry_name": "Marketing, Communications & Media",
+      "codes": [
+        "541430",
+        "541613"
+      ],
+      "official_titles": [
+        "Graphic Design Services",
+        "Marketing Consulting Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Graphic design plus branding/marketing consulting."
+    },
+    {
+      "subindustry_id": "marketing-communications-and-media-content-creation-video-blog-posts",
+      "subindustry_name": "Content Creation (Video, Blog Posts)",
+      "industry_name": "Marketing, Communications & Media",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "512110",
+        "541430",
+        "541613"
+      ],
+      "candidate_titles": [
+        "Motion Picture and Video Production",
+        "Graphic Design Services",
+        "Marketing Consulting Services"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "video_vs_written_or_design_content"
+      ],
+      "mapping_notes": "Video production, design, and marketing content differ by deliverable."
+    },
+    {
+      "subindustry_id": "marketing-communications-and-media-event-management-and-conference-services",
+      "subindustry_name": "Event Management & Conference Services",
+      "industry_name": "Marketing, Communications & Media",
+      "codes": [
+        "561920",
+        "711310",
+        "711320"
+      ],
+      "official_titles": [
+        "Convention and Trade Show Organizers",
+        "Promoters of Performing Arts, Sports, and Similar Events with Facilities",
+        "Promoters of Performing Arts, Sports, and Similar Events without Facilities"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Convention/trade show organization and event promotion codes may apply."
+    },
+    {
+      "subindustry_id": "marketing-communications-and-media-crisis-communication-and-reputation-management",
+      "subindustry_name": "Crisis Communication & Reputation Management",
+      "industry_name": "Marketing, Communications & Media",
+      "codes": [
+        "541820",
+        "541613"
+      ],
+      "official_titles": [
+        "Public Relations Agencies",
+        "Marketing Consulting Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "PR and marketing consulting both align."
+    },
+    {
+      "subindustry_id": "marketing-communications-and-media-translation-and-multilingual-services",
+      "subindustry_name": "Translation & Multilingual Services",
+      "industry_name": "Marketing, Communications & Media",
+      "codes": [
+        "541930"
+      ],
+      "official_titles": [
+        "Translation and Interpretation Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Direct title alignment."
+    },
+    {
+      "subindustry_id": "legal-and-compliance-services-regulatory-and-compliance-consulting",
+      "subindustry_name": "Regulatory & Compliance Consulting",
+      "industry_name": "Legal & Compliance Services",
+      "codes": [
+        "541618",
+        "541690"
+      ],
+      "official_titles": [
+        "Other Management Consulting Services",
+        "Other Scientific and Technical Consulting Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Compliance consulting may be management or technical/scientific consulting."
+    },
+    {
+      "subindustry_id": "legal-and-compliance-services-foia-and-records-management-services",
+      "subindustry_name": "FOIA & Records Management Services",
+      "industry_name": "Legal & Compliance Services",
+      "codes": [
+        "561410"
+      ],
+      "official_titles": [
+        "Document Preparation Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "direct",
+      "required_context": [],
+      "mapping_notes": "Document preparation/redaction support alignment."
+    },
+    {
+      "subindustry_id": "legal-and-compliance-services-audit-services-financial-it-security",
+      "subindustry_name": "Audit Services (Financial, IT Security)",
+      "industry_name": "Legal & Compliance Services",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "541211",
+        "541519"
+      ],
+      "candidate_titles": [
+        "Offices of Certified Public Accountants",
+        "Other Computer Related Services"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "financial_audit_vs_it_security_audit"
+      ],
+      "mapping_notes": "Financial audit and IT security audit use different industries."
+    },
+    {
+      "subindustry_id": "legal-and-compliance-services-legal-research-and-documentation",
+      "subindustry_name": "Legal Research & Documentation",
+      "industry_name": "Legal & Compliance Services",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "541110",
+        "541199",
+        "561410"
+      ],
+      "candidate_titles": [
+        "Offices of Lawyers",
+        "All Other Legal Services",
+        "Document Preparation Services"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "context_dependent",
+      "required_context": [
+        "legal_service_vs_document_support"
+      ],
+      "mapping_notes": "Legal office/service versus document prep depends on who performs legal work."
+    },
+    {
+      "subindustry_id": "legal-and-compliance-services-contract-and-grant-management",
+      "subindustry_name": "Contract & Grant Management",
+      "industry_name": "Legal & Compliance Services",
+      "codes": [
+        "541611",
+        "541618"
+      ],
+      "official_titles": [
+        "Administrative Management and General Management Consulting Services",
+        "Other Management Consulting Services"
+      ],
+      "candidate_codes": [],
+      "candidate_titles": [],
+      "mapping_status": "mapped",
+      "production_safe": true,
+      "review_status": "machine_proposed",
+      "mapping_type": "multi_code",
+      "required_context": [],
+      "mapping_notes": "Management consulting codes align."
+    },
+    {
+      "subindustry_id": "legal-and-compliance-services-dispute-resolution-and-mediation",
+      "subindustry_name": "Dispute Resolution & Mediation",
+      "industry_name": "Legal & Compliance Services",
+      "codes": [],
+      "official_titles": [],
+      "candidate_codes": [
+        "541199"
+      ],
+      "candidate_titles": [
+        "All Other Legal Services"
+      ],
+      "mapping_status": "candidate_only",
+      "production_safe": false,
+      "review_status": "machine_proposed",
+      "mapping_type": "needs_review",
+      "required_context": [
+        "legal_service_model"
+      ],
+      "mapping_notes": "No direct Census six-digit title for mediation/dispute resolution was identified in the workbook. All Other Legal Services is a proposed candidate only and requires human legal-service-model review."
+    }
+  ]
+}

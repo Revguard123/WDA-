@@ -1,7 +1,9 @@
 import Shell, { NotFound } from '../../../_components/Shell.jsx';
+import SupportCTA from '../../../_components/SupportCTA.jsx';
 import { getBuyerByToken } from '../../../../lib/buyers.js';
 import { getDeliveryForBuyer } from '../../../../lib/deliveries.js';
 import { UI } from '../../../../lib/ui.js';
+import { DEEP_DIVE_WHY_LABEL } from '../../../../lib/contractsPresentation.js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -46,11 +48,14 @@ export default async function DiveDeeperPage({ params }) {
 
         {record.why_line ? (
           <div style={{ background: UI.paper, borderLeft: `3px solid ${UI.green}`, padding: '10px 12px', borderRadius: '0 4px 4px 0', fontSize: 14, color: UI.text, margin: '10px 0 6px', lineHeight: 1.5 }}>
-            <strong style={{ color: UI.green }}>Why we picked this.</strong> {record.why_line}
+            <strong style={{ color: UI.green }}>{DEEP_DIVE_WHY_LABEL}.</strong> {record.why_line}
           </div>
         ) : null}
 
-        <h2 style={{ fontSize: 16, color: UI.ink, margin: '22px 0 8px' }}>The deep dive</h2>
+        <h2 style={{ fontSize: 16, color: UI.ink, margin: '22px 0 8px' }}>Full breakdown</h2>
+        <p style={{ color: UI.muted, fontSize: 14, lineHeight: 1.55, margin: '0 0 14px' }}>
+          A plain-English read on why this opportunity fits, what to watch for, and a sensible first move before you spend time on the paperwork.
+        </p>
         {paragraphs.length ? (
           paragraphs.map((p, i) => (
             <p key={i} style={{ fontSize: 15, color: UI.text, lineHeight: 1.65, margin: '0 0 14px' }}>{p}</p>
@@ -65,6 +70,7 @@ export default async function DiveDeeperPage({ params }) {
           </a>
         ) : null}
       </div>
+      <SupportCTA pageContext="deep_dive" />
     </Shell>
   );
 }

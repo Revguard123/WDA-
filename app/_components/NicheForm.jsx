@@ -19,23 +19,66 @@ const hintStyle = { fontSize: 12.5, color: UI.muted, marginTop: 5, lineHeight: 1
 
 const MAX_NAICS = 5;
 
-export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afterSaveHref, activateAfterSave = false }) {
+function normalizeInitialNaics(items = []) {
+  return (Array.isArray(items) ? items : []).map((item) => {
+    if (item && typeof item === 'object') {
+      return { code: String(item.code || ''), title: item.title || '' };
+    }
+    return { code: String(item), title: '' };
+  }).filter((n) => /^\d{6}$/.test(n.code));
+}
+
+function keywordsList(value) {
+  return String(value || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function moneyLabel(value) {
+  if (value === '' || value == null) return '';
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return String(value);
+  return `$${numeric.toLocaleString()}`;
+}
+
+function contractSizeLabel(min, max) {
+  const minLabel = moneyLabel(min);
+  const maxLabel = moneyLabel(max);
+  if (minLabel && maxLabel) return `${minLabel} to ${maxLabel}`;
+  if (minLabel) return `${minLabel}+`;
+  if (maxLabel) return `Up to ${maxLabel}`;
+  return 'No contract size range set';
+}
+
+function setAsideLabel(value) {
+  return SET_ASIDE_OPTIONS.find((option) => option.value === value)?.label || value;
+}
+
+export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afterSaveHref, discoveryReview = null, reviewMode = false }) {
   const [name, setName] = useState(initial.name || '');
   // NAICS as a list of { code, title }. Initial codes have no title yet.
-  const [naicsList, setNaicsList] = useState((initial.naics || []).map((c) => ({ code: String(c), title: '' })));
+  const [naicsList, setNaicsList] = useState(normalizeInitialNaics(initial.naics));
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState('');
   const [manualCode, setManualCode] = useState('');
   const [showManual, setShowManual] = useState(false);
+  const [editSections, setEditSections] = useState({
+    industries: !reviewMode,
+    keywords: !reviewMode,
+    setAsides: !reviewMode,
+    serviceArea: !reviewMode,
+    size: !reviewMode,
+  });
 
   const [keywords, setKeywords] = useState((initial.keywords || []).join(', '));
   const [setAsides, setSetAsides] = useState(new Set(initial.set_asides || []));
   const [state, setState] = useState(initial.state || '');
   const [sizeMin, setSizeMin] = useState(initial.size_min ?? '');
   const [sizeMax, setSizeMax] = useState(initial.size_max ?? '');
-  const [status, setStatus] = useState('idle'); // idle | saving | activating | saved | error
+  const [status, setStatus] = useState('idle'); // idle | saving | saved | error
   const [message, setMessage] = useState('');
 
   const full = naicsList.length >= MAX_NAICS;
@@ -120,20 +163,6 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
       });
       if (!res.ok) throw new Error((await res.json()).error || 'Save failed');
 
-      if (activateAfterSave) {
-        setStatus('activating');
-        setMessage('Saved. Pulling your first contracts now, this takes up to a minute...');
-        const act = await fetch(`/api/activate/${token}`, { method: 'POST' });
-        const actData = await act.json().catch(() => ({}));
-        if (!act.ok) {
-          setStatus('error');
-          setMessage(actData.error || 'Could not start your contracts. Please try again.');
-          return;
-        }
-        window.location.href = `/contracts/${token}`;
-        return;
-      }
-
       setStatus('saved');
       setMessage('Saved. Your targeting is set for the next cycle.');
       if (afterSaveHref) window.location.href = afterSaveHref;
@@ -157,17 +186,45 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
     fontWeight: active ? 700 : 400,
   });
 
-  const busy = status === 'saving' || status === 'activating';
-  const buttonLabel =
-    status === 'saving' ? 'Saving...' : status === 'activating' ? 'Pulling your first contracts...' : ctaLabel;
+  const busy = status === 'saving';
+  const buttonLabel = status === 'saving' ? 'Saving...' : ctaLabel;
+  const showNaicsSearch = editSections.industries || naicsList.length === 0;
+  const keywordItems = keywordsList(keywords);
+  const setAsideItems = [...setAsides];
+  const serviceAreaLabel = state ? state : 'Nationwide';
 
-  return (
-    <form onSubmit={save}>
-      <label style={labelStyle}>Your name or company</label>
-      <input style={inputStyle} value={name} onChange={(e) => setName(e.target.value)} placeholder="Acme Facility Services" />
+  function editSection(section) {
+    setEditSections((prev) => ({ ...prev, [section]: true }));
+  }
 
-      {/* Industry search -> NAICS */}
-      <label style={labelStyle}>What kind of work do you do?</label>
+  function SummarySection({ id, title, children, editHint, editor }) {
+    const editing = editSections[id];
+    return (
+      <section style={{ border: `1px solid ${UI.line}`, borderRadius: 10, background: UI.paper, padding: 16, marginTop: 14 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start' }}>
+          <div>
+            <div style={{ fontFamily: DISPLAY_FONT, fontSize: 16, fontWeight: 800, color: UI.ink, letterSpacing: 0.2 }}>{title}</div>
+            <div style={{ marginTop: 8 }}>{children}</div>
+          </div>
+          {!editing ? (
+            <button
+              type="button"
+              onClick={() => editSection(id)}
+              style={{ border: `1px solid ${UI.line}`, background: '#fff', color: UI.ink, fontWeight: 800, fontSize: 13, cursor: 'pointer', borderRadius: 8, padding: '8px 12px', flexShrink: 0 }}
+            >
+              Edit
+            </button>
+          ) : null}
+        </div>
+        {editHint && !editing ? <div style={hintStyle}>{editHint}</div> : null}
+        {editing ? <div style={{ marginTop: 12 }}>{editor}</div> : null}
+      </section>
+    );
+  }
+
+  const naicsEditor = (
+    <>
+      <label style={labelStyle}>{discoveryReview ? 'Edit official NAICS for this selected niche' : 'What kind of work do you do?'}</label>
       <div style={{ display: 'flex', gap: 8 }}>
         <input
           style={inputStyle}
@@ -199,14 +256,15 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
             opacity: searching || full || !query.trim() ? 0.6 : 1,
           }}
         >
-          {searching ? '...' : 'Search'}
+          {searching ? 'Searching...' : 'Search'}
         </button>
       </div>
       <div style={hintStyle}>
-        Just describe your work in plain words. We will find the right industry codes for you. Pick up to {MAX_NAICS}.
+        {discoveryReview
+          ? `Discovery loaded the authoritative NAICS for this niche. Search only if you need to fine-tune the official industry codes. Pick up to ${MAX_NAICS}.`
+          : `Just describe your work in plain words. We will find the right industry codes for you. Pick up to ${MAX_NAICS}.`}
       </div>
 
-      {/* Search results */}
       {results.length > 0 ? (
         <div style={{ marginTop: 10, border: `1px solid ${UI.line}`, borderRadius: 8, overflow: 'hidden' }}>
           {results.map((r) => {
@@ -246,7 +304,6 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
       ) : null}
       {searchError ? <div style={{ ...hintStyle, color: UI.orangeDeep, fontWeight: 600 }}>{searchError}</div> : null}
 
-      {/* Selected NAICS */}
       {naicsList.length > 0 ? (
         <div style={{ marginTop: 12 }}>
           <div style={{ fontSize: 12.5, color: UI.muted, fontWeight: 700, marginBottom: 6 }}>
@@ -286,7 +343,6 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
         </div>
       ) : null}
 
-      {/* Pro option: enter a code directly */}
       <div style={{ marginTop: 10 }}>
         {showManual ? (
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -325,34 +381,41 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
         )}
       </div>
 
-      <div
-        style={{
-          marginTop: 12,
-          background: UI.panel,
-          border: `1px solid ${UI.line}`,
-          borderLeft: `3px solid ${UI.orange}`,
-          borderRadius: '0 8px 8px 0',
-          padding: '12px 14px',
-        }}
-      >
-        <div style={{ fontFamily: DISPLAY_FONT, fontSize: 15, fontWeight: 800, color: UI.ink, letterSpacing: 0.2 }}>
-          Two or three is the sweet spot.
+      {!reviewMode ? (
+        <div
+          style={{
+            marginTop: 12,
+            background: UI.panel,
+            border: `1px solid ${UI.line}`,
+            borderLeft: `3px solid ${UI.orange}`,
+            borderRadius: '0 8px 8px 0',
+            padding: '12px 14px',
+          }}
+        >
+          <div style={{ fontFamily: DISPLAY_FONT, fontSize: 15, fontWeight: 800, color: UI.ink, letterSpacing: 0.2 }}>
+            Two or three is the sweet spot.
+          </div>
+          <div style={{ fontSize: 13, color: UI.text, lineHeight: 1.55, marginTop: 5 }}>
+            The whole idea of the course is to own one niche: learn how buyers in it talk, learn what a good price looks
+            like, and win it again and again. Two or three related industries keeps you focused and still gives us plenty
+            to pull from.
+          </div>
         </div>
-        <div style={{ fontSize: 13, color: UI.text, lineHeight: 1.55, marginTop: 5 }}>
-          The whole idea of the course is to own one niche: learn how buyers in it talk, learn what a good price looks
-          like, and win it again and again. Two or three related industries keeps you focused and still gives us plenty
-          to pull from.
-        </div>
-      </div>
+      ) : null}
+    </>
+  );
 
-      <label style={labelStyle}>Keywords / capabilities <span style={{ color: UI.muted, fontWeight: 600 }}>(optional)</span></label>
+  const keywordEditor = (
+    <>
       <input style={inputStyle} value={keywords} onChange={(e) => setKeywords(e.target.value)} placeholder="renovation, repair, HVAC, day porter" />
       <div style={hintStyle}>
-        Comma separated. Optional, but it sharpens how we rank your matches. It never shrinks your list, so more detail
-        only helps.
+        Comma separated. Optional, but it sharpens how we rank your matches. It never shrinks your list, so more detail only helps.
       </div>
+    </>
+  );
 
-      <label style={labelStyle}>Set-asides you hold</label>
+  const setAsideEditor = (
+    <>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
         {SET_ASIDE_OPTIONS.map((o) => (
           <label key={o.value} style={selChipStyle(setAsides.has(o.value))}>
@@ -362,24 +425,98 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
         ))}
       </div>
       <div style={hintStyle}>We only send you set-asides you actually qualify for, plus full-and-open work.</div>
+    </>
+  );
 
-      <label style={labelStyle}>State / service area</label>
-      <input style={{ ...inputStyle, maxWidth: 120 }} value={state} onChange={(e) => setState(e.target.value.toUpperCase())} placeholder="VA" maxLength={2} />
-      <div style={hintStyle}>
-        Two-letter state where you can perform work, or leave it blank for nationwide. The tighter you draw your area,
-        the fewer contracts open up in it. Blank casts the widest net.
+  const serviceAreaEditor = (
+    <>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
+        <button type="button" onClick={() => setState('')} style={selChipStyle(!state)}>
+          Nationwide
+        </button>
+        <button type="button" onClick={() => setState(state || 'VA')} style={selChipStyle(Boolean(state))}>
+          Single state
+        </button>
       </div>
+      {state ? (
+        <input style={{ ...inputStyle, maxWidth: 120, marginTop: 10 }} value={state} onChange={(e) => setState(e.target.value.toUpperCase())} placeholder="VA" maxLength={2} />
+      ) : null}
+      <div style={hintStyle}>Leave blank for nationwide. Use a two-letter state only when your service area is truly state-limited.</div>
+    </>
+  );
 
-      <div style={{ display: 'flex', gap: 16 }}>
-        <div style={{ flex: 1 }}>
-          <label style={labelStyle}>Min contract size ($)</label>
-          <input style={inputStyle} value={sizeMin} onChange={(e) => setSizeMin(e.target.value)} placeholder="Optional" inputMode="numeric" />
-        </div>
-        <div style={{ flex: 1 }}>
-          <label style={labelStyle}>Max contract size ($)</label>
-          <input style={inputStyle} value={sizeMax} onChange={(e) => setSizeMax(e.target.value)} placeholder="Optional" inputMode="numeric" />
-        </div>
+  const sizeEditor = (
+    <div style={{ display: 'flex', gap: 16 }}>
+      <div style={{ flex: 1 }}>
+        <label style={labelStyle}>Min contract size ($)</label>
+        <input style={inputStyle} value={sizeMin} onChange={(e) => setSizeMin(e.target.value)} placeholder="Optional" inputMode="numeric" />
       </div>
+      <div style={{ flex: 1 }}>
+        <label style={labelStyle}>Max contract size ($)</label>
+        <input style={inputStyle} value={sizeMax} onChange={(e) => setSizeMax(e.target.value)} placeholder="Optional" inputMode="numeric" />
+      </div>
+    </div>
+  );
+
+  return (
+    <form onSubmit={save}>
+      {!reviewMode ? (
+        <>
+          <label style={labelStyle}>Your name or company</label>
+          <input style={inputStyle} value={name} onChange={(e) => setName(e.target.value)} placeholder="Acme Facility Services" />
+          {naicsEditor}
+          <label style={labelStyle}>Keywords / capabilities <span style={{ color: UI.muted, fontWeight: 600 }}>(optional)</span></label>
+          {keywordEditor}
+          <label style={labelStyle}>Set-asides you hold</label>
+          {setAsideEditor}
+          <label style={labelStyle}>State / service area</label>
+          <input style={{ ...inputStyle, maxWidth: 120 }} value={state} onChange={(e) => setState(e.target.value.toUpperCase())} placeholder="VA" maxLength={2} />
+          <div style={hintStyle}>
+            Two-letter state where you can perform work, or leave it blank for nationwide. The tighter you draw your area, the fewer contracts open up in it. Blank casts the widest net.
+          </div>
+          {sizeEditor}
+        </>
+      ) : (
+        <>
+          <SummarySection id="industries" title="Industries / NAICS" editHint={discoveryReview ? 'Authoritative NAICS resolved from your selected Discovery niche.' : 'These are the industry codes we will search against.'} editor={naicsEditor}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {naicsList.map((n) => (
+                <span key={n.code} style={{ display: 'inline-block', fontSize: 13, fontWeight: 700, color: UI.ink, background: '#fff', border: `1px solid ${UI.line}`, borderRadius: 8, padding: '7px 10px' }}>
+                  NAICS {n.code}{n.title ? ` · ${n.title}` : ''}
+                </span>
+              ))}
+            </div>
+          </SummarySection>
+          <SummarySection id="keywords" title="Capabilities / Keywords" editHint={discoveryReview ? 'Pulled from your Discovery capabilities and positive interests.' : 'These sharpen matching without narrowing your eligible universe.'} editor={keywordEditor}>
+            {keywordItems.length > 0 ? (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {keywordItems.map((item) => (
+                  <span key={item} style={{ display: 'inline-block', fontSize: 13, fontWeight: 700, color: UI.text, background: '#fff', border: `1px solid ${UI.line}`, borderRadius: 8, padding: '7px 10px' }}>{item}</span>
+                ))}
+              </div>
+            ) : (
+              <div style={{ fontSize: 14, color: UI.muted }}>No keywords set.</div>
+            )}
+          </SummarySection>
+          <SummarySection id="serviceArea" title="Service Area" editHint="Nationwide keeps stale state filters out of this search." editor={serviceAreaEditor}>
+            <div style={{ fontSize: 15, color: UI.ink, fontWeight: 800 }}>{serviceAreaLabel}</div>
+          </SummarySection>
+          <SummarySection id="setAsides" title="Set-Asides" editHint="Only supported selected eligibility values are carried forward." editor={setAsideEditor}>
+            {setAsideItems.length > 0 ? (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {setAsideItems.map((item) => (
+                  <span key={item} style={{ display: 'inline-block', fontSize: 13, fontWeight: 700, color: UI.text, background: '#fff', border: `1px solid ${UI.line}`, borderRadius: 8, padding: '7px 10px' }}>{setAsideLabel(item)}</span>
+                ))}
+              </div>
+            ) : (
+              <div style={{ fontSize: 14, color: UI.muted }}>No set-asides selected.</div>
+            )}
+          </SummarySection>
+          <SummarySection id="size" title="Contract Size" editHint="Blank size answers clear stale minimum or maximum filters." editor={sizeEditor}>
+            <div style={{ fontSize: 15, color: UI.ink, fontWeight: 800 }}>{contractSizeLabel(sizeMin, sizeMax)}</div>
+          </SummarySection>
+        </>
+      )}
 
       <button
         type="submit"
@@ -387,7 +524,7 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
         style={{
           marginTop: 24,
           width: '100%',
-          background: activateAfterSave ? UI.pink : UI.ink,
+          background: UI.ink,
           color: '#fff',
           border: 'none',
           borderRadius: 9,

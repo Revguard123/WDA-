@@ -13,8 +13,10 @@
 import { redirect } from 'next/navigation';
 import Shell from '../_components/Shell.jsx';
 import PortalEmailForm from '../_components/PortalEmailForm.jsx';
+import SupportCTA from '../_components/SupportCTA.jsx';
 import { getBuyerByEmail } from '../../lib/buyers.js';
 import { UI, DISPLAY_FONT } from '../../lib/ui.js';
+import { portalPathForBuyer } from '../../lib/journey.js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -40,17 +42,17 @@ export default async function PortalPage({ searchParams }) {
             <PortalEmailForm />
           </div>
         </div>
+        <SupportCTA pageContext="portal" />
       </Shell>
     );
   }
 
   const buyer = await getBuyerByEmail(email);
   if (buyer) {
-    const token = buyer.access_token;
     // First-timers (not yet activated) go to niche setup first; everyone else
     // straight to their contracts. This makes the portal button a safe entry
     // point even if a brand-new member never opened their welcome email.
-    redirect(buyer.status === 'exploring' ? `/setup/${token}` : `/contracts/${token}`);
+    redirect(portalPathForBuyer(buyer));
   }
 
   // Signed in with an email we do not have an account for.
@@ -61,6 +63,7 @@ export default async function PortalPage({ searchParams }) {
         Academy account. You can also{' '}
         <a href="/access" style={{ color: UI.ink, fontWeight: 700 }}>get your link by email</a>.
       </div>
+      <SupportCTA pageContext="portal" />
     </Shell>
   );
 }

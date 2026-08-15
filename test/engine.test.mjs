@@ -112,7 +112,7 @@ test('buildSearchParams requires key and dates, clamps limit to 1000', () => {
   });
   assert.equal(p.get('limit'), '1000');
   assert.equal(p.get('ptype'), 'o,k');
-  assert.equal(p.get('naicsCode'), '561720');
+  assert.equal(p.get('ncode'), '561720');
   assert.equal(p.get('state'), 'SC');
   assert.equal(p.get('api_key'), 'k');
 });

@@ -133,13 +133,13 @@ export const SAMPLE_RECORDS = [
 ];
 
 // Build a fetch() stand-in that emulates the SAM search endpoint against the
-// fixture. It honors the naicsCode and ptype query params (as SAM does) but not
+// fixture. It honors the documented ncode and ptype query params (as SAM does) but not
 // state, so the engine's in-code geography filter is exercised. Description
 // fields here are plain text, so resolveDescriptionText never calls out.
 export function makeMockSamFetch(records = SAMPLE_RECORDS) {
   return async function mockFetch(url) {
     const u = new URL(url);
-    const naics = u.searchParams.get('naicsCode');
+    const naics = u.searchParams.get('ncode') || u.searchParams.get('naicsCode');
     const ptype = u.searchParams.get('ptype');
     const limit = Number(u.searchParams.get('limit')) || 1000;
     const offset = Number(u.searchParams.get('offset')) || 0;

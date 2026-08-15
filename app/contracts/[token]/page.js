@@ -1,7 +1,9 @@
 import Shell, { NotFound } from '../../_components/Shell.jsx';
+import SupportCTA from '../../_components/SupportCTA.jsx';
 import { getBuyerByToken } from '../../../lib/buyers.js';
 import { listDeliveriesForBuyer } from '../../../lib/deliveries.js';
 import { UI } from '../../../lib/ui.js';
+import { CONTRACT_CARD_BREAKDOWN_CTA, CONTRACT_CARD_WHY_LABEL, contractsPresentationForBuyer } from '../../../lib/contractsPresentation.js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -19,6 +21,7 @@ export default async function ContractsPage({ params }) {
   if (!buyer) return <NotFound what="link" />;
 
   const deliveries = await listDeliveriesForBuyer(buyer.id);
+  const presentation = contractsPresentationForBuyer(buyer, { deliveryCount: deliveries.length });
 
   const kajabiUrl = process.env.KAJABI_LIBRARY_URL || 'https://www.wardogsacademy.co/library';
 
@@ -37,9 +40,24 @@ export default async function ContractsPage({ params }) {
         </span>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
-        <h1 style={{ margin: 0, fontSize: 22, color: UI.ink }}>Your contracts</h1>
-        <a href={`/targeting/${token}`} style={{ color: UI.ink, fontWeight: 700, fontSize: 14 }}>Update targeting</a>
+        <h1 style={{ margin: 0, fontSize: 22, color: UI.ink }}>{presentation.listTitle}</h1>
+        {presentation.showTargetingLink ? (
+          <a href={`/targeting/${token}`} style={{ color: UI.ink, fontWeight: 700, fontSize: 14 }}>Update targeting</a>
+        ) : null}
       </div>
+
+      <p style={{ color: UI.muted, fontSize: 15, lineHeight: 1.55, margin: '0 0 16px' }}>
+        Matched to your niche and ranked around how strong each opportunity is for you. Here is the why on each.
+      </p>
+
+      {presentation.statusCallout ? (
+        <div style={{ background: presentation.completed ? UI.paper : UI.panel, border: `1px solid ${UI.line}`, borderLeft: `3px solid ${presentation.completed ? UI.orange : UI.pink}`, borderRadius: '0 8px 8px 0', padding: '12px 14px', marginBottom: 16 }}>
+          <div style={{ fontSize: 15, color: UI.ink, fontWeight: 800 }}>{presentation.statusCallout.title}</div>
+          <div style={{ fontSize: 13.5, color: UI.text, lineHeight: 1.55, marginTop: 5 }}>
+            {presentation.statusCallout.body}
+          </div>
+        </div>
+      ) : null}
 
       {buyer.naics && buyer.naics.length > 0 ? (
         <div style={{ background: UI.panel, border: `1px solid ${UI.line}`, borderLeft: `3px solid ${UI.pink}`, borderRadius: '0 8px 8px 0', padding: '12px 14px', marginBottom: 16 }}>
@@ -53,9 +71,11 @@ export default async function ContractsPage({ params }) {
               </span>
             ))}
           </div>
-          <div style={{ fontSize: 12.5, color: UI.muted, marginTop: 9 }}>
-            Not right? <a href={`/targeting/${token}`} style={{ color: UI.ink, fontWeight: 700 }}>Update your targeting</a>.
-          </div>
+          {presentation.showTargetingLink ? (
+            <div style={{ fontSize: 12.5, color: UI.muted, marginTop: 9 }}>
+              Not right? <a href={`/targeting/${token}`} style={{ color: UI.ink, fontWeight: 700 }}>Update your targeting</a>.
+            </div>
+          ) : null}
         </div>
       ) : null}
 
@@ -78,11 +98,11 @@ export default async function ContractsPage({ params }) {
             </div>
             {c.why_line ? (
               <div style={{ background: UI.paper, borderLeft: `3px solid ${UI.green}`, padding: '10px 12px', borderRadius: '0 4px 4px 0', fontSize: 14, color: UI.text, marginTop: 12, lineHeight: 1.5 }}>
-                <strong style={{ color: UI.green }}>Why we picked this.</strong> {c.why_line}
+                <strong style={{ color: UI.green }}>{CONTRACT_CARD_WHY_LABEL}.</strong> {c.why_line}
               </div>
             ) : null}
             <div style={{ marginTop: 14 }}>
-              <a href={`/d/${token}/${c.notice_id}`} style={{ display: 'inline-block', background: UI.ink, color: '#fff', textDecoration: 'none', fontWeight: 600, padding: '9px 16px', borderRadius: 6, fontSize: 14, marginRight: 8 }}>Dive Deeper</a>
+              <a href={`/d/${token}/${c.notice_id}`} style={{ display: 'inline-block', background: UI.ink, color: '#fff', textDecoration: 'none', fontWeight: 600, padding: '9px 16px', borderRadius: 6, fontSize: 14, marginRight: 8 }}>{CONTRACT_CARD_BREAKDOWN_CTA}</a>
               {c.sam_url ? (
                 <a href={c.sam_url} style={{ display: 'inline-block', color: UI.text, textDecoration: 'none', fontWeight: 600, padding: '9px 14px', border: `1px solid ${UI.line}`, borderRadius: 6, fontSize: 14 }}>View on SAM.gov</a>
               ) : null}
@@ -90,6 +110,7 @@ export default async function ContractsPage({ params }) {
           </div>
         ))
       )}
+      <SupportCTA pageContext="contracts" />
     </Shell>
   );
 }

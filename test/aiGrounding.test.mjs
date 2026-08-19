@@ -37,6 +37,8 @@ test('whyLine prompt forbids unsupported expertise, experience, and past-perform
   assert.match(prompt, /Do not describe selected NAICS codes, keywords,\s*or service areas as the buyer expertise, experience, past performance/i);
   assert.match(prompt, /proven capability, staff,\s*equipment, or qualifications/i);
   assert.match(prompt, /Use conditional language\s*for requirements such as bonding, licenses, or past performance/i);
+  assert.match(prompt, /STRUCTURED CORE PREMISE ASSESSMENT/i);
+  assert.match(prompt, /Use at least one supplied Core Premise rubric signal/i);
 });
 
 test('whyLine prompt encourages phrasing based on selected targeting data', async () => {
@@ -55,6 +57,8 @@ test('deepDive prompt keeps human-review and hand-selection claims prohibited', 
   assert.match(prompt, /Do not claim human review/i);
   assert.match(prompt, /human team personally selected/i);
   assert.match(prompt, /Do not say "aligns perfectly."/i);
+  assert.match(prompt, /War Dogs decision brief/i);
+  assert.match(prompt, /What you need to verify/i);
 });
 
 test('discoverNiches prompt applies the same grounding rule to niche discovery', async () => {

@@ -139,8 +139,8 @@ test('Discovery session loads saved progress', async () => {
 
 test('save updates current step and persists Playbook version', async () => {
   const client = createFakeClient();
-  const session = await saveDiscoverySessionForBuyer(buyerId, { answers: structuredAnswers, currentStep: 7 }, { client });
-  assert.equal(session.current_step, 7);
+  const session = await saveDiscoverySessionForBuyer(buyerId, { answers: structuredAnswers, currentStep: 6 }, { client });
+  assert.equal(session.current_step, 6);
   assert.equal(session.playbook_version, PLAYBOOK_VERSION);
   assert.equal(client.row.playbook_version, PLAYBOOK_VERSION);
 });
@@ -152,11 +152,11 @@ test('refresh/resume returns saved answers without access token', () => {
     access_token: 'should-not-leak',
     answers: structuredAnswers,
     normalized_profile: normalizeDiscoveryProfile(structuredAnswers),
-    current_step: 8,
+    current_step: 6,
     status: 'in_progress',
     playbook_version: PLAYBOOK_VERSION,
   });
-  assert.equal(publicSession.current_step, 8);
+  assert.equal(publicSession.current_step, 6);
   assert.equal(publicSession.answers.interests, structuredAnswers.interests);
   assert.equal('buyer_id' in publicSession, false);
   assert.equal('access_token' in publicSession, false);
@@ -166,12 +166,12 @@ test('final step persists completed questionnaire profile as recommended state',
   const patch = prepareDiscoverySessionSave({
     buyerId,
     answers: structuredAnswers,
-    currentStep: 10,
+    currentStep: 6,
     status: 'recommended',
     recommendations: [],
   });
   assert.equal(patch.status, 'recommended');
-  assert.equal(patch.current_step, 10);
+  assert.equal(patch.current_step, 6);
   assert.equal(patch.normalized_profile.fulfillment_model, 'existing_vendors');
 });
 

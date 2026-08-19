@@ -14,7 +14,7 @@ const inputStyle = {
   color: UI.text,
   fontFamily: BODY_FONT,
 };
-const labelStyle = { display: 'block', fontSize: 13, fontWeight: 800, color: UI.ink, margin: '18px 0 6px', letterSpacing: 0.2 };
+const labelStyle = { display: 'block', fontSize: 13, fontWeight: 600, color: UI.ink, margin: '18px 0 6px', letterSpacing: 0.2 };
 const hintStyle = { fontSize: 12.5, color: UI.muted, marginTop: 5, lineHeight: 1.5 };
 
 const MAX_NAICS = 5;
@@ -55,7 +55,7 @@ function setAsideLabel(value) {
   return SET_ASIDE_OPTIONS.find((option) => option.value === value)?.label || value;
 }
 
-export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afterSaveHref, discoveryReview = null, reviewMode = false }) {
+export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afterSaveHref, discoveryReview = null, reviewMode = false, readOnly = false }) {
   const [name, setName] = useState(initial.name || '');
   // NAICS as a list of { code, title }. Initial codes have no title yet.
   const [naicsList, setNaicsList] = useState(normalizeInitialNaics(initial.naics));
@@ -140,6 +140,10 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
 
   async function save(e) {
     e.preventDefault();
+    if (readOnly) {
+      if (afterSaveHref) window.location.href = afterSaveHref;
+      return;
+    }
     if (naicsList.length === 0) {
       setStatus('error');
       setMessage('Add at least one industry above so we know what work to look for.');
@@ -200,23 +204,23 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
   function SummarySection({ id, title, children, editHint, editor }) {
     const editing = editSections[id];
     return (
-      <section style={{ border: `1px solid ${UI.line}`, borderRadius: 10, background: UI.paper, padding: 16, marginTop: 14 }}>
+      <section className={`targeting-summary-section targeting-section-${id}`} style={{ border: `1px solid ${UI.line}`, borderRadius: 10, background: UI.paper, padding: reviewMode ? 13 : 16, marginTop: reviewMode ? 0 : 14 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start' }}>
           <div>
-            <div style={{ fontFamily: DISPLAY_FONT, fontSize: 16, fontWeight: 800, color: UI.ink, letterSpacing: 0.2 }}>{title}</div>
+            <div style={{ fontFamily: DISPLAY_FONT, fontSize: 16, fontWeight: 600, color: UI.ink, letterSpacing: 0.2 }}>{title}</div>
             <div style={{ marginTop: 8 }}>{children}</div>
           </div>
-          {!editing ? (
+          {!editing && !readOnly ? (
             <button
               type="button"
               onClick={() => editSection(id)}
-              style={{ border: `1px solid ${UI.line}`, background: '#fff', color: UI.ink, fontWeight: 800, fontSize: 13, cursor: 'pointer', borderRadius: 8, padding: '8px 12px', flexShrink: 0 }}
+              style={{ border: `1px solid ${UI.line}`, background: '#fff', color: UI.ink, fontWeight: 600, fontSize: 13, cursor: 'pointer', borderRadius: 8, padding: '8px 12px', flexShrink: 0 }}
             >
               Edit
             </button>
           ) : null}
         </div>
-        {editHint && !editing ? <div style={hintStyle}>{editHint}</div> : null}
+        {editHint && !editing ? <div className="targeting-summary-hint" style={hintStyle}>{editHint}</div> : null}
         {editing ? <div style={{ marginTop: 12 }}>{editor}</div> : null}
       </section>
     );
@@ -251,7 +255,7 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
             borderRadius: 8,
             padding: '0 18px',
             fontSize: 14,
-            fontWeight: 800,
+            fontWeight: 600,
             cursor: searching || full ? 'default' : 'pointer',
             opacity: searching || full || !query.trim() ? 0.6 : 1,
           }}
@@ -294,7 +298,7 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
                   <span style={{ display: 'block', fontSize: 14, color: UI.ink, fontWeight: 600 }}>{r.title}</span>
                   <span style={{ fontSize: 12, color: UI.muted }}>NAICS {r.code}</span>
                 </span>
-                <span style={{ flexShrink: 0, fontSize: 13, fontWeight: 800, color: already ? UI.muted : UI.pink }}>
+                <span style={{ flexShrink: 0, fontSize: 13, fontWeight: 600, color: already ? UI.muted : UI.pink }}>
                   {already ? 'Added' : '+ Add'}
                 </span>
               </button>
@@ -306,7 +310,7 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
 
       {naicsList.length > 0 ? (
         <div style={{ marginTop: 12 }}>
-          <div style={{ fontSize: 12.5, color: UI.muted, fontWeight: 700, marginBottom: 6 }}>
+          <div style={{ fontSize: 12.5, color: UI.muted, fontWeight: 600, marginBottom: 6 }}>
             Your industries ({naicsList.length}/{MAX_NAICS})
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -326,14 +330,14 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
                 }}
               >
                 <span>
-                  <strong style={{ color: UI.ink }}>{n.title || `NAICS ${n.code}`}</strong>
+                  <strong style={{ color: UI.ink, fontWeight: 600 }}>{n.title || `NAICS ${n.code}`}</strong>
                   {n.title ? <span style={{ color: UI.muted }}> &middot; {n.code}</span> : null}
                 </span>
                 <button
                   type="button"
                   onClick={() => removeNaics(n.code)}
                   aria-label={`Remove ${n.code}`}
-                  style={{ border: 'none', background: 'transparent', color: UI.pinkDeep, fontSize: 16, lineHeight: 1, cursor: 'pointer', fontWeight: 800 }}
+                  style={{ border: 'none', background: 'transparent', color: UI.pinkDeep, fontSize: 16, lineHeight: 1, cursor: 'pointer', fontWeight: 600 }}
                 >
                   &times;
                 </button>
@@ -365,7 +369,7 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
               type="button"
               onClick={addManual}
               disabled={full || !/^\d{6}$/.test(manualCode.replace(/\D/g, ''))}
-              style={{ background: UI.ink, color: '#fff', border: 'none', borderRadius: 8, padding: '11px 16px', fontSize: 14, fontWeight: 800, cursor: 'pointer', opacity: full || !/^\d{6}$/.test(manualCode.replace(/\D/g, '')) ? 0.6 : 1 }}
+              style={{ background: UI.ink, color: '#fff', border: 'none', borderRadius: 8, padding: '11px 16px', fontSize: 14, fontWeight: 600, cursor: 'pointer', opacity: full || !/^\d{6}$/.test(manualCode.replace(/\D/g, '')) ? 0.6 : 1 }}
             >
               Add
             </button>
@@ -374,7 +378,7 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
           <button
             type="button"
             onClick={() => setShowManual(true)}
-            style={{ border: 'none', background: 'transparent', color: UI.ink, fontWeight: 700, fontSize: 13, cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
+            style={{ border: 'none', background: 'transparent', color: UI.ink, fontWeight: 600, fontSize: 13, cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
           >
             Already know your NAICS code? Add it directly
           </button>
@@ -392,7 +396,7 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
             padding: '12px 14px',
           }}
         >
-          <div style={{ fontFamily: DISPLAY_FONT, fontSize: 15, fontWeight: 800, color: UI.ink, letterSpacing: 0.2 }}>
+          <div style={{ fontFamily: DISPLAY_FONT, fontSize: 15, fontWeight: 600, color: UI.ink, letterSpacing: 0.2 }}>
             Two or three is the sweet spot.
           </div>
           <div style={{ fontSize: 13, color: UI.text, lineHeight: 1.55, marginTop: 5 }}>
@@ -460,6 +464,7 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
 
   return (
     <form onSubmit={save}>
+      {reviewMode ? <style>{`.targeting-review-grid{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:12px;margin-top:14px}.targeting-section-keywords{grid-column:span 2}.targeting-summary-section{min-width:0;display:flex;flex-direction:column}.targeting-summary-section>div:first-child{flex:1 1 auto}.targeting-summary-hint{margin-top:10px!important}@media(max-width:900px){.targeting-review-grid{grid-template-columns:1fr}.targeting-section-keywords{grid-column:auto}}`}</style> : null}
       {!reviewMode ? (
         <>
           <label style={labelStyle}>Your name or company</label>
@@ -477,11 +482,11 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
           {sizeEditor}
         </>
       ) : (
-        <>
+        <div className="targeting-review-grid">
           <SummarySection id="industries" title="Industries / NAICS" editHint={discoveryReview ? 'Authoritative NAICS resolved from your selected Discovery niche.' : 'These are the industry codes we will search against.'} editor={naicsEditor}>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {naicsList.map((n) => (
-                <span key={n.code} style={{ display: 'inline-block', fontSize: 13, fontWeight: 700, color: UI.ink, background: '#fff', border: `1px solid ${UI.line}`, borderRadius: 8, padding: '7px 10px' }}>
+                <span key={n.code} style={{ display: 'inline-block', fontSize: 13, fontWeight: 600, color: UI.ink, background: '#fff', border: `1px solid ${UI.line}`, borderRadius: 8, padding: '7px 10px' }}>
                   NAICS {n.code}{n.title ? ` · ${n.title}` : ''}
                 </span>
               ))}
@@ -491,7 +496,7 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
             {keywordItems.length > 0 ? (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {keywordItems.map((item) => (
-                  <span key={item} style={{ display: 'inline-block', fontSize: 13, fontWeight: 700, color: UI.text, background: '#fff', border: `1px solid ${UI.line}`, borderRadius: 8, padding: '7px 10px' }}>{item}</span>
+                  <span key={item} style={{ display: 'inline-block', fontSize: 13, fontWeight: 600, color: UI.text, background: '#fff', border: `1px solid ${UI.line}`, borderRadius: 8, padding: '7px 10px' }}>{item}</span>
                 ))}
               </div>
             ) : (
@@ -499,13 +504,13 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
             )}
           </SummarySection>
           <SummarySection id="serviceArea" title="Service Area" editHint="Nationwide keeps stale state filters out of this search." editor={serviceAreaEditor}>
-            <div style={{ fontSize: 15, color: UI.ink, fontWeight: 800 }}>{serviceAreaLabel}</div>
+            <div style={{ fontSize: 15, color: UI.ink, fontWeight: 600 }}>{serviceAreaLabel}</div>
           </SummarySection>
           <SummarySection id="setAsides" title="Set-Asides" editHint="Only supported selected eligibility values are carried forward." editor={setAsideEditor}>
             {setAsideItems.length > 0 ? (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {setAsideItems.map((item) => (
-                  <span key={item} style={{ display: 'inline-block', fontSize: 13, fontWeight: 700, color: UI.text, background: '#fff', border: `1px solid ${UI.line}`, borderRadius: 8, padding: '7px 10px' }}>{setAsideLabel(item)}</span>
+                  <span key={item} style={{ display: 'inline-block', fontSize: 13, fontWeight: 600, color: UI.text, background: '#fff', border: `1px solid ${UI.line}`, borderRadius: 8, padding: '7px 10px' }}>{setAsideLabel(item)}</span>
                 ))}
               </div>
             ) : (
@@ -513,9 +518,9 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
             )}
           </SummarySection>
           <SummarySection id="size" title="Contract Size" editHint="Blank size answers clear stale minimum or maximum filters." editor={sizeEditor}>
-            <div style={{ fontSize: 15, color: UI.ink, fontWeight: 800 }}>{contractSizeLabel(sizeMin, sizeMax)}</div>
+            <div style={{ fontSize: 15, color: UI.ink, fontWeight: 600 }}>{contractSizeLabel(sizeMin, sizeMax)}</div>
           </SummarySection>
-        </>
+        </div>
       )}
 
       <button
@@ -530,7 +535,7 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
           borderRadius: 9,
           padding: '14px 24px',
           fontSize: 16,
-          fontWeight: 800,
+          fontWeight: 600,
           cursor: busy ? 'default' : 'pointer',
           opacity: busy ? 0.75 : 1,
         }}

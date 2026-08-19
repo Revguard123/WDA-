@@ -5,7 +5,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { runEngineForNiche } from '../lib/sam/engine.js';
-import { inMemoryUpsert } from '../lib/opportunities.js';
+import { inMemoryUpsert, opportunityUpsertPayload } from '../lib/opportunities.js';
 import {
   buyerQualifiesForSetAside,
   isFullAndOpen,
@@ -79,6 +79,13 @@ test('upsert receives exactly the kept rows', async () => {
   const { sink, stats } = await runFixture();
   assert.equal(sink.length, 2);
   assert.equal(stats.upserted, 2);
+});
+
+test('database upsert payload excludes in-memory rubric assessment', () => {
+  const [row] = opportunityUpsertPayload([{ notice_id: 'N-1', title: 'Test', rubric_assessment: { eligibility: { status: 'eligible' } } }], '2026-08-19T00:00:00.000Z');
+  assert.equal(row.notice_id, 'N-1');
+  assert.equal(row.fetched_at, '2026-08-19T00:00:00.000Z');
+  assert.equal('rubric_assessment' in row, false);
 });
 
 test('set-aside eligibility logic', () => {

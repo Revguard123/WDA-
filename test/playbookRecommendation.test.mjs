@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { explainPlaybookRecommendations, rankPlaybookCandidates, suggestNaics } from '../lib/ai/claude.js';
+import { explainPlaybookRecommendations, extractDiscoveryBio, rankPlaybookCandidates, suggestNaics } from '../lib/ai/claude.js';
 import { prepareDiscoverySessionSave, publicDiscoverySession } from '../lib/discoverySessions.js';
 import { normalizeDiscoveryProfile } from '../lib/playbook/index.js';
 import { validateAdaptiveQuestionCoverage } from '../lib/playbook/adaptiveQuestions.js';
@@ -121,9 +121,35 @@ test('adaptive unresolved answer remains unresolved', () => {
   assert.deepEqual(resolved.codes, []);
 });
 
-test('maximum one clarification round excludes unresolved context candidates', async () => {
-  const result = await recommendPlaybookNiches(profile, { ranker: rankerFor('Network Infrastructure'), clarificationRound: 1 });
-  assert.equal(result.status, 'no_recommendation');
+test('adaptive clarification can ask up to three unresolved context questions', async () => {
+  const candidates = [byName('Air & Maritime Logistics')];
+  const first = await recommendPlaybookNiches(profile, { ranker: rankerFor('Air & Maritime Logistics'), candidates });
+  assert.equal(first.status, 'needs_clarification');
+  assert.equal(first.questions[0].key, 'air_vs_maritime');
+
+  const second = await recommendPlaybookNiches(profile, {
+    ranker: rankerFor('Air & Maritime Logistics'),
+    candidates,
+    clarificationRound: 1,
+    adaptiveAnswers: { air_vs_maritime: 'air' },
+  });
+  assert.equal(second.status, 'needs_clarification');
+  assert.equal(second.questions[0].key, 'scheduled_vs_chartered');
+
+  const third = await recommendPlaybookNiches(profile, {
+    ranker: rankerFor('Air & Maritime Logistics'),
+    candidates,
+    clarificationRound: 2,
+    adaptiveAnswers: { air_vs_maritime: 'air', scheduled_vs_chartered: 'scheduled' },
+  });
+  assert.equal(third.status, 'needs_clarification');
+  assert.equal(third.questions[0].key, 'carrier_vs_freight_arrangement');
+});
+
+test('maximum three clarification rounds falls back to a canonical starting lane', async () => {
+  const result = await recommendPlaybookNiches(profile, { ranker: rankerFor('Network Infrastructure'), clarificationRound: 3 });
+  assert.equal(result.status, 'recommended');
+  assert.ok(result.recommendations[0].naics.length > 0);
 });
 
 test('final recommendations max 3 and none have empty NAICS or candidate-only codes', async () => {
@@ -174,15 +200,24 @@ test('2 strong candidates produce only 2 visible recommendations and no weak fil
   assert.equal(result.recommendations.length, 2);
 });
 
-test('zero strong candidates returns no_recommendation', async () => {
+test('thin information still receives one canonical starting lane', async () => {
   const weak = { ...strongFit, overall_fit: 'weak', capability_fit: 'weak' };
   const result = await recommendPlaybookNiches(profile, {
     ranker: rankerWithFits([['Janitorial & Cleaning Services', weak]]),
     feedabilityChecker: feedability(),
     explainer: null,
   });
-  assert.equal(result.status, 'no_recommendation');
-  assert.equal(result.recommendations.length, 0);
+  assert.equal(result.status, 'recommended');
+  assert.equal(result.recommendations.length, 1);
+  assert.ok(result.recommendations[0].naics.every((item) => isOfficialNaics2022(item.code)));
+});
+
+test('quick bio extraction retains only the structured facts returned by Claude', async () => {
+  const client = { messages: { create: async () => ({ content: [{ type: 'text', text: JSON.stringify({ capabilities_text: 'Commercial cleaning', fulfillment_model: 'unknown', opportunity_type: 'services', experience_types: ['private_commercial'], interests: '', avoid: '' }) }] }) } };
+  const result = await extractDiscoveryBio('I do commercial cleaning.', { client });
+  assert.equal(result.capabilities_text, 'Commercial cleaning');
+  assert.equal('set_asides' in result, false);
+  assert.equal('qualification_categories' in result, false);
 });
 
 test('no_current_supply candidate is excluded from visible when better feedable candidates exist but retained internally', async () => {
@@ -325,6 +360,17 @@ test('Discovery targeting handoff populates keywords from capabilities and inter
   });
   assert.deepEqual(keywords, ['Network infrastructure', 'structured cabling', 'low voltage installation', 'data drops']);
   assert.equal(keywords.some((k) => /software|help desk/i.test(k)), false);
+});
+
+test('Discovery targeting keywords strip sentence wrappers and skip avoid text', () => {
+  const keywords = discoveryKeywordsForTargeting({
+    ...profile,
+    capabilities_text: 'I can provide cleaning and facilities work. I have hands-on experience doing this type of work.',
+    interests: 'I want to focus on wastage and facilities services I already do hands-on. Skip laundry linen services or anything requiring equipment I have not confirmed.',
+    avoid: 'laundry linen services or anything requiring equipment I have not confirmed',
+  });
+  assert.deepEqual(keywords, ['cleaning and facilities', 'wastage and facilities services']);
+  assert.equal(keywords.some((k) => /laundry|linen|equipment/i.test(k)), false);
 });
 
 test('Discovery targeting handoff persists set-asides and contract size answers', async () => {
@@ -507,8 +553,8 @@ test('final explanation IDs must match allowed final IDs and cannot supply NAICS
 });
 
 test('saved questionnaire payload remains valid when provider failure is reported', () => {
-  const patch = prepareDiscoverySessionSave({ buyerId: 'buyer-1', answers: profile, currentStep: 10, status: 'in_progress' });
-  assert.equal(patch.current_step, 10);
+  const patch = prepareDiscoverySessionSave({ buyerId: 'buyer-1', answers: profile, currentStep: 6, status: 'in_progress' });
+  assert.equal(patch.current_step, 6);
   assert.equal(patch.status, 'in_progress');
   assert.equal(patch.answers.capabilities_text, profile.capabilities_text);
 });

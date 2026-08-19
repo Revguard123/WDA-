@@ -42,7 +42,10 @@ export async function POST(req, { params }) {
         ...(body.adaptive_answers || {}),
       },
     });
-    const clarificationRound = Number(body.clarification_round || 0);
+    const clarificationRound = Math.max(
+      Number(body.clarification_round || 0),
+      Object.keys(answers.adaptive_answers || {}).length,
+    );
     stage = 'recommendation_engine';
     const result = await recommendPlaybookNiches(answers, {
       adaptiveAnswers: answers.adaptive_answers,
@@ -54,7 +57,7 @@ export async function POST(req, { params }) {
       stage = 'session_recommendation_persistence';
       const session = await saveDiscoverySessionForBuyer(buyer.id, {
         answers,
-        currentStep: 10,
+        currentStep: 6,
         status: 'in_progress',
         recommendations: { status: 'needs_clarification', questions: result.questions, preliminary_candidate_ids: result.preliminary_candidate_ids },
       });
@@ -73,7 +76,7 @@ export async function POST(req, { params }) {
       stage = 'session_recommendation_persistence';
       const session = await saveDiscoverySessionForBuyer(buyer.id, {
         answers,
-        currentStep: 10,
+        currentStep: 6,
         status: 'recommended',
         recommendations: result.recommendations,
       });
@@ -91,7 +94,7 @@ export async function POST(req, { params }) {
     stage = 'session_recommendation_persistence';
     await saveDiscoverySessionForBuyer(buyer.id, {
       answers,
-      currentStep: 10,
+      currentStep: 6,
       status: 'in_progress',
       recommendations: { status: 'no_recommendation', message: result.message },
     });

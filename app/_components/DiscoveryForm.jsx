@@ -1,544 +1,422 @@
 'use client';
 
-import { useState } from 'react';
-import { UI, SET_ASIDE_OPTIONS, BODY_FONT, DISPLAY_FONT } from '../../lib/ui.js';
+import { useEffect, useRef, useState } from 'react';
+import { UI, BODY_FONT } from '../../lib/ui.js';
 
-const TOTAL_STEPS = 10;
-
-const inputStyle = {
-  width: '100%',
-  padding: '11px 13px',
-  fontSize: 15,
-  border: `1px solid ${UI.line}`,
-  borderRadius: 8,
-  boxSizing: 'border-box',
-  background: '#fff',
-  color: UI.text,
-  fontFamily: BODY_FONT,
+const emptyState = { messages: [], pending_question: null, turn_count: 0, complete: false };
+const ADVISOR_TOTAL = 10;
+const THINKING_LOTTIE_URL = 'https://lottie.host/embed/d600c658-5662-4e45-bdba-bf24d1abbff8/P88Xg7Vftf.lottie';
+const DRAFT_LOTTIE_URL = 'https://lottie.host/embed/322a6aa2-45b8-484f-aa83-529d5134cf7f/Fs00gWaIMv.json';
+const iconPaths = {
+  award: <><circle cx="12" cy="8" r="5" /><path d="m8.5 12.5-1.5 8 5-3 5 3-1.5-8" /></>,
+  briefcase: <><path d="M10 6V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1" /><rect x="3" y="6" width="18" height="14" rx="2" /><path d="M3 12h18" /></>,
+  building: <><path d="M4 21V5a2 2 0 0 1 2-2h8v18" /><path d="M14 9h4a2 2 0 0 1 2 2v10" /><path d="M8 7h2M8 11h2M8 15h2" /></>,
+  check: <path d="m5 12 4 4L19 6" />,
+  circle: <circle cx="12" cy="12" r="7" />,
+  dollar: <><path d="M12 2v20" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6" /></>,
+  edit: <><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></>,
+  globe: <><circle cx="12" cy="12" r="10" /><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20" /></>,
+  hammer: <><path d="m15 12-8 8-3-3 8-8" /><path d="m14 4 6 6" /><path d="m11 7 3-3 6 6-3 3" /></>,
+  help: <><circle cx="12" cy="12" r="10" /><path d="M9.5 9a2.8 2.8 0 0 1 5 1.7c0 2-2.5 2-2.5 4" /><path d="M12 18h.01" /></>,
+  home: <><path d="m3 11 9-8 9 8" /><path d="M5 10v11h14V10" /></>,
+  map: <><path d="M9 18 3 21V6l6-3 6 3 6-3v15l-6 3Z" /><path d="M9 3v15M15 6v15" /></>,
+  message: <><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z" /></>,
+  monitor: <><rect x="3" y="4" width="18" height="12" rx="2" /><path d="M8 20h8M12 16v4" /></>,
+  package: <><path d="m21 8-9-5-9 5 9 5Z" /><path d="M3 8v8l9 5 9-5V8" /><path d="M12 13v8" /></>,
+  plus: <path d="M12 5v14M5 12h14" />,
+  send: <><path d="m22 2-7 20-4-9-9-4Z" /><path d="M22 2 11 13" /></>,
+  shield: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />,
+  target: <><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1" /></>,
+  truck: <><path d="M10 17H5V6h11v11h-2" /><path d="M16 9h3l3 4v4h-3" /><circle cx="7" cy="17" r="2" /><circle cx="17" cy="17" r="2" /></>,
+  users: <><path d="M16 21v-2a4 4 0 0 0-8 0v2" /><circle cx="12" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8" /></>,
 };
-const labelStyle = { display: 'block', fontSize: 13, fontWeight: 800, color: UI.ink, margin: '16px 0 6px', letterSpacing: 0.2 };
-const hintStyle = { fontSize: 12.5, color: UI.muted, marginTop: 5, lineHeight: 1.5 };
+const optionIcons = { 'IT support': 'monitor', 'Cleaning / Facilities': 'building', Construction: 'hammer', 'Staffing / Labor': 'users', 'Product sourcing': 'package', Products: 'package', Services: 'briefcase', Either: 'check', 'My own team': 'users', Subcontractors: 'truck', Combination: 'users', Federal: 'building', 'State / local': 'map', Commercial: 'briefcase', 'Industry experience': 'award', 'Brand new': 'plus', Licenses: 'award', Bonding: 'shield', 'Qualified staff': 'users', Equipment: 'hammer', Suppliers: 'package', 'None / not sure': 'help', 'Small Business': 'briefcase', SDVOSB: 'shield', WOSB: 'award', '8(a)': 'check', HUBZone: 'map', Nationwide: 'globe', 'Remote / digital': 'monitor', 'Depends on vendor': 'truck', 'Recurring services': 'briefcase', 'Project work': 'hammer', 'Product supply': 'package', 'No preference': 'circle', 'Under $25k': 'dollar', '$25k to $150k': 'dollar', '$150k+': 'dollar', 'Include services I already know': 'briefcase', 'Include product sourcing': 'package', 'Avoid construction': 'hammer', 'Avoid staffing': 'users', 'Nothing to avoid': 'check', 'Not sure': 'help', 'Not sure yet': 'help' };
 
-const optionStyle = (active) => ({
-  display: 'block',
-  width: '100%',
-  textAlign: 'left',
-  background: active ? '#fdeaf6' : '#fff',
-  color: active ? UI.pinkDeep : UI.text,
-  border: `1px solid ${active ? UI.pink : UI.line}`,
-  borderRadius: 8,
-  padding: '11px 13px',
-  cursor: 'pointer',
-  fontSize: 14,
-  fontWeight: active ? 800 : 500,
-  fontFamily: BODY_FONT,
-});
-
-const EMPTY_ANSWERS = {
-  capabilities_text: '',
-  fulfillment_model: '',
-  opportunity_type: '',
-  experience_types: [],
-  qualification_categories: [],
-  qualification_notes: '',
-  geography_mode: '',
-  state: '',
-  operating_model: '',
-  size_min: '',
-  size_max: '',
-  set_asides: [],
-  interests: '',
-  avoid: '',
-  adaptive_answers: {},
-};
-
-const fulfillmentOptions = [
-  ['self_perform', 'My own company or team performs the work'],
-  ['existing_partners', 'I already work with vendors or subcontractors'],
-  ['source_as_needed', 'I plan to source vendors as opportunities come up'],
-  ['hybrid', 'A combination of these'],
-  ['unknown', "I'm not sure yet"],
-];
-const opportunityOptions = [
-  ['products', 'Supplying products'],
-  ['services', 'Providing services'],
-  ['both', 'Either'],
-  ['unknown', 'Not sure'],
-];
-const experienceOptions = [
-  ['federal_contracts', 'Federal government contracts'],
-  ['state_local_government', 'State/local government contracts'],
-  ['private_commercial', 'Private/commercial work'],
-  ['industry_experience', 'Industry experience but no contract history'],
-  ['new_to_area', 'Brand new to this area'],
-];
-const qualificationOptions = [
-  ['professional_trade_licenses', 'Professional/trade licenses'],
-  ['bonding_capacity', 'Bonding capacity'],
-  ['security_clearances', 'Security clearances'],
-  ['technical_cyber_certifications', 'Technical/cyber certifications'],
-  ['healthcare_medical_credentials', 'Healthcare/medical credentials'],
-  ['environmental_safety_certifications', 'Environmental/safety certifications'],
-  ['specialized_equipment', 'Specialized equipment'],
-  ['qualified_staff', 'Qualified staff'],
-  ['regulated_product_suppliers', 'Regulated product suppliers'],
-  ['other', 'Other'],
-  ['none_or_unknown', 'None / not sure'],
-];
-const geographyOptions = [
-  ['single_state', 'My state only'],
-  ['multi_state', 'Several states'],
-  ['nationwide', 'Nationwide'],
-  ['remote', 'Remote / digital work'],
-  ['vendor_dependent', 'Depends on the vendor or subcontractor'],
-  ['unknown', "I'm not sure yet"],
-];
-const operatingOptions = [
-  ['volume_products', 'Fast, higher-volume product opportunities'],
-  ['recurring_services', 'Recurring long-term service contracts'],
-  ['project_based', 'Project-based work'],
-  ['no_preference', 'No preference'],
-];
-
-function mergeInitialAnswers(initial = {}, session = {}) {
-  return {
-    ...EMPTY_ANSWERS,
-    set_asides: initial.set_asides || [],
-    state: initial.state || '',
-    ...(session.answers || {}),
-  };
+function initialAdvisorState(session) { return session?.answers?.advisor_state || emptyState; }
+function isGenericAdvisorRow(message) { return message?.role === 'advisor' && String(message.content || '').includes('keep this practical and narrow the next useful point'); }
+function Icon({ name }) {
+  return <svg aria-hidden="true" viewBox="0 0 24 24" className="discovery-icon" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{iconPaths[name] || iconPaths.help}</svg>;
 }
+function icon(label) { return <span aria-hidden="true" className="discovery-chip-icon"><Icon name={optionIcons[label] || 'help'} /></span>; }
 
-function toggleArray(list, value) {
-  return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
-}
-
-function marketLabel(feedability = {}) {
-  if (feedability.status === 'sufficient_current_supply') return 'Healthy';
-  if (feedability.status === 'thin_current_supply') return 'Limited';
-  if (feedability.status === 'no_current_supply') return 'Unavailable right now';
-  return 'Could not verify';
-}
-
-function marketHint(feedability = {}) {
-  if (feedability.status === 'sufficient_current_supply') return 'Current federal opportunity supply for this targeting lane is healthy.';
-  if (feedability.status === 'thin_current_supply') return 'Current live opportunity supply is limited, so this may produce fewer immediate targets.';
-  if (feedability.status === 'no_current_supply') return 'Current live opportunity supply is not available for this lane right now.';
-  return 'Current market availability could not be verified right now.';
-}
-
-function LoadingLabel({ children }) {
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-      <span aria-hidden="true" style={{ display: 'inline-block', fontSize: 15, lineHeight: 1 }}>
-        ●
-      </span>
-      <span>{children}</span>
-    </span>
-  );
-}
-
-export default function DiscoveryForm({ token, initial = {}, initialSession = null }) {
-  const [answers, setAnswers] = useState(() => mergeInitialAnswers(initial, initialSession || {}));
-  const [step, setStep] = useState(initialSession?.current_step || 1);
-  const [status, setStatus] = useState('idle'); // idle | saving | thinking | done | error
-  const [message, setMessage] = useState(initialSession ? 'Saved progress loaded.' : '');
+export default function DiscoveryForm({ token, initialSession = null, supportCta = null, updateMode = false }) {
+  const [state, setState] = useState(() => initialAdvisorState(initialSession));
+  const [answers, setAnswers] = useState(initialSession?.answers || {});
+  const [draft, setDraft] = useState('');
+  const [mode, setMode] = useState('chat');
+  const [status, setStatus] = useState('idle');
+  const [error, setError] = useState('');
   const [recs, setRecs] = useState(Array.isArray(initialSession?.recommendations) ? initialSession.recommendations : []);
-  const [adaptiveQuestions, setAdaptiveQuestions] = useState(initialSession?.recommendations?.status === 'needs_clarification' ? initialSession.recommendations.questions || [] : []);
-  const [clarificationRound, setClarificationRound] = useState(adaptiveQuestions.length ? 1 : 0);
-  const [applyingIdx, setApplyingIdx] = useState(-1);
+  const [optimisticMessages, setOptimisticMessages] = useState([]);
+  const [applying, setApplying] = useState(-1);
+  const [showBackToBottom, setShowBackToBottom] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [editingIndex, setEditingIndex] = useState(null);
+  const historyRef = useRef(null);
+  const textareaRef = useRef(null);
+  const endRef = useRef(null);
+  const bootstrapped = useRef(false);
+  const stuckToBottom = useRef(true);
+  const didInitialScroll = useRef(false);
+  const busy = status === 'thinking';
+  const drafting = status === 'drafting';
+  const rewinding = status === 'rewinding';
+  const locked = busy || drafting || rewinding;
+  const buildingRecommendations = busy && state.complete && !recs.length;
+  const messages = state.messages || [];
+  const latestStudent = [...messages].reverse().find((message) => message.role === 'student');
+  const pendingOptimisticMessages = optimisticMessages.filter((message) => !(message.role === 'student' && messages.length > message.afterMessageCount && latestStudent?.content === message.content));
+  const visibleMessages = [...messages, ...pendingOptimisticMessages].filter((message) => !isGenericAdvisorRow(message));
+  const pending = state.pending_question;
+  const progress = Math.min(ADVISOR_TOTAL, Math.max(1, (state.turn_count || 0) + (recs.length ? 0 : 1)));
 
-  function setField(key, value) {
-    setAnswers((prev) => ({ ...prev, [key]: value }));
+  function scrollChatToBottom(behavior = 'smooth') {
+    const el = historyRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior });
+    setShowBackToBottom(false);
+    stuckToBottom.current = true;
   }
 
-  async function saveProgress(nextStep, nextStatus = 'in_progress', nextRecs = undefined) {
-    setStatus(nextStatus === 'recommended' ? 'thinking' : 'saving');
-    setMessage('');
-    const res = await fetch(`/api/discover/${token}/session`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        answers,
-        current_step: nextStep,
-        status: nextStatus,
-        recommendations: nextRecs,
-      }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      const first = data.details?.[0]?.message;
-      throw new Error(first || data.error || 'Could not save discovery progress');
-    }
-    return data.session;
+  function updateScrollState() {
+    const el = historyRef.current;
+    if (!el) return;
+    const away = el.scrollHeight - el.scrollTop - el.clientHeight > 90;
+    setShowBackToBottom(away);
+    stuckToBottom.current = !away;
   }
 
-  function validateCurrentStep() {
-    if (step === 1 && !answers.capabilities_text.trim()) return 'Tell us what you can provide or source today.';
-    if (step === 2 && !answers.fulfillment_model) return 'Choose how you would fulfill the work.';
-    if (step === 3 && !answers.opportunity_type) return 'Choose the type of opportunity you want.';
-    if (step === 6) {
-      if (!answers.geography_mode) return 'Choose where you can support work.';
-      if (answers.geography_mode === 'single_state' && !/^[A-Z]{2}$/.test(answers.state)) {
-        return 'Enter a valid two-letter state.';
-      }
-    }
-    if (step === 7 && !answers.operating_model) return 'Choose the operating model that fits you best.';
-    const min = answers.size_min === '' ? null : Number(answers.size_min);
-    const max = answers.size_max === '' ? null : Number(answers.size_max);
-    if (step === 8 && ((min != null && (!Number.isFinite(min) || min < 0)) || (max != null && (!Number.isFinite(max) || max < 0)))) {
-      return 'Contract size must be a non-negative number.';
-    }
-    if (step === 8 && min != null && max != null && min > max) return 'Minimum size must be less than or equal to maximum size.';
-    return '';
-  }
+  useEffect(() => {
+    const htmlOverflow = document.documentElement.style.overflow;
+    const bodyOverflow = document.body.style.overflow;
+    window.scrollTo(0, 0);
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.documentElement.style.overflow = htmlOverflow;
+      document.body.style.overflow = bodyOverflow;
+    };
+  }, []);
 
-  async function continueStep() {
-    const validationMessage = validateCurrentStep();
-    if (validationMessage) {
-      setStatus('error');
-      setMessage(validationMessage);
+  useEffect(() => {
+    if (!didInitialScroll.current) {
+      didInitialScroll.current = true;
+      requestAnimationFrame(() => scrollChatToBottom('auto'));
       return;
     }
-    try {
-      const next = Math.min(TOTAL_STEPS, step + 1);
-      await saveProgress(next);
-      setStep(next);
-      setStatus('idle');
-      setMessage('Saved.');
-    } catch (err) {
-      setStatus('error');
-      setMessage(String(err.message || err));
-    }
-  }
+    if (stuckToBottom.current) requestAnimationFrame(() => scrollChatToBottom('smooth'));
+  }, [visibleMessages.length, busy, recs.length]);
 
-  async function submitFinal() {
-    const validationMessage = validateCurrentStep();
-    if (validationMessage) {
-      setStatus('error');
-      setMessage(validationMessage);
-      return;
-    }
+  useEffect(() => {
+    if (bootstrapped.current || mode !== 'chat' || messages.length || pending || recs.length) return;
+    bootstrapped.current = true;
     setStatus('thinking');
-    setMessage(adaptiveQuestions.length > 0 ? 'Finalizing recommendations...' : 'Saving and preparing recommendations...');
+    callConversation({ start: true }).catch((err) => setError(err.message)).finally(() => setStatus('idle'));
+  }, [mode, messages.length, pending, recs.length]);
+
+  useEffect(() => {
+    setShowSuggestions(false);
+    if (locked || !pending || recs.length || (draft.trim() && editingIndex == null)) return undefined;
+    const timer = setTimeout(() => setShowSuggestions(true), 3500);
+    return () => clearTimeout(timer);
+  }, [locked, pending?.id, pending?.prompt, recs.length, draft]);
+
+  async function callConversation(body) {
+    const response = await fetch(`/api/discover/${token}/conversation`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Could not continue this conversation.');
+    setState(data.advisor_state);
+    setAnswers(data.answers);
+    return data;
+  }
+
+  async function startNewDiscovery() {
+    if (locked) return;
+    setMode('chat');
+    setDraft('');
+    setError('');
+    setRecs([]);
+    setOptimisticMessages([]);
+    setEditingIndex(null);
+    stuckToBottom.current = true;
+    didInitialScroll.current = false;
+    setShowBackToBottom(false);
+    setAnswers({});
+    setState(emptyState);
+    bootstrapped.current = true;
+    setStatus('thinking');
     try {
-      const res = await fetch(`/api/discover/${token}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ answers, clarification_round: clarificationRound }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Discovery failed');
-      if (data.status === 'needs_clarification') {
-        setAdaptiveQuestions(data.questions || []);
-        setClarificationRound(1);
+      const response = await fetch(`/api/discover/${token}/session`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answers: { advisor_state: emptyState }, current_step: 1, status: 'in_progress', recommendations: [] }) });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Could not start a new discovery.');
+      await callConversation({ start: true });
+    } catch (err) {
+      setError(err.message || 'Could not start a new discovery.');
+    } finally {
+      setStatus('idle');
+    }
+  }
+
+  async function submit(value = draft) {
+    const answer = String(value || '').trim();
+    if (!answer || locked) return;
+    if (editingIndex != null) {
+      setShowSuggestions(false);
+      setStatus('thinking');
+      setError('');
+      try {
+        const data = await callConversation({ edit_answer: true, message_index: editingIndex, answer });
         setRecs([]);
+        setDraft('');
+        setEditingIndex(null);
+        if (!data.complete) return;
+        const response = await fetch(`/api/discover/${token}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answers: data.answers, clarification_round: 0 }) });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Could not refresh recommendations.');
+        setRecs(result.recommendations || []);
+      } catch (err) {
+        setError(err.message || 'Could not update that answer right now.');
+      } finally {
         setStatus('idle');
-        setMessage('One more thing will help us safely narrow the official NAICS fit.');
-        return;
       }
-      if (data.status === 'no_recommendation') {
-        setAdaptiveQuestions([]);
-        setRecs([]);
-        setStatus('error');
-        setMessage(data.message || 'We could not safely resolve a recommendation from those answers yet.');
-        return;
-      }
-      const list = data.recommendations || [];
-      setAdaptiveQuestions([]);
-      setRecs(list);
-      setStatus(list.length ? 'done' : 'error');
-      setMessage(list.length ? 'Saved. Here are your Playbook recommendations.' : 'We could not safely resolve a recommendation from those answers yet.');
-    } catch (err) {
-      setStatus('error');
-      setMessage('Could not run discovery right now. Your answers are saved.');
+      return;
     }
-  }
-
-  async function useThis(rec, idx) {
-    setApplyingIdx(idx);
-    setMessage('');
+    stuckToBottom.current = true;
+    setShowSuggestions(false);
+    setOptimisticMessages([{ role: 'student', content: answer, sending: true, afterMessageCount: messages.length }]);
+    setDraft('');
+    setEditingIndex(null);
+    setStatus('thinking');
+    setError('');
+    let succeeded = false;
     try {
-      const codes = (rec.naics || []).map((n) => n.code).join(', ');
-      if (!codes) throw new Error('This recommendation is not ready for targeting.');
-      const res = await fetch(`/api/discover/${token}/select`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subindustry_id: rec.subindustry_id }),
-      });
-      if (!res.ok) throw new Error((await res.json()).error || 'Could not save');
-      window.location.href = `/setup/${token}`;
+      if (pending?.adaptive_key) {
+        const nextAnswers = { ...answers, adaptive_answers: { ...(answers.adaptive_answers || {}), [pending.adaptive_key]: answer } };
+        const response = await fetch(`/api/discover/${token}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answers: nextAnswers, clarification_round: 1 }) });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Could not prepare recommendations.');
+        setAnswers(nextAnswers);
+        if (result.status === 'needs_clarification' && result.questions?.[0]) {
+          const question = result.questions[0];
+          setState((current) => ({ ...current, complete: false, pending_question: { category: 'naics_clarification', prompt: question.prompt, input_type: 'single_choice', options: question.options || [], adaptive_key: question.key } }));
+        } else {
+          setState((current) => ({ ...current, pending_question: null, complete: true }));
+          setRecs(result.recommendations || []);
+        }
+        succeeded = true;
+        return;
+      }
+      const data = await callConversation({ answer, question_id: pending?.id, question_category: pending?.category });
+      if (!data.complete) return;
+      const response = await fetch(`/api/discover/${token}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answers: data.answers, clarification_round: 0 }) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Could not prepare recommendations.');
+      if (result.status === 'needs_clarification' && result.questions?.[0]) {
+        const question = result.questions[0];
+        setState({ ...data.advisor_state, complete: false, pending_question: { category: 'naics_clarification', prompt: question.prompt, input_type: 'single_choice', options: question.options || [], adaptive_key: question.key } });
+      } else {
+        setRecs(result.recommendations || []);
+      }
+      succeeded = true;
     } catch (err) {
-      setApplyingIdx(-1);
-      setStatus('error');
-      setMessage(String(err.message || err));
+      setOptimisticMessages([]);
+      setError(err.message || 'Could not continue right now. Your previous answers are saved.');
+    } finally {
+      if (succeeded) setOptimisticMessages([]);
+      if (succeeded) setEditingIndex(null);
+      setStatus('idle');
     }
   }
 
-  const busy = status === 'saving' || status === 'thinking';
-  const singleChoice = (name, options) => (
-    <div role="radiogroup" aria-label={name} style={{ display: 'grid', gap: 8 }}>
-      {options.map(([value, label]) => (
-        <button key={value} type="button" role="radio" aria-checked={answers[name] === value} onClick={() => setField(name, value)} style={optionStyle(answers[name] === value)}>
-          {label}
-        </button>
-      ))}
-    </div>
-  );
-  const multiChoice = (name, options) => (
-    <div style={{ display: 'grid', gap: 8 }}>
-      {options.map(([value, label]) => {
-        const active = answers[name].includes(value);
-        return (
-          <label key={value} style={{ ...optionStyle(active), display: 'flex', alignItems: 'center', gap: 8 }}>
-            <input type="checkbox" checked={active} onChange={() => setField(name, toggleArray(answers[name], value))} />
-            {label}
-          </label>
-        );
-      })}
-    </div>
-  );
+  async function editAnswer(index, content) {
+    if (locked) return;
+    setStatus('rewinding');
+    setShowSuggestions(false);
+    setError('');
+    try {
+      const response = await fetch(`/api/discover/${token}/conversation`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ edit_answer: true, message_index: index }) });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Could not edit that answer.');
+      setState({ ...data.advisor_state, pending_question: data.editing_question, complete: false });
+      setAnswers(data.answers);
+      setRecs([]);
+      setOptimisticMessages([]);
+      setEditingIndex(index);
+      setDraft(data.editing_answer || content || '');
+      setShowSuggestions(true);
+      requestAnimationFrame(() => {
+        const el = textareaRef.current;
+        if (!el) return;
+        el.style.height = 'auto';
+        el.style.height = `${Math.min(el.scrollHeight, 128)}px`;
+        el.focus();
+      });
+    } catch (err) {
+      setError(err.message || 'Could not edit that answer right now.');
+    } finally {
+      setStatus('idle');
+    }
+  }
 
-  return (
-    <div>
-      <div style={{ marginBottom: 18, color: UI.muted, fontSize: 13, fontWeight: 800 }}>
-        Step {step} of {TOTAL_STEPS}
-      </div>
+  async function draftSuggestion(label) {
+    if (!pending || locked) return;
+    setShowSuggestions(false);
+    setStatus('drafting');
+    setError('');
+    try {
+      const response = await fetch(`/api/discover/${token}/conversation`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ draft_suggestion: true, suggestion: label, current_question: { category: pending.category, prompt: pending.prompt, helper: pending.helper } }) });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Could not draft that suggestion.');
+      setDraft(data.draft || '');
+      requestAnimationFrame(() => {
+        const el = textareaRef.current;
+        if (!el) return;
+        el.style.height = 'auto';
+        el.style.height = `${Math.min(el.scrollHeight, 128)}px`;
+        el.focus();
+      });
+    } catch (err) {
+      setError(err.message || 'Could not draft that suggestion right now.');
+    } finally {
+      setStatus('idle');
+    }
+  }
 
-      <div style={{ border: `1px solid ${UI.line}`, borderRadius: 10, padding: 18, background: UI.paper }}>
-        {step === 1 ? (
-          <>
-            <h2 style={{ margin: 0, fontFamily: DISPLAY_FONT, color: UI.ink }}>What can you confidently provide or source today?</h2>
-            <label style={labelStyle} htmlFor="capabilities_text">Products, services, skills, industries, or vendor relationships</label>
-            <textarea id="capabilities_text" style={{ ...inputStyle, minHeight: 120, resize: 'vertical' }} value={answers.capabilities_text} onChange={(e) => setField('capabilities_text', e.target.value)} />
-            <div style={hintStyle}>Plain English is perfect. We will not infer certifications from this text.</div>
-          </>
-        ) : null}
+  async function useThis(rec, index) {
+    setApplying(index);
+    try {
+      const response = await fetch(`/api/discover/${token}/select`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ subindustry_id: rec.subindustry_id }) });
+      if (!response.ok) throw new Error();
+      window.location.href = `/setup/${token}${updateMode ? '?update=1' : ''}`;
+    } catch {
+      setApplying(-1);
+      setError('Could not apply this niche safely.');
+    }
+  }
 
-        {step === 2 ? (
-          <>
-            <h2 style={{ margin: 0, fontFamily: DISPLAY_FONT, color: UI.ink }}>How would you fulfill a government contract?</h2>
-            <div style={{ ...hintStyle, marginBottom: 12 }}>Vendor and subcontractor ability matters; this does not assume you personally hold every trade credential.</div>
-            {singleChoice('fulfillment_model', fulfillmentOptions)}
-          </>
-        ) : null}
+  function sendWithKey(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      submit();
+    }
+  }
 
-        {step === 3 ? (
-          <>
-            <h2 style={{ margin: 0, fontFamily: DISPLAY_FONT, color: UI.ink }}>What type of opportunity do you want?</h2>
-            {singleChoice('opportunity_type', opportunityOptions)}
-          </>
-        ) : null}
+  function resizeComposer(event) {
+    const el = event.currentTarget;
+    setDraft(el.value);
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, 128)}px`;
+  }
 
-        {step === 4 ? (
-          <>
-            <h2 style={{ margin: 0, fontFamily: DISPLAY_FONT, color: UI.ink }}>What experience do you bring?</h2>
-            <div style={{ ...hintStyle, marginBottom: 12 }}>Private experience is useful context, but it is not treated as federal past performance.</div>
-            {multiChoice('experience_types', experienceOptions)}
-          </>
-        ) : null}
+  function questionForMessage(index) {
+    return [...visibleMessages.slice(0, index)].reverse().find((message) => message.role === 'advisor' && message.question?.prompt)?.question?.prompt || 'Your answer';
+  }
 
-        {step === 5 ? (
-          <>
-            <h2 style={{ margin: 0, fontFamily: DISPLAY_FONT, color: UI.ink }}>Qualifications or delivery advantages</h2>
-            {multiChoice('qualification_categories', qualificationOptions)}
-            <label style={labelStyle} htmlFor="qualification_notes">Optional notes</label>
-            <textarea id="qualification_notes" style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} value={answers.qualification_notes} onChange={(e) => setField('qualification_notes', e.target.value)} />
-            <div style={hintStyle}>Self-reported only. We do not verify or infer these here.</div>
-          </>
-        ) : null}
+  return <div className="discovery-workspace">
+    <style>{`.discovery-workspace{height:100%;overflow:hidden;background:#fbf9f6;font-family:${BODY_FONT}}.discovery-main{height:100%;margin:0;padding:18px 26px 13px;min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column}.discovery-thread{position:relative;width:100%;margin:0;display:flex;min-height:0;flex:1;flex-direction:column;overflow:hidden}.discovery-icon{width:16px;height:16px;flex:0 0 auto}.discovery-header{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:52px;color:#182033;font-size:13px;font-weight:600;flex:0 0 auto}.discovery-header-left{display:flex;align-items:center;gap:12px;min-width:0}.discovery-avatar{width:42px;height:42px;border:1px solid #ff9f58;border-radius:50%;padding:3px;background:#fff;object-fit:contain;flex:0 0 auto}.discovery-advisor-title{font-size:16px;font-weight:600;color:#182033}.discovery-advisor-subtitle{margin-top:2px;color:#667085;font-size:12px;font-weight:500}.discovery-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.discovery-toolbar-button,.discovery-toolbar-link,.discovery-current{display:inline-flex;align-items:center;gap:6px;border:1px solid #e6e4e2;border-radius:999px;background:#fff;padding:7px 10px;color:#3d4352;font:600 12px ${BODY_FONT};text-decoration:none;cursor:pointer}.discovery-toolbar-button{background:#f52ea9;border-color:#f52ea9;color:#fff}.discovery-toolbar-button:disabled{opacity:.65;cursor:wait}.discovery-header-right{display:flex;align-items:center;gap:16px;margin-left:auto}.discovery-progress{display:flex;gap:4px}.discovery-progress span{display:block;width:45px;height:7px;border-radius:99px;background:#e2e3e7}.discovery-progress span.is-done{background:#f52ea9}.discovery-progress-count{white-space:nowrap}.discovery-support{display:inline-flex}.discovery-support>div{margin:0!important;border:0!important;border-radius:999px!important;padding:0!important;background:transparent!important;color:#3d4352!important;font-size:12px!important}.discovery-support strong,.discovery-support span{display:none!important} .discovery-support>div>button{border:1px solid #e6e4e2!important;border-radius:999px!important;background:#fff!important;padding:7px 10px!important;color:#3d4352!important;font:600 12px ${BODY_FONT}!important;text-decoration:none!important}.discovery-history{padding:2px 11px 0;min-height:0;flex:1 1 auto;overflow-y:auto;scroll-behavior:smooth;overscroll-behavior:contain}.discovery-assistant{display:flex;gap:12px;margin:22px 0 0}.discovery-assistant-body{max-width:860px;color:#182033;font-size:17px;line-height:1.55}.discovery-copy{display:inline-block;max-width:860px;padding:15px 18px;border:1px solid #eee7dc;border-radius:18px 18px 18px 6px;background:#fffaf4;box-shadow:0 2px 7px rgba(32,24,16,.05);color:#182033}.discovery-question{margin-top:12px;font-size:20px;line-height:1.4;font-weight:600}.discovery-helper{margin-top:5px;color:#6e7380;font-size:16px}.discovery-student{display:flex;justify-content:flex-end;margin:18px 0 10px}.discovery-student-wrap{max-width:650px;text-align:right}.discovery-student-question{margin:0 6px 6px;color:#687084;font-size:12px;font-weight:600}.discovery-student-bubble{max-width:610px;padding:22px 29px 15px;border-radius:22px 22px 7px 22px;background:linear-gradient(135deg,#10182a,#222b42);box-shadow:0 3px 8px rgba(12,17,31,.16);color:#fff;font-size:17px;line-height:1.55;text-align:left}.discovery-student.is-editing .discovery-student-bubble{outline:2px solid #f52ea9;box-shadow:0 0 0 5px rgba(245,46,169,.12)}.discovery-student-meta{margin-top:8px;text-align:right;color:#c3c8d4;font-size:12px}.discovery-edit-answer{margin:6px 6px 0;border:0;background:transparent;color:#f52ea9;font:600 12px ${BODY_FONT};cursor:pointer;text-decoration:underline}.discovery-edit-answer:disabled{opacity:.5;cursor:wait}.discovery-chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px 71px}.discovery-chip{display:inline-flex;align-items:center;border:1px solid #e6e4e2;border-radius:999px;background:#fff;box-shadow:none;padding:7px 12px;color:#3d4352;font:600 13px ${BODY_FONT};cursor:pointer}.discovery-chip:hover{border-color:#f52ea9;color:#172034}.discovery-chip:disabled{opacity:.5;cursor:wait}.discovery-chip-icon{display:inline-grid;place-items:center;margin-right:6px;color:#f52ea9}.discovery-chip-icon .discovery-icon{width:14px;height:14px}.discovery-thinking{display:block;width:92px;height:42px;margin:18px 0 0 71px;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;overflow:hidden;animation:none;flex:0 0 auto}.discovery-thinking iframe{display:block;width:100%;height:100%;border:0;background:transparent}.discovery-draft-loading{margin-top:auto;padding:18px 0 32px;display:flex;align-items:center;justify-content:center;gap:12px;color:#182033;font-weight:600}.discovery-draft-loading iframe{width:48px;height:48px;border:0}.discovery-draft-loading span{font-size:14px}.discovery-suggestion-label{margin:15px 0 0 71px;color:#7b8190;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.7px}.discovery-bottom-jump{position:absolute;right:20px;bottom:104px;z-index:4;border:0;border-radius:999px;padding:10px 14px;background:#111827;color:#fff;box-shadow:0 8px 20px rgba(17,24,39,.18);font:600 13px ${BODY_FONT};cursor:pointer;transition:transform .16s ease,opacity .16s ease}.discovery-bottom-jump:hover{transform:translateY(-2px);background:#f52ea9}.discovery-composer{margin-top:auto;padding-top:20px;flex:0 0 auto}.discovery-composer-box{position:relative;border:2px solid #f52ea9;border-radius:22px;box-shadow:0 3px 8px rgba(245,46,169,.12);background:#fff}.discovery-composer-leading{position:absolute;left:17px;top:13px;color:#f52ea9}.discovery-composer-leading .discovery-icon{width:18px;height:18px}.discovery-composer textarea{display:block;width:100%;min-height:72px;box-sizing:border-box;border:0;border-radius:20px;padding:20px 80px 14px 58px;resize:none;outline:none;color:#182033;font:17px ${BODY_FONT}}.discovery-composer textarea::placeholder{color:#7c8290}.discovery-composer button{position:absolute;right:13px;top:12px;width:49px;height:49px;display:grid;place-items:center;border:0;border-radius:50%;background:#f52ea9;color:#fff;cursor:pointer}.discovery-composer button .discovery-icon{width:20px;height:20px}.discovery-composer button:disabled{opacity:.55;cursor:wait}.discovery-composer-help{margin:8px 0 0 18px;color:#707583;font-size:13px}.discovery-error{margin:12px 0;color:${UI.orangeDeep};font-weight:600;flex:0 0 auto}.discovery-recommendations{margin:28px 70px 0}.discovery-card{margin-bottom:14px;padding:20px;border:1px solid #e5e0da;border-top:3px solid #f52ea9;border-radius:12px}.discovery-text-link{margin-top:14px;border:0;background:none;padding:0;color:#182033;font:600 14px ${BODY_FONT};text-decoration:underline;cursor:pointer}@media(max-width:800px){.discovery-main{padding:12px}.discovery-header{align-items:flex-start;flex-direction:column}.discovery-header-right{margin-left:0;flex-wrap:wrap}.discovery-history{padding:0}.discovery-assistant{gap:12px}.discovery-avatar{width:40px;height:40px}.discovery-assistant-body,.discovery-student-bubble{font-size:15px}.discovery-question{font-size:18px}.discovery-chips{margin-left:52px;gap:8px}.discovery-chip{padding:9px 12px;font-size:14px}.discovery-progress span{width:26px}.discovery-composer textarea{font-size:16px}.discovery-recommendations{margin-left:52px;margin-right:0}}`}</style>
 
-        {step === 6 ? (
-          <>
-            <h2 style={{ margin: 0, fontFamily: DISPLAY_FONT, color: UI.ink }}>Where can you support work?</h2>
-            {singleChoice('geography_mode', geographyOptions)}
-            {answers.geography_mode === 'single_state' ? (
-              <>
-                <label style={labelStyle} htmlFor="state">Two-letter state</label>
-                <input id="state" style={{ ...inputStyle, maxWidth: 120 }} value={answers.state} onChange={(e) => setField('state', e.target.value.toUpperCase())} placeholder="GA" maxLength={2} />
-              </>
-            ) : null}
-            <div style={hintStyle}>Current contract targeting supports one state or blank/nationwide. Richer geography is saved here for the Playbook matcher phase.</div>
-          </>
-        ) : null}
-
-        {step === 7 ? (
-          <>
-            <h2 style={{ margin: 0, fontFamily: DISPLAY_FONT, color: UI.ink }}>What operating model fits you?</h2>
-            {singleChoice('operating_model', operatingOptions)}
-          </>
-        ) : null}
-
-        {step === 8 ? (
-          <>
-            <h2 style={{ margin: 0, fontFamily: DISPLAY_FONT, color: UI.ink }}>What contract size feels comfortable?</h2>
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <div style={{ flex: '1 1 180px' }}>
-                <label style={labelStyle} htmlFor="size_min">Minimum dollars</label>
-                <input id="size_min" style={inputStyle} inputMode="numeric" value={answers.size_min} onChange={(e) => setField('size_min', e.target.value)} placeholder="Optional" />
-              </div>
-              <div style={{ flex: '1 1 180px' }}>
-                <label style={labelStyle} htmlFor="size_max">Maximum dollars</label>
-                <input id="size_max" style={inputStyle} inputMode="numeric" value={answers.size_max} onChange={(e) => setField('size_max', e.target.value)} placeholder="Optional" />
-              </div>
+    <style>{`.discovery-student-label{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin:0 3px 7px;color:#687084;font-size:12px;font-weight:500}.discovery-student-label span{display:inline-flex;align-items:center;gap:5px;max-width:520px;text-align:right}.discovery-student-label .discovery-icon{width:13px;height:13px}.discovery-edit-answer{display:inline-flex;align-items:center;gap:4px;margin:0;border:1px solid #f5d5e8;border-radius:999px;background:#fff7fc;padding:5px 8px;color:#d61b8d;font:600 11px ${BODY_FONT};text-decoration:none;box-shadow:0 1px 4px rgba(245,46,169,.08)}.discovery-edit-answer:hover{border-color:#f52ea9;background:#fff}.discovery-edit-answer .discovery-icon{width:12px;height:12px}.discovery-active-question{align-items:center;gap:12px;margin-top:12px}.discovery-active-question .discovery-avatar{width:38px;height:38px}.discovery-question-line{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.discovery-active-question .discovery-question{margin:0;font-size:17px;line-height:1.3;font-weight:600}.discovery-active-question .discovery-helper{margin:0;font-size:13px;font-weight:400}.discovery-draft-loading{flex-direction:column;gap:4px;font-weight:500}.discovery-draft-animation{width:110px;height:110px;display:grid;place-items:center;overflow:hidden}.discovery-draft-animation iframe{display:block;width:110px;height:110px;border:0;background:transparent}.discovery-draft-loading span{font-weight:500;color:#4f5665}.discovery-composer{padding-top:10px;padding-bottom:32px}.discovery-composer-box{border-radius:999px;box-shadow:0 2px 7px rgba(245,46,169,.1)}.discovery-composer textarea{height:46px;min-height:46px;border-radius:999px;padding:13px 58px 11px 43px;font-size:15px;line-height:20px;overflow:hidden}.discovery-composer button{right:7px;top:6px;width:34px;height:34px}.discovery-composer-help{margin-top:6px;font-size:12px}.discovery-bottom-jump{bottom:140px}@media(max-width:600px){.discovery-main{padding:9px 10px 0}.discovery-header{align-items:flex-start;gap:8px;min-height:auto;font-size:12px}.discovery-header-left{gap:8px;align-items:center;flex-wrap:wrap}.discovery-avatar{width:34px;height:34px;padding:2px}.discovery-advisor-title{font-size:14px;line-height:1.05}.discovery-advisor-subtitle{font-size:11px;margin-top:1px}.discovery-toolbar{gap:6px} .discovery-toolbar-button,.discovery-toolbar-link,.discovery-current,.discovery-support>div>button{padding:6px 9px!important;font-size:11px!important;gap:4px}.discovery-header-right{gap:9px;margin-left:0;width:100%}.discovery-progress{gap:3px}.discovery-progress span{width:28px!important;height:6px}.discovery-progress-count{font-size:12px}.discovery-history{padding:0 2px}.discovery-assistant{gap:8px;margin-top:14px}.discovery-assistant-body{font-size:14px;line-height:1.45}.discovery-copy{padding:10px 12px;border-radius:14px 14px 14px 5px}.discovery-student{margin:12px 0 8px}.discovery-student-label{font-size:10px;gap:6px}.discovery-student-label span{max-width:64vw}.discovery-edit-answer{padding:4px 7px;font-size:10px}.discovery-student-bubble{max-width:70vw;padding:14px 16px 10px;border-radius:18px 18px 6px 18px;font-size:14px;line-height:1.45}.discovery-student-meta{font-size:10px}.discovery-active-question{margin-top:8px}.discovery-active-question .discovery-avatar{width:32px;height:32px}.discovery-question-line{gap:5px}.discovery-active-question .discovery-question{font-size:16px;line-height:1.2}.discovery-active-question .discovery-helper{font-size:12px;line-height:1.35}.discovery-draft-animation,.discovery-draft-animation iframe{width:82px;height:82px}.discovery-draft-loading span{font-size:12px}.discovery-suggestion-label{margin:10px 0 0 43px;font-size:10px;letter-spacing:.6px}.discovery-chips{margin:7px 0 8px 43px;gap:6px}.discovery-chip{padding:6px 9px;font-size:12px}.discovery-chip-icon{margin-right:4px}.discovery-chip-icon .discovery-icon{width:12px;height:12px}.discovery-composer{padding-top:8px;padding-bottom:20px}.discovery-composer-box{border-radius:22px}.discovery-composer-leading{left:14px;top:12px}.discovery-composer-leading .discovery-icon{width:14px;height:14px}.discovery-composer textarea{height:42px;min-height:42px;max-height:128px;padding:11px 52px 10px 37px;font-size:14px;line-height:18px;overflow-y:auto}.discovery-composer button{right:6px;top:auto;bottom:6px;width:30px;height:30px}.discovery-composer button .discovery-icon{width:16px;height:16px}.discovery-composer-help{margin:5px 0 0 12px;font-size:10px}.discovery-bottom-jump{right:18px;bottom:118px;padding:8px 11px;font-size:12px}.discovery-thinking{width:70px;height:32px;margin-left:43px}.discovery-recommendations{margin:16px 0 0 43px}.discovery-card{padding:14px}}`}</style>
+    <style>{`@keyframes wdaEditGlow{0%{background-position:0 0,0% 50%}100%{background-position:0 0,220% 50%}}.discovery-student.is-editing .discovery-student-bubble{border:3px solid transparent;background:linear-gradient(135deg,#10182a,#222b42) padding-box,linear-gradient(90deg,#f52ea9,#ff9f58,#f52ea9,#ff9f58) border-box;background-size:100% 100%,220% 100%;animation:wdaEditGlow 1.6s linear infinite;outline:none;box-shadow:0 0 0 6px rgba(245,46,169,.12),0 12px 28px rgba(245,46,169,.2)}.discovery-recommendation-loading{display:flex;align-items:center;gap:12px;margin:18px 0 0 71px;padding:13px 15px;max-width:560px;border:1px solid #eee0d7;border-radius:18px;background:#fffaf4;box-shadow:0 8px 24px rgba(26,26,26,.06);color:#182033}.discovery-recommendation-loading iframe{width:46px;height:46px;border:0;flex:0 0 auto}.discovery-loading-title{font-weight:600;font-size:14px}.discovery-loading-copy{margin-top:2px;color:#697386;font-size:13px;line-height:1.4}.discovery-recommendation-message{margin-bottom:22px}.discovery-recommendations{max-width:1120px;margin:0!important}.discovery-recommendation-intro{margin-bottom:14px}.discovery-rec-eyebrow{margin-bottom:5px;color:#c81e86;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px}.discovery-rec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:12px}.discovery-card{position:relative;margin:0;padding:18px;border:1px solid #eee0d7;border-top:0;border-radius:18px;background:#fff;box-shadow:0 10px 30px rgba(26,26,26,.06)}.discovery-card:first-child{border-color:#f52ea9;box-shadow:0 14px 34px rgba(245,46,169,.12)}.discovery-rec-rank{position:absolute;right:14px;top:12px;color:#f52ea9;font-size:12px;font-weight:600}.discovery-rec-title{padding-right:36px;color:#182033;font-size:18px;font-weight:600;line-height:1.25}.discovery-rec-industry{margin-top:4px;color:#697386;font-size:13px}.discovery-rec-copy{margin:12px 0;color:#2f3543;font-size:14px;line-height:1.55}.discovery-rec-naics{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 14px}.discovery-rec-naics span{border:1px solid #e6e4e2;border-radius:999px;background:#fbf9f6;padding:4px 8px;color:#687084;font-size:11px}.discovery-rec-button{width:100%;border:0;border-radius:999px;background:#f52ea9;color:#fff;padding:10px 14px;font:600 13px ${BODY_FONT};cursor:pointer;box-shadow:0 8px 18px rgba(245,46,169,.18)}.discovery-rec-button:disabled{opacity:.65;cursor:wait}@media(max-width:600px){.discovery-recommendation-loading{margin-left:43px;padding:10px 12px}.discovery-recommendation-loading iframe{width:38px;height:38px}.discovery-loading-title{font-size:13px}.discovery-loading-copy{font-size:12px}.discovery-rec-grid{grid-template-columns:1fr;gap:10px}.discovery-card{padding:14px;border-radius:15px}.discovery-rec-title{font-size:16px}.discovery-rec-copy{font-size:13px}.discovery-rec-button{padding:9px 12px}}`}</style>
+    <style>{`.discovery-support>div{margin:0!important;border:0!important;border-radius:0!important;padding:0!important;background:transparent!important;color:#6e7380!important;font-size:13px!important} .discovery-support>div>button{border:0!important;background:transparent!important;padding:0!important;color:#182033!important;font-size:0!important;text-decoration:underline!important;box-shadow:none!important} .discovery-support>div>button:after{content:"Contact support";font:600 13px ${BODY_FONT}}@media(max-width:600px){.discovery-support>div{font-size:0!important} .discovery-support>div>button{width:34px!important;height:34px!important;display:inline-grid!important;place-items:center!important;border:1px solid #e6e4e2!important;border-radius:999px!important;background:#fff!important;padding:0!important;text-decoration:none!important} .discovery-support>div>button:after{content:"";width:17px;height:17px;background:#182033;display:block;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='m4.9 4.9 4.3 4.3M14.8 14.8l4.3 4.3M19.1 4.9l-4.3 4.3M9.2 14.8l-4.3 4.3'/%3E%3C/svg%3E") center/contain no-repeat;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='m4.9 4.9 4.3 4.3M14.8 14.8l4.3 4.3M19.1 4.9l-4.3 4.3M9.2 14.8l-4.3 4.3'/%3E%3C/svg%3E") center/contain no-repeat}}`}</style>
+    <main className="discovery-main">
+      <div className="discovery-thread">
+        <div className="discovery-header">
+          <div className="discovery-header-left">
+            <img src="/brand/wda-favicon.png" alt="" className="discovery-avatar" />
+            <div>
+              <div className="discovery-advisor-title">Niche Advisor</div>
+              <div className="discovery-advisor-subtitle">War Dogs Academy</div>
             </div>
-            <div style={hintStyle}>Leave blank if you are not sure yet.</div>
-          </>
-        ) : null}
-
-        {step === 9 ? (
-          <>
-            <h2 style={{ margin: 0, fontFamily: DISPLAY_FONT, color: UI.ink }}>Which set-asides do you hold?</h2>
-            <div style={{ display: 'grid', gap: 8 }}>
-              {SET_ASIDE_OPTIONS.map((o) => {
-                const active = answers.set_asides.includes(o.value);
-                return (
-                  <label key={o.value} style={{ ...optionStyle(active), display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <input type="checkbox" checked={active} onChange={() => setField('set_asides', toggleArray(answers.set_asides, o.value))} />
-                    {o.label}
-                  </label>
-                );
-              })}
+            <div className="discovery-toolbar">
+              <button type="button" className="discovery-toolbar-button" disabled={locked} onClick={startNewDiscovery}><Icon name="plus" /> New</button>
+              <span className="discovery-current"><Icon name="message" /> Current</span>
+              <a href={`/setup/${token}${updateMode ? '?update=1' : '?targeting=1'}`} className="discovery-toolbar-link"><Icon name="target" /> Build targeting</a>
+              <span className="discovery-support">{supportCta}</span>
             </div>
-          </>
-        ) : null}
-
-        {step === 10 ? (
-          <>
-            <h2 style={{ margin: 0, fontFamily: DISPLAY_FONT, color: UI.ink }}>What do you want to pursue or avoid?</h2>
-            <label style={labelStyle} htmlFor="interests">Kinds of work you are interested in</label>
-            <textarea id="interests" style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} value={answers.interests} onChange={(e) => setField('interests', e.target.value)} />
-            <label style={labelStyle} htmlFor="avoid">Anything you definitely do not want to pursue?</label>
-            <textarea id="avoid" style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} value={answers.avoid} onChange={(e) => setField('avoid', e.target.value)} />
-            <div style={hintStyle}>These are preference signals. They do not override hard fit checks later.</div>
-          </>
-        ) : null}
-      </div>
-
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 16 }}>
-        <button type="button" disabled={busy || step === 1} onClick={() => setStep((s) => Math.max(1, s - 1))} style={{ background: '#fff', color: UI.text, border: `1px solid ${UI.line}`, borderRadius: 8, padding: '11px 16px', fontSize: 14, fontWeight: 800, cursor: busy || step === 1 ? 'default' : 'pointer', opacity: busy || step === 1 ? 0.55 : 1 }}>
-          Previous
-        </button>
-        {step < TOTAL_STEPS ? (
-          <button type="button" disabled={busy} onClick={continueStep} style={{ background: UI.pink, color: '#fff', border: 'none', borderRadius: 8, padding: '11px 18px', fontSize: 14, fontWeight: 800, cursor: busy ? 'default' : 'pointer', opacity: busy ? 0.75 : 1 }}>
-            {busy ? 'Saving...' : 'Continue'}
-          </button>
-        ) : (
-          <button type="button" disabled={busy} aria-busy={status === 'thinking'} onClick={submitFinal} style={{ background: UI.pink, color: '#fff', border: 'none', borderRadius: 8, padding: '11px 18px', fontSize: 14, fontWeight: 800, cursor: busy ? 'wait' : 'pointer', opacity: busy ? 0.75 : 1 }}>
-            {status === 'thinking' ? <LoadingLabel>Saving and preparing recommendations...</LoadingLabel> : 'Save and see recommendations'}
-          </button>
-        )}
-      </div>
-
-      {message ? <div style={{ marginTop: 12, fontSize: 14, color: status === 'error' ? UI.orangeDeep : UI.pinkDeep, fontWeight: 700 }}>{message}</div> : null}
-
-      {adaptiveQuestions.length > 0 ? (
-        <div style={{ marginTop: 24, background: UI.paper, border: `1px solid ${UI.line}`, borderLeft: `3px solid ${UI.orange}`, borderRadius: '0 8px 8px 0', padding: 18 }}>
-          <div style={{ fontFamily: DISPLAY_FONT, color: UI.ink, fontSize: 20, marginBottom: 4 }}>One more thing</div>
-          <div style={{ fontSize: 13.5, color: UI.muted, lineHeight: 1.5, marginBottom: 14 }}>
-            A few promising Playbook lanes need one clarification before we can safely attach official Census NAICS codes.
           </div>
-          {adaptiveQuestions.map((q) => (
-            <div key={q.key} style={{ marginBottom: 14 }}>
-              <div style={labelStyle}>{q.prompt}</div>
-              <div role="radiogroup" aria-label={q.prompt} style={{ display: 'grid', gap: 8 }}>
-                {(q.options || []).map((o) => {
-                  const active = answers.adaptive_answers?.[q.key] === o.value;
-                  return (
-                    <button
-                      key={o.value}
-                      type="button"
-                      role="radio"
-                      aria-checked={active}
-                      onClick={() => setField('adaptive_answers', { ...(answers.adaptive_answers || {}), [q.key]: o.value })}
-                      style={optionStyle(active)}
-                    >
-                      {o.label}
-                    </button>
-                  );
-                })}
+          <div className="discovery-header-right">
+            <div className="discovery-progress" aria-hidden="true">{[1, 2, 3, 4].map((step) => <span key={step} className={step <= Math.ceil((progress / ADVISOR_TOTAL) * 4) ? 'is-done' : ''} />)}</div>
+            <span className="discovery-progress-count">{recs.length ? 'Complete' : `${progress} of ${ADVISOR_TOTAL}`}</span>
+          </div>
+        </div>
+
+        <div className="discovery-history" ref={historyRef} onScroll={updateScrollState}>
+          {visibleMessages.map((message, index) => message.role === 'student' ? (
+            <div key={index} className={`discovery-student ${editingIndex === index ? 'is-editing' : ''}`}>
+              <div className="discovery-student-wrap">
+                <div className="discovery-student-label">
+                  <span><Icon name="message" /> {questionForMessage(index)}</span>
+                  {!message.sending ? <button type="button" className="discovery-edit-answer" disabled={locked} onClick={() => editAnswer(index, message.content)}><Icon name="edit" /> Edit</button> : null}
+                </div>
+                <div className="discovery-student-bubble">{message.content}<div className="discovery-student-meta">{message.sending ? 'Sending...' : 'Saved ✓'}</div></div>
               </div>
             </div>
+          ) : (
+            <div key={index} className="discovery-assistant"><img src="/brand/wda-favicon.png" alt="" className="discovery-avatar" /><div className="discovery-assistant-body"><div className="discovery-copy">{message.content}</div></div></div>
           ))}
-          <button type="button" disabled={busy} aria-busy={status === 'thinking'} onClick={submitFinal} style={{ background: UI.pink, color: '#fff', border: 'none', borderRadius: 8, padding: '11px 18px', fontSize: 14, fontWeight: 800, cursor: busy ? 'wait' : 'pointer', opacity: busy ? 0.75 : 1 }}>
-            {status === 'thinking' ? <LoadingLabel>Finalizing recommendations...</LoadingLabel> : 'Finalize recommendations'}
-          </button>
-        </div>
-      ) : null}
-
-      {recs.length > 0 ? (
-        <div style={{ marginTop: 28 }}>
-          <div style={{ fontFamily: DISPLAY_FONT, fontSize: 20, color: UI.ink, letterSpacing: '-0.2px', marginBottom: 4 }}>
-            Playbook recommendations
-          </div>
-          <div style={{ fontSize: 13.5, color: UI.muted, lineHeight: 1.5, marginBottom: 16 }}>
-            These are selected from the bounded War Dogs Playbook universe and use official Census NAICS titles.
-          </div>
-
-          {recs.map((rec, idx) => (
-            <div key={idx} style={{ background: UI.card, border: `1px solid ${UI.line}`, borderTop: `3px solid ${UI.pink}`, borderRadius: 10, padding: 20, marginBottom: 14 }}>
-              <div style={{ fontSize: 18, fontWeight: 800, color: UI.ink, lineHeight: 1.3 }}>{rec.industry_name}</div>
-              <div style={{ fontSize: 14, color: UI.muted, marginTop: 3 }}>{rec.subindustry_name}</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 10 }}>
-                {(rec.naics || []).map((n) => (
-                  <span key={n.code} style={{ display: 'inline-block', fontSize: 12.5, fontWeight: 700, color: UI.ink, background: '#fff', border: `1px solid ${UI.line}`, borderRadius: 6, padding: '5px 10px' }}>
-                    NAICS {n.code} &middot; {n.title}
-                  </span>
-                ))}
+          {recs.length ? <div className="discovery-assistant discovery-recommendation-message">
+            <img src="/brand/wda-favicon.png" alt="" className="discovery-avatar" />
+            <div className="discovery-assistant-body discovery-recommendations">
+              <div className="discovery-copy discovery-recommendation-intro">
+                <div className="discovery-rec-eyebrow">Niche Advisor recommendation</div>
+                I narrowed this to the strongest starting lanes for you. Pick the one that feels most honest to what you can actually deliver.
               </div>
-              {rec.explanation ? (
-                <div style={{ background: UI.paper, borderLeft: `3px solid ${UI.orange}`, padding: '10px 12px', borderRadius: '0 4px 4px 0', fontSize: 14, color: UI.text, marginTop: 14, lineHeight: 1.55 }}>
-                  <strong style={{ color: UI.orangeDeep }}>Why this fits you.</strong> {rec.explanation}
-                </div>
-              ) : null}
-              {rec.feedability ? (
-                <div style={{ marginTop: 10, fontSize: 13.5, color: UI.text, lineHeight: 1.5 }}>
-                  <strong>Current federal opportunity supply:</strong> {marketLabel(rec.feedability)}
-                  <div style={{ color: UI.muted }}>{marketHint(rec.feedability)}</div>
-                </div>
-              ) : null}
-              {rec.strengths && rec.strengths.length ? (
-                <div style={{ marginTop: 12, fontSize: 14, color: UI.text, lineHeight: 1.55 }}>
-                  <strong>Why it is worth considering:</strong> {rec.strengths.join(' ')}
-                </div>
-              ) : null}
-              {rec.risks && rec.risks.length ? (
-                <div style={{ marginTop: 8, fontSize: 14, color: UI.text, lineHeight: 1.55 }}>
-                  <strong>What to watch:</strong> {rec.risks.join(' ')}
-                </div>
-              ) : null}
-              {rec.competition ? (
-                <div style={{ marginTop: 8, fontSize: 13, color: UI.muted, fontWeight: 700 }}>Competition: {rec.competition}</div>
-              ) : null}
-              <button type="button" onClick={() => useThis(rec, idx)} disabled={applyingIdx !== -1} style={{ marginTop: 16, background: UI.pink, color: '#fff', border: 'none', borderRadius: 8, padding: '11px 18px', fontSize: 14.5, fontWeight: 800, cursor: applyingIdx !== -1 ? 'default' : 'pointer', opacity: applyingIdx !== -1 && applyingIdx !== idx ? 0.5 : 1 }}>
-                {applyingIdx === idx ? 'Loading it in...' : 'Use this niche'}
-              </button>
-              <div style={{ ...hintStyle, marginTop: 8 }}>
-                This writes only production-safe official NAICS codes into Review Targeting. You can fine-tune or remove them next.
+              <div className="discovery-rec-grid">
+                {recs.map((rec, index) => <article key={rec.subindustry_id} className="discovery-card">
+                  <div className="discovery-rec-rank">#{index + 1}</div>
+                  <div className="discovery-rec-title">{rec.subindustry_name}</div>
+                  <div className="discovery-rec-industry">{rec.industry_name}</div>
+                  <p className="discovery-rec-copy">{rec.explanation}</p>
+                  <div className="discovery-rec-naics">{(rec.naics || []).map((code) => <span key={code.code}>NAICS {code.code} · {code.title}</span>)}</div>
+                  <button type="button" disabled={applying !== -1} onClick={() => useThis(rec, index)} className="discovery-rec-button discovery-chip">{applying === index ? 'Loading it in...' : 'Use this niche'}</button>
+                </article>)}
               </div>
             </div>
-          ))}
+          </div> : null}
         </div>
-      ) : null}
 
-      {status === 'error' && recs.length === 0 ? (
-        <div style={{ marginTop: 22, background: UI.paper, border: `1px solid ${UI.line}`, borderLeft: `3px solid ${UI.orange}`, borderRadius: '0 8px 8px 0', padding: 18 }}>
-          <div style={{ fontFamily: DISPLAY_FONT, color: UI.ink, fontSize: 18, fontWeight: 800 }}>
-            We could not find a strong enough niche match from your current answers.
+        {showBackToBottom ? <button type="button" className="discovery-bottom-jump" onClick={() => scrollChatToBottom()}>↓ Latest</button> : null}
+        {buildingRecommendations ? <div className="discovery-recommendation-loading" aria-live="polite">
+          <iframe title="Building recommendations animation" src={THINKING_LOTTIE_URL}></iframe>
+          <div>
+            <div className="discovery-loading-title">Building your recommendations</div>
+            <div className="discovery-loading-copy">I’m matching your answers against the War Dogs Playbook and checking the safest starting lanes.</div>
           </div>
-          <div style={{ color: UI.text, fontSize: 14, lineHeight: 1.55, marginTop: 6 }}>
-            Your answers are saved. You can review them or build targeting directly without fabricating a weak recommendation.
+        </div> : busy ? <div className="discovery-thinking" aria-live="polite" aria-label="Advisor is thinking"><iframe title="Advisor thinking animation" src={THINKING_LOTTIE_URL} /></div> : null}
+
+        {(!recs.length || editingIndex != null) && pending ? <>
+          <div className="discovery-assistant discovery-active-question">
+            <img src="/brand/wda-favicon.png" alt="" className="discovery-avatar" />
+            <div className="discovery-assistant-body">
+              <div className="discovery-question-line">
+                <span className="discovery-question">{pending.prompt}</span>
+                {pending.helper ? <span className="discovery-helper">{pending.helper}</span> : null}
+              </div>
+            </div>
           </div>
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 14 }}>
-            <button type="button" onClick={() => setStep(1)} style={{ background: '#fff', color: UI.ink, border: `1px solid ${UI.line}`, borderRadius: 8, padding: '9px 14px', fontSize: 14, fontWeight: 800, cursor: 'pointer' }}>
-              Review answers
-            </button>
-            <a href={`/setup/${token}?targeting=1`} style={{ display: 'inline-block', background: UI.ink, color: '#fff', textDecoration: 'none', borderRadius: 8, padding: '9px 14px', fontSize: 14, fontWeight: 800 }}>
-              Build targeting directly
-            </a>
+          {showSuggestions ? <>
+            <div className="discovery-suggestion-label">Suggestions, not limits</div>
+            <div className="discovery-chips">{(pending.options || []).map((option) => <button key={option.value} type="button" disabled={locked} onClick={() => draftSuggestion(option.label)} className="discovery-chip">{icon(option.label)}{option.label}</button>)}</div>
+          </> : null}
+        </> : null}
+
+        {drafting ? <div className="discovery-draft-loading" aria-live="polite">
+          <div className="discovery-draft-animation"><iframe title="Generating suggested answer" src={DRAFT_LOTTIE_URL}></iframe></div>
+          <span>Generating an answer you can review...</span>
+        </div> : null}
+
+        {!drafting && (pending || recs.length || buildingRecommendations) ? <form className="discovery-composer" onSubmit={(event) => { event.preventDefault(); if (((!recs.length && !buildingRecommendations) || editingIndex != null)) submit(); }}>
+          <div className="discovery-composer-box">
+            <span className="discovery-composer-leading"><Icon name="edit" /></span>
+            <textarea ref={textareaRef} rows={1} aria-label="Your answer" value={draft} maxLength={900} onChange={resizeComposer} onKeyDown={sendWithKey} disabled={(recs.length > 0 || buildingRecommendations) && editingIndex == null} placeholder={buildingRecommendations ? 'Building your recommendations...' : recs.length > 0 && editingIndex == null ? 'Recommendations are ready. Edit an earlier answer to change them.' : drafting ? 'Writing a draft you can edit...' : pending?.placeholder || 'Tell the Niche Advisor your answer...'} />
+            <button type="submit" aria-label="Send answer" disabled={locked || ((recs.length > 0 || buildingRecommendations) && editingIndex == null) || !draft.trim()}><Icon name="send" /></button>
           </div>
-        </div>
-      ) : null}
-    </div>
-  );
+          <div className="discovery-composer-help">Enter to send &nbsp;•&nbsp; Shift+Enter for a new line</div>
+        </form> : null}
+
+        {error ? <div aria-live="polite" className="discovery-error">{error}</div> : null}
+        <div ref={endRef} />
+      </div>
+    </main>
+  </div>;
 }

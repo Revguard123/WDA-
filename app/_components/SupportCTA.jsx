@@ -39,12 +39,12 @@ const inputStyle = {
 const labelStyle = {
   display: 'block',
   fontSize: 13,
-  fontWeight: 800,
+  fontWeight: 600,
   color: UI.ink,
   margin: '16px 0 6px',
 };
 
-export default function SupportCTA({ pageContext }) {
+export default function SupportCTA({ pageContext, compact = false }) {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -107,8 +107,8 @@ export default function SupportCTA({ pageContext }) {
   }
 
   return (
-    <div style={{ marginTop: 26, textAlign: 'center', color: UI.muted, fontSize: 13.5 }}>
-      Having trouble with this page?{' '}
+    <div style={{ marginTop: compact ? 0 : 26, textAlign: compact ? 'left' : 'center', color: UI.muted, fontSize: 13.5, border: compact ? `1px solid ${UI.line}` : 'none', borderRadius: compact ? 12 : 0, padding: compact ? '14px 15px' : 0, background: compact ? '#fff' : 'transparent' }}>
+      <>Having trouble with this page? </>
       <button
         type="button"
         onClick={() => {
@@ -120,14 +120,14 @@ export default function SupportCTA({ pageContext }) {
           border: 'none',
           background: 'transparent',
           color: UI.ink,
-          fontWeight: 800,
+          fontWeight: 600,
           fontSize: 13.5,
           cursor: 'pointer',
           padding: 0,
           textDecoration: 'underline',
         }}
       >
-        Contact support
+        {compact ? '→' : 'Contact support'}
       </button>
 
       {open ? (
@@ -178,7 +178,7 @@ export default function SupportCTA({ pageContext }) {
               <div style={{ background: UI.paper, border: `1px solid ${UI.line}`, borderLeft: `3px solid ${UI.pink}`, borderRadius: '0 8px 8px 0', padding: '13px 14px', marginTop: 18, color: UI.text, fontSize: 14.5, lineHeight: 1.55 }}>
                 Your support request has been sent. We&apos;ll get back to you as soon as we can.
                 <div style={{ marginTop: 14 }}>
-                  <button type="button" onClick={close} style={{ background: UI.ink, color: '#fff', border: 'none', borderRadius: 8, padding: '10px 16px', fontWeight: 800, cursor: 'pointer' }}>
+                  <button type="button" onClick={close} style={{ background: UI.ink, color: '#fff', border: 'none', borderRadius: 8, padding: '10px 16px', fontWeight: 600, cursor: 'pointer' }}>
                     Close
                   </button>
                 </div>
@@ -220,7 +220,7 @@ export default function SupportCTA({ pageContext }) {
                 <div style={{ marginTop: 5, fontSize: 12.5, color: UI.muted }}>{message.length}/3000</div>
 
                 {error ? (
-                  <div role="alert" style={{ marginTop: 12, color: UI.orangeDeep, fontSize: 13.5, fontWeight: 700 }}>
+                  <div role="alert" style={{ marginTop: 12, color: UI.orangeDeep, fontSize: 13.5, fontWeight: 600 }}>
                     {error}
                   </div>
                 ) : null}
@@ -229,7 +229,7 @@ export default function SupportCTA({ pageContext }) {
                   <button
                     type="submit"
                     disabled={sending}
-                    style={{ background: UI.pink, color: '#fff', border: 'none', borderRadius: 8, padding: '11px 16px', fontSize: 14, fontWeight: 800, cursor: sending ? 'default' : 'pointer', opacity: sending ? 0.72 : 1 }}
+                    style={{ background: UI.pink, color: '#fff', border: 'none', borderRadius: 8, padding: '11px 16px', fontSize: 14, fontWeight: 600, cursor: sending ? 'default' : 'pointer', opacity: sending ? 0.72 : 1 }}
                   >
                     {sending ? 'Sending...' : 'Send support request'}
                   </button>
@@ -237,7 +237,7 @@ export default function SupportCTA({ pageContext }) {
                     type="button"
                     onClick={close}
                     disabled={sending}
-                    style={{ background: '#fff', color: UI.ink, border: `1px solid ${UI.line}`, borderRadius: 8, padding: '11px 16px', fontSize: 14, fontWeight: 800, cursor: sending ? 'default' : 'pointer', opacity: sending ? 0.72 : 1 }}
+                    style={{ background: '#fff', color: UI.ink, border: `1px solid ${UI.line}`, borderRadius: 8, padding: '11px 16px', fontSize: 14, fontWeight: 600, cursor: sending ? 'default' : 'pointer', opacity: sending ? 0.72 : 1 }}
                   >
                     Cancel
                   </button>

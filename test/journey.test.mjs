@@ -47,10 +47,25 @@ test('setup redirects active and completed buyers to contracts', () => {
   assert.deepEqual(setupStateForBuyer(buyer('completed')), { redirect: `/contracts/${token}` });
 });
 
+test('setup review-only allows active and completed buyers to inspect targeting', () => {
+  assert.deepEqual(setupStateForBuyer(buyer('active', ['236220']), { reviewOnly: true }), { hasTargeting: true, reviewOnly: true, showChoice: false });
+  assert.deepEqual(setupStateForBuyer(buyer('completed', ['236220']), { reviewOnly: true }), { hasTargeting: true, reviewOnly: true, showChoice: false });
+});
+
+test('setup update mode lets active and completed buyers edit future targeting', () => {
+  assert.deepEqual(setupStateForBuyer(buyer('active', ['236220']), { updateMode: true }), { hasTargeting: true, updateMode: true, showChoice: false });
+  assert.deepEqual(setupStateForBuyer(buyer('completed', ['236220']), { updateMode: true }), { hasTargeting: true, updateMode: true, showChoice: false });
+});
+
 test('discovery allows exploring buyers and redirects active/completed buyers', () => {
   assert.deepEqual(discoverStateForBuyer(buyer('exploring')), { allowed: true });
   assert.deepEqual(discoverStateForBuyer(buyer('active')), { redirect: `/contracts/${token}` });
   assert.deepEqual(discoverStateForBuyer(buyer('completed')), { redirect: `/contracts/${token}` });
+});
+
+test('discovery update mode lets active and completed buyers choose future niche', () => {
+  assert.deepEqual(discoverStateForBuyer(buyer('active'), { updateMode: true }), { allowed: true, updateMode: true });
+  assert.deepEqual(discoverStateForBuyer(buyer('completed'), { updateMode: true }), { allowed: true, updateMode: true });
 });
 
 test('start requires exploring status and targeting', () => {

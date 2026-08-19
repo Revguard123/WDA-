@@ -24,7 +24,7 @@ export default function PortalEmailForm() {
 
   return (
     <form onSubmit={submit} action="/portal" method="GET">
-      <label style={{ display: 'block', fontSize: 13, fontWeight: 800, color: UI.ink, margin: '0 0 6px', letterSpacing: 0.2 }}>
+      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: UI.ink, margin: '0 0 6px', letterSpacing: 0.2 }}>
         Your email
       </label>
       <input
@@ -60,7 +60,7 @@ export default function PortalEmailForm() {
           borderRadius: 9,
           padding: '14px 24px',
           fontSize: 16,
-          fontWeight: 800,
+          fontWeight: 600,
           cursor: 'pointer',
         }}
       >

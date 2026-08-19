@@ -6,6 +6,8 @@ import {
   CONTRACT_CARD_BREAKDOWN_CTA,
   CONTRACT_CARD_WHY_LABEL,
   DEEP_DIVE_WHY_LABEL,
+  contractEvidenceChips,
+  contractVerifyItems,
   contractsPresentationForBuyer,
 } from '../lib/contractsPresentation.js';
 
@@ -69,6 +71,10 @@ test('relevant page presentation removed the old why label and old dive CTA', ()
   assert.ok(!contractsPage.includes('Dive Deeper'));
   assert.ok(contractsPage.includes('CONTRACT_CARD_WHY_LABEL'));
   assert.ok(deepDivePage.includes('DEEP_DIVE_WHY_LABEL'));
+  assert.ok(contractsPage.includes('contractEvidenceChips'));
+  assert.ok(contractsPage.includes('Verify:'));
+  assert.ok(deepDivePage.includes('War Dogs decision brief'));
+  assert.ok(deepDivePage.includes('First move'));
 });
 
 test('contract cards link each delivery to its token-scoped deep dive', () => {
@@ -78,6 +84,27 @@ test('contract cards link each delivery to its token-scoped deep dive', () => {
   assert.ok(contractsPage.includes('CONTRACT_CARD_BREAKDOWN_CTA'));
   assert.ok(deepDivePage.includes('getDeliveryForBuyer(buyer.id, noticeId)'));
   assert.ok(deepDivePage.includes('Full breakdown'));
+});
+
+test('contracts archive links back to read-only targeting review', () => {
+  const contractsPage = readFileSync('app/contracts/[token]/page.js', 'utf8');
+  assert.ok(contractsPage.includes('Review targeting'));
+  assert.ok(contractsPage.includes('`/setup/${token}?review=1`'));
+  assert.ok(contractsPage.includes('Change niche for future batches'));
+  assert.ok(contractsPage.includes('`/discover/${token}?update=1`'));
+});
+
+test('contract card presentation derives evidence chips and verify items from persisted analysis', () => {
+  const contract = {
+    set_aside_type: 'SBA',
+    response_deadline: '2026-09-01T00:00:00Z',
+    why_line: 'This LPTA set-aside has broker-friendly line items. Verify Buy American sourcing before bidding.',
+    deep_dive_text: 'What you need to verify\nConfirm the site visit and Buy American requirements.',
+  };
+  assert.ok(contractEvidenceChips(contract).includes('Set-aside'));
+  assert.ok(contractEvidenceChips(contract).includes('LPTA fit'));
+  assert.ok(contractEvidenceChips(contract).includes('Broker-friendly'));
+  assert.ok(contractVerifyItems(contract).some((item) => /Buy American/.test(item)));
 });
 
 test('relevant static product copy does not claim hand-picked by our team', () => {

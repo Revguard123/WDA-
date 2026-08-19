@@ -22,7 +22,7 @@ export default async function TargetingPage({ params }) {
         <NicheForm token={token} initial={buyer} ctaLabel="Save targeting" />
       </div>
       <div style={{ marginTop: 18, fontSize: 14, color: UI.muted }}>
-        <a href={`/contracts/${token}`} style={{ color: UI.ink, fontWeight: 700 }}>Back to your contracts</a>
+        <a href={`/contracts/${token}`} style={{ color: UI.ink, fontWeight: 600 }}>Back to your contracts</a>
       </div>
     </Shell>
   );

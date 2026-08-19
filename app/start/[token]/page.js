@@ -42,8 +42,8 @@ function setAsideLabel(value) {
 function SummaryRow({ label, children }) {
   return (
     <div style={{ padding: '12px 0', borderTop: `1px solid ${UI.line}` }}>
-      <div style={{ fontSize: 12, color: UI.muted, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.6 }}>{label}</div>
-      <div style={{ marginTop: 6, color: UI.ink, fontSize: 14.5, fontWeight: 700, lineHeight: 1.45 }}>{children}</div>
+      <div style={{ fontSize: 12, color: UI.muted, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.6 }}>{label}</div>
+      <div style={{ marginTop: 6, color: UI.ink, fontSize: 14.5, fontWeight: 600, lineHeight: 1.45 }}>{children}</div>
     </div>
   );
 }

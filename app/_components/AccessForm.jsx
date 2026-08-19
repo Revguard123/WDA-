@@ -42,7 +42,7 @@ export default function AccessForm() {
   if (status === 'done') {
     return (
       <div style={{ background: '#fdeaf6', border: `1px solid ${UI.line}`, borderLeft: `3px solid ${UI.pink}`, borderRadius: '0 10px 10px 0', padding: 20 }}>
-        <div style={{ fontWeight: 800, color: UI.ink, fontSize: 16 }}>Check your inbox.</div>
+        <div style={{ fontWeight: 600, color: UI.ink, fontSize: 16 }}>Check your inbox.</div>
         <p style={{ color: UI.text, fontSize: 14, lineHeight: 1.55, margin: '6px 0 0' }}>{message}</p>
       </div>
     );
@@ -50,7 +50,7 @@ export default function AccessForm() {
 
   return (
     <form onSubmit={submit}>
-      <label style={{ display: 'block', fontSize: 13, fontWeight: 800, color: UI.ink, margin: '0 0 6px', letterSpacing: 0.2 }}>
+      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: UI.ink, margin: '0 0 6px', letterSpacing: 0.2 }}>
         Your email
       </label>
       <input
@@ -86,7 +86,7 @@ export default function AccessForm() {
           borderRadius: 9,
           padding: '14px 24px',
           fontSize: 16,
-          fontWeight: 800,
+          fontWeight: 600,
           cursor: status === 'sending' ? 'default' : 'pointer',
           opacity: status === 'sending' ? 0.7 : 1,
         }}

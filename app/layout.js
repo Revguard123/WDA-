@@ -26,6 +26,22 @@ const fontFace = `
   font-style: normal;
   font-display: swap;
 }
+*,*::before,*::after {
+  box-sizing: border-box;
+}
+html,body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+img,svg,video,canvas {
+  max-width: 100%;
+}
+a,button,input,textarea,select {
+  font: inherit;
+}
+p,h1,h2,h3,h4,h5,h6,div,span,a {
+  overflow-wrap: anywhere;
+}
 `;
 
 export default function RootLayout({ children }) {
@@ -34,7 +50,7 @@ export default function RootLayout({ children }) {
       <head>
         <style dangerouslySetInnerHTML={{ __html: fontFace }} />
       </head>
-      <body style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif", margin: 0 }}>
+      <body style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif", margin: 0, maxWidth: '100%', overflowX: 'hidden' }}>
         {children}
       </body>
     </html>

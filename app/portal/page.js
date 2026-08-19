@@ -59,9 +59,9 @@ export default async function PortalPage({ searchParams }) {
   return (
     <Shell subtitle="Your contracts.">
       <div style={{ background: UI.card, border: `1px solid ${UI.line}`, borderRadius: 10, padding: 24, color: UI.text, fontSize: 15, lineHeight: 1.55 }}>
-        We could not find an account for <strong>{email}</strong>. Make sure you are using the email on your War Dogs
+        We could not find an account for <strong style={{ fontWeight: 600 }}>{email}</strong>. Make sure you are using the email on your War Dogs
         Academy account. You can also{' '}
-        <a href="/access" style={{ color: UI.ink, fontWeight: 700 }}>get your link by email</a>.
+        <a href="/access" style={{ color: UI.ink, fontWeight: 600 }}>get your link by email</a>.
       </div>
       <SupportCTA pageContext="portal" />
     </Shell>

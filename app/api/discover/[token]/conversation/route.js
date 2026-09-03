@@ -17,7 +17,7 @@ function chatContext(messages = []) {
     .filter((message) => message.content || message.question);
 }
 
-export async function POST(req, { params }) {
+async function handleConversationPost(req, { params }) {
   const buyer = await getBuyerByToken(params.token);
   if (!buyer) return Response.json({ error: 'not found' }, { status: 404 });
   let body;
@@ -76,4 +76,18 @@ export async function POST(req, { params }) {
   const answers = { ...turn.answers, advisor_state: { messages, resolved_dimensions: turn.resolved_dimensions, turn_count: body.start ? 0 : state.turn_count + (turn.count_progress === false ? 0 : 1), pending_question: turn.complete ? null : turn.next_question, complete: turn.complete, last_answer_question_id: body.start ? null : pending.id } };
   const saved = await saveDiscoverySessionForBuyer(buyer.id, { answers, currentStep: Math.min(ADVISOR_MAX_TURNS, Math.max(1, answers.advisor_state.turn_count + 1)), status: 'in_progress' });
   return Response.json({ ok: true, complete: turn.complete, answers: saved.answers, advisor_state: answers.advisor_state, session: publicDiscoverySession(saved) });
+}
+
+export async function POST(req, context) {
+  try {
+    return await handleConversationPost(req, context);
+  } catch (error) {
+    console.error({
+      event: 'playbook_discovery_debug',
+      stage: 'conversation_route_failed',
+      error_name: error?.name || 'Error',
+      error_message: String(error?.message || 'Discovery conversation failed').slice(0, 180),
+    });
+    return Response.json({ error: 'Could not continue this conversation right now.' }, { status: 503 });
+  }
 }

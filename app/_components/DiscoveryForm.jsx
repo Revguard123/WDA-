@@ -34,6 +34,23 @@ const optionIcons = { 'IT support': 'monitor', 'Cleaning / Facilities': 'buildin
 
 function initialAdvisorState(session) { return session?.answers?.advisor_state || emptyState; }
 function isGenericAdvisorRow(message) { return message?.role === 'advisor' && String(message.content || '').includes('keep this practical and narrow the next useful point'); }
+async function readJsonResponse(response, fallbackMessage = 'Request failed.') {
+  const text = await response.text();
+  if (!text) return { error: fallbackMessage };
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { error: fallbackMessage };
+  }
+}
+function customerSafeError(error, fallbackMessage = 'Something went wrong. Please try again.') {
+  const message = String(error?.message || '').trim();
+  if (!message) return fallbackMessage;
+  if (/failed to execute|unexpected end|json|syntaxerror|typeerror|referenceerror|networkerror|request_id|stack|response\.json|html|doctype|internal server error/i.test(message)) {
+    return fallbackMessage;
+  }
+  return message.slice(0, 180);
+}
 function Icon({ name }) {
   return <svg aria-hidden="true" viewBox="0 0 24 24" className="discovery-icon" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{iconPaths[name] || iconPaths.help}</svg>;
 }
@@ -111,7 +128,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
     if (bootstrapped.current || mode !== 'chat' || messages.length || pending || recs.length) return;
     bootstrapped.current = true;
     setStatus('thinking');
-    callConversation({ start: true }).catch((err) => setError(err.message)).finally(() => setStatus('idle'));
+    callConversation({ start: true }).catch((err) => setError(customerSafeError(err, 'Could not start Discovery right now. Please try again.'))).finally(() => setStatus('idle'));
   }, [mode, messages.length, pending, recs.length]);
 
   useEffect(() => {
@@ -123,7 +140,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
 
   async function callConversation(body) {
     const response = await fetch(`/api/discover/${token}/conversation`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    const data = await response.json();
+    const data = await readJsonResponse(response, 'Could not continue this conversation.');
     if (!response.ok) throw new Error(data.error || 'Could not continue this conversation.');
     setState(data.advisor_state);
     setAnswers(data.answers);
@@ -147,11 +164,11 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
     setStatus('thinking');
     try {
       const response = await fetch(`/api/discover/${token}/session`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answers: { advisor_state: emptyState }, current_step: 1, status: 'in_progress', recommendations: [] }) });
-      const data = await response.json();
+      const data = await readJsonResponse(response, 'Could not start a new discovery.');
       if (!response.ok) throw new Error(data.error || 'Could not start a new discovery.');
       await callConversation({ start: true });
     } catch (err) {
-      setError(err.message || 'Could not start a new discovery.');
+      setError(customerSafeError(err, 'Could not start a new discovery.'));
     } finally {
       setStatus('idle');
     }
@@ -171,11 +188,11 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
         setEditingIndex(null);
         if (!data.complete) return;
         const response = await fetch(`/api/discover/${token}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answers: data.answers, clarification_round: 0 }) });
-        const result = await response.json();
+        const result = await readJsonResponse(response, 'Could not refresh recommendations.');
         if (!response.ok) throw new Error(result.error || 'Could not refresh recommendations.');
         setRecs(result.recommendations || []);
       } catch (err) {
-        setError(err.message || 'Could not update that answer right now.');
+        setError(customerSafeError(err, 'Could not update that answer right now.'));
       } finally {
         setStatus('idle');
       }
@@ -193,7 +210,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
       if (pending?.adaptive_key) {
         const nextAnswers = { ...answers, adaptive_answers: { ...(answers.adaptive_answers || {}), [pending.adaptive_key]: answer } };
         const response = await fetch(`/api/discover/${token}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answers: nextAnswers, clarification_round: 1 }) });
-        const result = await response.json();
+        const result = await readJsonResponse(response, 'Could not prepare recommendations.');
         if (!response.ok) throw new Error(result.error || 'Could not prepare recommendations.');
         setAnswers(nextAnswers);
         if (result.status === 'needs_clarification' && result.questions?.[0]) {
@@ -209,7 +226,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
       const data = await callConversation({ answer, question_id: pending?.id, question_category: pending?.category });
       if (!data.complete) return;
       const response = await fetch(`/api/discover/${token}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answers: data.answers, clarification_round: 0 }) });
-      const result = await response.json();
+      const result = await readJsonResponse(response, 'Could not prepare recommendations.');
       if (!response.ok) throw new Error(result.error || 'Could not prepare recommendations.');
       if (result.status === 'needs_clarification' && result.questions?.[0]) {
         const question = result.questions[0];
@@ -220,7 +237,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
       succeeded = true;
     } catch (err) {
       setOptimisticMessages([]);
-      setError(err.message || 'Could not continue right now. Your previous answers are saved.');
+      setError(customerSafeError(err, 'Could not continue right now. Your previous answers are saved.'));
     } finally {
       if (succeeded) setOptimisticMessages([]);
       if (succeeded) setEditingIndex(null);
@@ -235,7 +252,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
     setError('');
     try {
       const response = await fetch(`/api/discover/${token}/conversation`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ edit_answer: true, message_index: index }) });
-      const data = await response.json();
+      const data = await readJsonResponse(response, 'Could not edit that answer.');
       if (!response.ok) throw new Error(data.error || 'Could not edit that answer.');
       setState({ ...data.advisor_state, pending_question: data.editing_question, complete: false });
       setAnswers(data.answers);
@@ -252,7 +269,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
         el.focus();
       });
     } catch (err) {
-      setError(err.message || 'Could not edit that answer right now.');
+      setError(customerSafeError(err, 'Could not edit that answer right now.'));
     } finally {
       setStatus('idle');
     }
@@ -265,7 +282,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
     setError('');
     try {
       const response = await fetch(`/api/discover/${token}/conversation`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ draft_suggestion: true, suggestion: label, current_question: { category: pending.category, prompt: pending.prompt, helper: pending.helper } }) });
-      const data = await response.json();
+      const data = await readJsonResponse(response, 'Could not draft that suggestion.');
       if (!response.ok) throw new Error(data.error || 'Could not draft that suggestion.');
       setDraft(data.draft || '');
       requestAnimationFrame(() => {
@@ -276,7 +293,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
         el.focus();
       });
     } catch (err) {
-      setError(err.message || 'Could not draft that suggestion right now.');
+      setError(customerSafeError(err, 'Could not draft that suggestion right now.'));
     } finally {
       setStatus('idle');
     }

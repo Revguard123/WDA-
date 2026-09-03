@@ -92,6 +92,23 @@ test('Discovery route counts answered adaptive questions as clarification rounds
   assert.ok(source.includes('Object.keys(answers.adaptive_answers || {}).length'));
 });
 
+test('Discovery conversation submit handles empty or non-JSON error responses safely', () => {
+  const source = readFileSync('app/_components/DiscoveryForm.jsx', 'utf8');
+  assert.ok(source.includes('async function readJsonResponse'));
+  assert.ok(source.includes('function customerSafeError'));
+  assert.ok(source.includes('failed to execute|unexpected end|json|syntaxerror'));
+  assert.ok(source.includes('const text = await response.text()'));
+  assert.equal(source.includes('const data = await response.json();'), false);
+  assert.equal(source.includes('const result = await response.json();'), false);
+});
+
+test('Discovery conversation route returns JSON for unexpected failures', () => {
+  const source = readFileSync('app/api/discover/[token]/conversation/route.js', 'utf8');
+  assert.ok(source.includes('async function handleConversationPost'));
+  assert.ok(source.includes("stage: 'conversation_route_failed'"));
+  assert.ok(source.includes("Response.json({ error: 'Could not continue this conversation right now.' }, { status: 503 })"));
+});
+
 test('editing a prior Discovery answer updates in place instead of truncating later chat', () => {
   const source = readFileSync('app/api/discover/[token]/conversation/route.js', 'utf8');
   assert.ok(source.includes('nextMessages = answer ? messages.map'));

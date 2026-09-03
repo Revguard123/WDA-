@@ -410,18 +410,22 @@ test('Direct Targeting suggestNaics remains functional with a mocked client', as
   assert.deepEqual(matches, [{ code: '561720', title: 'Janitorial Services' }]);
 });
 
-test('compact ranking parser is not internally capped at 8 and returns no NAICS', async () => {
+test('compact ranking request caps provider output at 8 and returns no NAICS', async () => {
   const candidates = buildCandidateUniverse().slice(0, 10);
+  let payload;
   const client = {
     messages: {
-      create: async () => ({
+      create: async (request) => {
+        payload = request;
+        return {
         stop_reason: 'end_turn',
         usage: { output_tokens: 180 },
         content: [{
           type: 'text',
           text: JSON.stringify({
-            rankings: candidates.slice(0, 9).map((candidate) => ({
+            rankings: candidates.slice(0, 8).map((candidate) => ({
               subindustry_id: candidate.subindustry_id,
+              overall_fit: 'strong',
               capability_fit: 'strong',
               fulfillment_fit: 'moderate',
               qualification_fit: 'unknown',
@@ -431,11 +435,14 @@ test('compact ranking parser is not internally capped at 8 and returns no NAICS'
             })),
           }),
         }],
-      }),
+        };
+      },
     },
   };
   const ranked = await rankPlaybookCandidates({ profile, candidates }, { client });
-  assert.equal(ranked.recommendations.length, 9);
+  assert.equal(payload.output_config.format.schema.properties.rankings.maxItems, 8);
+  assert.match(payload.system, /at most 8 supplied candidates/i);
+  assert.equal(ranked.recommendations.length, 8);
   assert.equal('naics' in ranked.recommendations[0], false);
 });
 

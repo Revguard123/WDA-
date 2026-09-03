@@ -1,7 +1,33 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { existsSync, readFileSync } from 'node:fs';
 import { advanceAdvisorConversation, ADVISOR_MAX_TURNS, ADVISOR_OPENING_ID, answersFromAdvisorMessages, cleanAdvisorMessages, fallbackAdvisorTurn, recoverAdvisorState } from '../lib/playbook/advisor.js';
-import { draftDiscoverySuggestion } from '../lib/ai/claude.js';
+import { DISCOVERY_ADVISOR_SCHEMA, adviseDiscoveryTurn, draftDiscoverySuggestion } from '../lib/ai/claude.js';
+
+function collectOpenObjects(schema, path = '$', open = []) {
+  if (!schema || typeof schema !== 'object') return open;
+  if (schema.type === 'object' && schema.additionalProperties === true) open.push(path);
+  if (schema.properties) {
+    for (const [key, value] of Object.entries(schema.properties)) collectOpenObjects(value, `${path}.properties.${key}`, open);
+  }
+  if (schema.items) collectOpenObjects(schema.items, `${path}.items`, open);
+  for (const key of ['anyOf', 'oneOf', 'allOf']) {
+    if (Array.isArray(schema[key])) schema[key].forEach((value, index) => collectOpenObjects(value, `${path}.${key}[${index}]`, open));
+  }
+  return open;
+}
+
+function loadAnthropicKeyForLiveTest() {
+  if (process.env.RUN_LIVE_CLAUDE_TESTS !== '1') return false;
+  if (process.env.ANTHROPIC_API_KEY) return true;
+  const envPath = new URL('../.env.local', import.meta.url);
+  if (!existsSync(envPath)) return false;
+  const line = readFileSync(envPath, 'utf8').split(/\r?\n/).find((entry) => /^\s*ANTHROPIC_API_KEY\s*=/.test(entry));
+  const value = line?.replace(/^\s*ANTHROPIC_API_KEY\s*=\s*/, '').replace(/^['"]|['"]$/g, '').trim();
+  if (!value) return false;
+  process.env.ANTHROPIC_API_KEY = value;
+  return true;
+}
 
 test('rich response resolves several dimensions and skips them', async () => {
   const client = { messages: { create: async () => ({ usage: { output_tokens: 120 }, stop_reason: 'end_turn', content: [{ type: 'text', text: JSON.stringify({ profile_updates: { capabilities_text: 'Commercial cleaning', opportunity_type: 'services', fulfillment_model: 'self_perform', experience_types: ['private_commercial'], geography_mode: 'single_state', state: 'GA' }, resolved_dimensions: ['capability', 'opportunity_type', 'fulfillment', 'experience', 'geography'], course_reason: 'Service delivery is clear.', assistant_message: 'Cleaning experience is a real starting point. Next, what delivery advantages do you have?', next_question: { category: 'qualifications', input_type: 'multi_choice', prompt: 'What advantages do you have?', helper: '', placeholder: '', options: [{ value: 'qualified_staff', label: 'Qualified staff' }] }, complete: false }) }] }) } };
@@ -65,6 +91,36 @@ test('Claude advisor prompt asks for human student language', async () => {
   assert.match(systemPrompt, /human coach/i);
   assert.match(systemPrompt, /short, simple sentences/i);
   assert.match(systemPrompt, /Avoid idioms/i);
+});
+
+test('Claude advisor structured-output schema has no open-ended objects', async () => {
+  let schema;
+  const client = { messages: { create: async (payload) => {
+    schema = payload.output_config.format.schema;
+    return { content: [{ type: 'text', text: JSON.stringify({ profile_updates: {}, resolved_dimensions: ['capability'], course_reason: '', assistant_message: 'Good. Now tell me how you would get paid.', next_question: { category: 'opportunity_type', input_type: 'single_choice', prompt: 'Is this mostly products, services, or both?', helper: '', placeholder: '', options: [] }, complete: false }) }] };
+  } } };
+
+  await adviseDiscoveryTurn({ profile: {}, unresolved_dimensions: ['capability'], latest_answer: 'IT support' }, { client, logger: { info() {}, error() {} } });
+
+  assert.equal(schema.properties.profile_updates.additionalProperties, false);
+  assert.ok(Object.hasOwn(schema.properties.profile_updates.properties, 'capabilities_text'));
+  assert.ok(Object.hasOwn(schema.properties.profile_updates.properties, 'set_asides'));
+  assert.deepEqual(collectOpenObjects(schema), []);
+});
+
+test('live Claude provider accepts the exact advisor structured-output schema without fallback', { skip: !loadAnthropicKeyForLiveTest(), timeout: 90000 }, async () => {
+  const { default: Anthropic } = await import('@anthropic-ai/sdk');
+  const anthropic = new Anthropic({ timeout: 60000 });
+  const response = await anthropic.messages.create({
+    model: process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5',
+    max_tokens: 1,
+    system: 'Return a minimal response matching the supplied schema.',
+    messages: [{ role: 'user', content: 'schema acceptance check only' }],
+    output_config: { format: { type: 'json_schema', schema: DISCOVERY_ADVISOR_SCHEMA } },
+  });
+
+  assert.equal(typeof response, 'object');
+  assert.notEqual(response?.type, 'error');
 });
 
 test('suggestion chips ask Claude for an editable student draft', async () => {

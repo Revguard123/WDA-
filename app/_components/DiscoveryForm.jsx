@@ -163,10 +163,10 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
     bootstrapped.current = true;
     setStatus('thinking');
     try {
-      const response = await fetch(`/api/discover/${token}/session`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answers: { advisor_state: emptyState }, current_step: 1, status: 'in_progress', recommendations: [] }) });
+      const response = await fetch(`/api/discover/${token}/session`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answers: { advisor_state: emptyState }, current_step: 1, status: 'in_progress', recommendations: [], selected_recommendation: null }) });
       const data = await readJsonResponse(response, 'Could not start a new discovery.');
       if (!response.ok) throw new Error(data.error || 'Could not start a new discovery.');
-      await callConversation({ start: true });
+      await callConversation({ start: true, reset: true });
     } catch (err) {
       setError(customerSafeError(err, 'Could not start a new discovery.'));
     } finally {

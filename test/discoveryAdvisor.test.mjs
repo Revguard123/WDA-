@@ -162,6 +162,121 @@ test('a Claude next-question proposal cannot repeat the answered category', asyn
   assert.equal(result.next_question.category, 'opportunity_type');
 });
 
+test('server rejects a semantically duplicate delivery question proposed as operating model', async () => {
+  const logs = [];
+  const client = { messages: { create: async () => ({ content: [{ type: 'text', text: JSON.stringify({ profile_updates: {}, resolved_dimensions: ['qualifications'], course_reason: '', assistant_message: 'Good.', next_question: { category: 'operating_model', input_type: 'single_choice', prompt: "Now let's lock in how you'd actually deliver the work - solo, with a team you'd hire, or by partnering with existing techs.", helper: '', placeholder: '', options: [] }, complete: false }) }] }) } };
+  const result = await advanceAdvisorConversation({
+    answers: { capabilities_text: 'IT support', fulfillment_model: 'self', qualification_categories: ['none_unknown'] },
+    resolved_dimensions: ['capability', 'opportunity_type', 'fulfillment', 'experience', 'qualifications', 'set_asides', 'geography', 'operating_model'],
+    latest_answer: "We don't currently have Microsoft Certified staff, but we're evaluating certifications.",
+    answered_category: 'qualifications',
+    turn_count: 6,
+    client,
+    logger: { info(event) { logs.push(event); }, error() {} },
+  });
+  assert.equal(result.next_question.category, 'contract_scale');
+  assert.ok(logs.some((event) => event.stage === 'advisor_question_rejected' && event.category === 'operating_model'));
+});
+
+test('one fulfillment answer can resolve delivery and operating concept so delivery is not re-asked', () => {
+  const result = fallbackAdvisorTurn({
+    answers: { capabilities_text: 'IT support' },
+    resolved_dimensions: ['capability', 'opportunity_type'],
+    latest_answer: 'My existing technicians will perform the work themselves.',
+    answered_category: 'fulfillment',
+    turn_count: 2,
+  });
+  assert.equal(result.answers.fulfillment_model, 'self');
+  assert.equal(result.resolved_dimensions.includes('fulfillment'), true);
+  assert.equal(result.resolved_dimensions.includes('operating_model'), true);
+  assert.notEqual(result.next_question.category, 'operating_model');
+});
+
+test('contradictory delivery answer asks clarification instead of silently overwriting', async () => {
+  const logs = [];
+  const result = await advanceAdvisorConversation({
+    answers: { capabilities_text: 'IT support', fulfillment_model: 'self' },
+    resolved_dimensions: ['capability', 'fulfillment'],
+    latest_answer: "We'd partner with certified IT vendors or subcontractors.",
+    answered_category: 'operating_model',
+    turn_count: 4,
+    client: { messages: { create: async () => { throw new Error('should not call provider for contradiction clarification'); } } },
+    logger: { info(event) { logs.push(event); }, error() {} },
+  });
+  assert.equal(result.next_question.category, 'fulfillment_clarification');
+  assert.equal(result.answers.fulfillment_model, 'self');
+  assert.equal(result.count_progress, false);
+  assert.ok(logs.some((event) => event.stage === 'advisor_contradiction_detected' && event.field === 'fulfillment_model'));
+});
+
+test('explicit delivery correction updates fulfillment without unnecessary clarification', async () => {
+  const client = { messages: { create: async () => ({ content: [{ type: 'text', text: JSON.stringify({ profile_updates: {}, resolved_dimensions: ['fulfillment'], course_reason: '', assistant_message: 'Got it. Now let us move forward.', next_question: { category: 'experience', input_type: 'single_choice', prompt: 'What experience can we use?', helper: '', placeholder: '', options: [] }, complete: false }) }] }) } };
+  const result = await advanceAdvisorConversation({
+    answers: { capabilities_text: 'IT support', fulfillment_model: 'self' },
+    resolved_dimensions: ['capability', 'fulfillment', 'operating_model'],
+    latest_answer: 'Actually, we plan to subcontract most of it.',
+    answered_category: 'operating_model',
+    turn_count: 4,
+    client,
+    logger: { info() {}, error() {} },
+  });
+  assert.equal(result.answers.fulfillment_model, 'existing_vendors');
+  assert.notEqual(result.next_question.category, 'fulfillment_clarification');
+  assert.equal(result.resolved_dimensions.includes('operating_model'), false);
+});
+
+test('hybrid delivery language resolves fulfillment and prevents another delivery question', async () => {
+  const logs = [];
+  const client = { messages: { create: async () => ({ content: [{ type: 'text', text: JSON.stringify({ profile_updates: {}, resolved_dimensions: ['fulfillment'], course_reason: '', assistant_message: 'Good.', next_question: { category: 'operating_model', input_type: 'single_choice', prompt: 'Would your team do it or would partners do it?', helper: '', placeholder: '', options: [] }, complete: false }) }] }) } };
+  const result = await advanceAdvisorConversation({
+    answers: { capabilities_text: 'IT support' },
+    resolved_dimensions: ['capability', 'opportunity_type', 'experience', 'qualifications', 'set_asides', 'geography'],
+    latest_answer: "Our team handles normal support but we'd use certified subcontractors where needed.",
+    answered_category: 'fulfillment',
+    turn_count: 6,
+    client,
+    logger: { info(event) { logs.push(event); }, error() {} },
+  });
+  assert.equal(result.answers.fulfillment_model, 'hybrid');
+  assert.equal(result.resolved_dimensions.includes('operating_model'), true);
+  assert.equal(result.next_question.category, 'contract_scale');
+  assert.ok(logs.some((event) => event.stage === 'advisor_question_rejected' && event.category === 'operating_model'));
+});
+
+test('invalid Claude profile update values do not poison saved advisor answers', async () => {
+  const client = { messages: { create: async () => ({ content: [{ type: 'text', text: JSON.stringify({ profile_updates: { fulfillment_model: 'broker_management', set_asides: ['small_business'] }, resolved_dimensions: ['fulfillment'], course_reason: '', assistant_message: 'Good.', next_question: { category: 'experience', input_type: 'single_choice', prompt: 'What experience can we use?', helper: '', placeholder: '', options: [] }, complete: false }) }] }) } };
+  const result = await advanceAdvisorConversation({ latest_answer: 'I broker and manage IT contractors or staffing vendors', answered_category: 'fulfillment', client, logger: { info() {}, error() {} } });
+  assert.equal(result.answers.fulfillment_model, 'existing_vendors');
+  assert.deepEqual(result.answers.set_asides, []);
+});
+
+test('poisoned persisted advisor answers recover on the next conversation turn', async () => {
+  const client = { messages: { create: async () => ({ content: [{ type: 'text', text: JSON.stringify({ profile_updates: {}, resolved_dimensions: ['experience'], course_reason: '', assistant_message: 'Good.', next_question: { category: 'qualifications', input_type: 'single_choice', prompt: 'What do you already have?', helper: '', placeholder: '', options: [] }, complete: false }) }] }) } };
+  const result = await advanceAdvisorConversation({
+    answers: { capabilities_text: 'IT help desk and network support', fulfillment_model: 'broker_management', set_asides: ['small_business'] },
+    resolved_dimensions: ['capability', 'fulfillment'],
+    latest_answer: 'Commercial IT support experience',
+    answered_category: 'experience',
+    turn_count: 2,
+    client,
+    logger: { info() {}, error() {} },
+  });
+  assert.equal(result.answers.fulfillment_model, '');
+  assert.deepEqual(result.answers.set_asides, []);
+});
+
+test('Claude size updates must be numeric before they can override advisor answers', async () => {
+  const client = { messages: { create: async () => ({ content: [{ type: 'text', text: JSON.stringify({ profile_updates: { size_min: '$25k', size_max: '150000' }, resolved_dimensions: ['contract_scale'], course_reason: '', assistant_message: 'Good.', next_question: { category: 'interests_avoidances', input_type: 'text', prompt: 'Anything to include or avoid?', helper: '', placeholder: '', options: [] }, complete: false }) }] }) } };
+  const result = await advanceAdvisorConversation({
+    latest_answer: 'Not sure',
+    answered_category: 'contract_scale',
+    client,
+    logger: { info() {}, error() {} },
+  });
+  assert.equal(result.answers.size_min, '');
+  assert.equal(result.answers.size_max, '150000');
+});
+
 test('conflicting capability answers request one clarification without advancing progress', async () => {
   const result = await advanceAdvisorConversation({ answers: { capabilities_text: 'Network services' }, resolved_dimensions: [], latest_answer: 'Cleaning', answered_category: 'capability' });
   assert.equal(result.next_question.category, 'capability_clarification');
@@ -235,4 +350,12 @@ test('old prematurely complete sessions resume at missing contract size', () => 
   const state = recoverAdvisorState({ complete: true, resolved_dimensions: resolved, pending_question: null }, {});
   assert.equal(state.complete, false);
   assert.equal(state.pending_question.category, 'contract_scale');
+});
+
+test('resume does not restore an already-resolved delivery-style operating question', () => {
+  const state = recoverAdvisorState({
+    resolved_dimensions: ['capability', 'fulfillment', 'operating_model'],
+    pending_question: { id: 'advisor-operating_model-v1', category: 'operating_model', prompt: 'Will you deliver with your team or subcontractors?', helper: '', placeholder: '', input_type: 'single_choice', options: [] },
+  }, { capabilities_text: 'IT support', fulfillment_model: 'self' });
+  assert.notEqual(state.pending_question.category, 'operating_model');
 });

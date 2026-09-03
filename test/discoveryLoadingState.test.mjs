@@ -105,8 +105,24 @@ test('Discovery conversation submit handles empty or non-JSON error responses sa
 test('Discovery conversation route returns JSON for unexpected failures', () => {
   const source = readFileSync('app/api/discover/[token]/conversation/route.js', 'utf8');
   assert.ok(source.includes('async function handleConversationPost'));
+  assert.ok(source.includes("stage: 'discovery_answers_validation_failed'"));
+  assert.ok(source.includes('validation_failure_path'));
+  assert.ok(source.includes('validation_failure_reason'));
   assert.ok(source.includes("stage: 'conversation_route_failed'"));
   assert.ok(source.includes("Response.json({ error: 'Could not continue this conversation right now.' }, { status: 503 })"));
+});
+
+test('New Discovery reset clears stale recommendations and selected recommendation state', () => {
+  const source = readFileSync('app/_components/DiscoveryForm.jsx', 'utf8');
+  const route = readFileSync('app/api/discover/[token]/conversation/route.js', 'utf8');
+  assert.ok(source.includes('setRecs([])'));
+  assert.ok(source.includes('setAnswers({})'));
+  assert.ok(source.includes('setState(emptyState)'));
+  assert.ok(source.includes('recommendations: [], selected_recommendation: null'));
+  assert.ok(source.includes('start: true, reset: true'));
+  assert.ok(route.includes('const forceReset = body.start && body.reset === true'));
+  assert.ok(route.includes('body.start && !forceReset'));
+  assert.ok(route.includes('const existingAnswers = forceReset ? {}'));
 });
 
 test('editing a prior Discovery answer updates in place instead of truncating later chat', () => {

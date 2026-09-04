@@ -53,6 +53,7 @@ export default async function DiveDeeperPage({ params }) {
   if (!record) return <NotFound what="contract" />;
   const opp = record.opportunity || {};
   const sections = briefSections(record.deep_dive_text);
+  const supportEmail = process.env.SUPPORT_TO_EMAIL || '';
 
   const chip = (label, value) => (
     <span style={{ display: 'inline-block', background: UI.paper, border: `1px solid ${UI.line}`, borderRadius: 4, padding: '3px 8px', margin: '0 6px 6px 0', fontSize: 12, color: UI.muted }}>
@@ -61,7 +62,7 @@ export default async function DiveDeeperPage({ params }) {
   );
 
   return (
-    <Shell>
+    <Shell supportBar={<SupportCTA sticky pageContext="deep_dive" initialEmail={buyer.email} supportEmail={supportEmail} />}>
       <div style={{ marginBottom: 12 }}>
         <a href={`/contracts/${token}`} style={{ color: UI.muted, fontSize: 14, textDecoration: 'none' }}>&larr; Back to your contracts</a>
       </div>
@@ -104,7 +105,6 @@ export default async function DiveDeeperPage({ params }) {
           </a>
         ) : null}
       </div>
-      <SupportCTA pageContext="deep_dive" />
     </Shell>
   );
 }

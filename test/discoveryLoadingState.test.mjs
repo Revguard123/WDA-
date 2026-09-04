@@ -127,8 +127,8 @@ test('New Discovery reset clears stale recommendations and selected recommendati
 
 test('editing a prior Discovery answer updates in place instead of truncating later chat', () => {
   const source = readFileSync('app/api/discover/[token]/conversation/route.js', 'utf8');
-  assert.ok(source.includes('nextMessages = answer ? messages.map'));
-  assert.ok(source.includes('advisor_state: { messages,'));
+  assert.match(source, /nextMessages\s*=\s*answer\s*\?\s*messages\.map/);
+  assert.match(source, /advisor_state:\s*advisorState/);
   assert.equal(source.includes('.slice(-10)'), false);
   assert.equal(source.includes('.slice(-14)'), false);
   assert.equal(source.includes('const priorMessages'), false);

@@ -24,13 +24,14 @@ export const dynamic = 'force-dynamic';
 export default async function PortalPage({ searchParams }) {
   const sp = (await searchParams) || {};
   const email = String(sp.email || '').trim();
+  const supportEmail = process.env.SUPPORT_TO_EMAIL || '';
 
   // No usable email (missing, or Kajabi did not render the Liquid tag) -> show a
   // one-field gate that drops them straight into their portal on submit. No
   // email round-trip.
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return (
-      <Shell subtitle="Welcome back.">
+      <Shell subtitle="Welcome back." supportBar={<SupportCTA sticky pageContext="portal" initialEmail={email} supportEmail={supportEmail} />}>
         <div style={{ background: UI.card, border: `1px solid ${UI.line}`, borderRadius: 12, borderTop: `4px solid ${UI.orange}`, padding: 28 }}>
           <h1 style={{ margin: '0 0 8px', fontSize: 24, color: UI.ink, fontFamily: DISPLAY_FONT, letterSpacing: '-0.4px' }}>
             Access your portal
@@ -42,7 +43,6 @@ export default async function PortalPage({ searchParams }) {
             <PortalEmailForm />
           </div>
         </div>
-        <SupportCTA pageContext="portal" />
       </Shell>
     );
   }
@@ -57,13 +57,12 @@ export default async function PortalPage({ searchParams }) {
 
   // Signed in with an email we do not have an account for.
   return (
-    <Shell subtitle="Your contracts.">
+    <Shell subtitle="Your contracts." supportBar={<SupportCTA sticky pageContext="portal" initialEmail={email} supportEmail={supportEmail} />}>
       <div style={{ background: UI.card, border: `1px solid ${UI.line}`, borderRadius: 10, padding: 24, color: UI.text, fontSize: 15, lineHeight: 1.55 }}>
         We could not find an account for <strong style={{ fontWeight: 600 }}>{email}</strong>. Make sure you are using the email on your War Dogs
         Academy account. You can also{' '}
         <a href="/access" style={{ color: UI.ink, fontWeight: 600 }}>get your link by email</a>.
       </div>
-      <SupportCTA pageContext="portal" />
     </Shell>
   );
 }

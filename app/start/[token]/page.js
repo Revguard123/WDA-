@@ -60,9 +60,10 @@ export default async function StartPage({ params }) {
   const naics = discoveryReview?.naics?.length ? discoveryReview.naics : normalizeNaics(buyer.naics);
   const keywords = Array.isArray(buyer.keywords) ? buyer.keywords.filter(Boolean) : [];
   const setAsides = Array.isArray(buyer.set_asides) ? buyer.set_asides.filter(Boolean) : [];
+  const supportEmail = process.env.SUPPORT_TO_EMAIL || '';
 
   return (
-    <Shell>
+    <Shell supportBar={<SupportCTA sticky pageContext="start" initialEmail={buyer.email} supportEmail={supportEmail} />}>
       <div style={{ background: UI.card, border: `1px solid ${UI.line}`, borderRadius: 10, padding: 32 }}>
         <h1 style={{ margin: '0 0 12px', fontSize: 26, color: UI.ink }}>Ready to Start</h1>
         <p style={{ color: UI.text, fontSize: 16, lineHeight: 1.6, marginTop: 0 }}>
@@ -105,7 +106,6 @@ export default async function StartPage({ params }) {
           After activation, targeting edits still apply to future cycles. This cycle stays locked once contracts are pulled.
         </p>
       </div>
-      <SupportCTA pageContext="start" />
     </Shell>
   );
 }

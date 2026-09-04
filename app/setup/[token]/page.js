@@ -19,6 +19,7 @@ export default async function SetupPage({ params, searchParams }) {
   const updateMode = sp.update === '1';
   const buyer = await getBuyerByToken(token);
   if (!buyer) return <NotFound what="setup link" />;
+  const supportEmail = process.env.SUPPORT_TO_EMAIL || '';
 
   const state = setupStateForBuyer(buyer, { directTargeting, reviewOnly, updateMode });
   if (state.redirect) redirect(state.redirect);
@@ -31,7 +32,7 @@ export default async function SetupPage({ params, searchParams }) {
 
   if (state.showChoice) {
     return (
-      <Shell subtitle="Set the target before we pull contracts.">
+      <Shell subtitle="Set the target before we pull contracts." supportBar={<SupportCTA sticky pageContext="targeting_setup" initialEmail={buyer.email} supportEmail={supportEmail} />}>
         <div style={{ background: UI.card, border: `1px solid ${UI.line}`, borderRadius: 10, padding: 28 }}>
           <h1 style={{ margin: '0 0 8px', fontSize: 24, color: UI.ink }}>Start Your Curated Target Contracts</h1>
           <p style={{ color: UI.muted, fontSize: 15, lineHeight: 1.55, marginTop: 0 }}>
@@ -60,13 +61,12 @@ export default async function SetupPage({ params, searchParams }) {
             </a>
           </div>
         </div>
-        <SupportCTA pageContext="targeting_setup" />
       </Shell>
     );
   }
 
   return (
-    <Shell maxWidth={discoveryReview || state.hasTargeting ? 1120 : 660} subtitle="Confirm the targeting profile we should use.">
+    <Shell maxWidth={discoveryReview || state.hasTargeting ? 1120 : 660} subtitle="Confirm the targeting profile we should use." supportBar={<SupportCTA sticky pageContext={state.hasTargeting ? 'targeting_review' : 'targeting_setup'} initialEmail={buyer.email} supportEmail={supportEmail} />}>
       <div style={{ background: UI.card, border: `1px solid ${UI.line}`, borderRadius: 10, padding: 28 }}>
           <h1 style={{ margin: '0 0 6px', fontSize: 22, color: UI.ink }}>
           {state.hasTargeting ? 'Review Your Targeting' : 'Build Your Targeting Profile'}
@@ -127,7 +127,6 @@ export default async function SetupPage({ params, searchParams }) {
           afterSaveHref={state.reviewOnly || state.updateMode ? `/contracts/${token}` : `/start/${token}`}
         />
       </div>
-      <SupportCTA pageContext={state.hasTargeting ? 'targeting_review' : 'targeting_setup'} />
     </Shell>
   );
 }

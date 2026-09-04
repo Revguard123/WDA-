@@ -24,9 +24,10 @@ export default async function ContractsPage({ params }) {
   const presentation = contractsPresentationForBuyer(buyer, { deliveryCount: deliveries.length });
 
   const kajabiUrl = process.env.KAJABI_LIBRARY_URL || 'https://www.wardogsacademy.co/library';
+  const supportEmail = process.env.SUPPORT_TO_EMAIL || '';
 
   return (
-    <Shell maxWidth={1120} subtitle="Every target we have sent you, newest first.">
+    <Shell maxWidth={1120} subtitle="Every target we have sent you, newest first." supportBar={<SupportCTA sticky pageContext="contracts" initialEmail={buyer.email} supportEmail={supportEmail} />}>
       <style>{`
         .contracts-hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:start;margin-bottom:18px;max-width:100%}
         .contracts-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap;min-width:0}
@@ -176,7 +177,6 @@ export default async function ContractsPage({ params }) {
           </div>
         ))
       )}
-      <SupportCTA pageContext="contracts" />
     </Shell>
   );
 }

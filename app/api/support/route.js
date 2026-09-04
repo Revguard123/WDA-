@@ -1,4 +1,4 @@
-import { sendSupportRequest } from '../../../lib/support.js';
+import { sendFeedbackRequest, sendSupportRequest } from '../../../lib/support.js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -27,8 +27,11 @@ function rateLimited(req) {
   return existing.count > MAX_REQUESTS_PER_WINDOW;
 }
 
-function safeError(status = 400) {
-  return Response.json({ ok: false, error: 'We could not send your request right now. Please try again.' }, { status });
+function safeError(status = 400, type = 'support') {
+  const error = type === 'feedback'
+    ? "We couldn't send that feedback right now. Please try again or contact us by email."
+    : 'We could not send your request right now. Please try again.';
+  return Response.json({ ok: false, error }, { status });
 }
 
 export async function POST(req) {
@@ -49,9 +52,18 @@ export async function POST(req) {
   } catch {
     return safeError(400);
   }
+  const type = body?.type === 'feedback' ? 'feedback' : 'support';
 
   try {
-    await sendSupportRequest(body);
+    if (type === 'feedback') {
+      await sendFeedbackRequest(body, {
+        metadata: {
+          userAgent: req.headers.get('user-agent') || '',
+        },
+      });
+    } else {
+      await sendSupportRequest(body);
+    }
     return Response.json({ ok: true });
   } catch (err) {
     if (err?.code === 'SUPPORT_CONFIG_MISSING') {
@@ -59,15 +71,17 @@ export async function POST(req) {
         event: 'support_request_failed',
         reason: 'missing_config',
         missing_keys: err.missing,
+        type,
       });
-      return safeError(503);
+      return safeError(503, type);
     }
-    if (err?.code === 'SUPPORT_VALIDATION_FAILED') return safeError(400);
+    if (err?.code === 'SUPPORT_VALIDATION_FAILED') return safeError(400, type);
     console.warn({
       event: 'support_request_failed',
       reason: 'send_failed',
       error_name: err?.name || 'Error',
+      type,
     });
-    return safeError(502);
+    return safeError(502, type);
   }
 }

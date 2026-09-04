@@ -3,12 +3,14 @@ import { UI, DISPLAY_FONT, BODY_FONT } from '../../lib/ui.js';
 // Branded page chrome for buyer-facing pages (server component).
 // Light editorial header: pink+orange edge stripe, the Zuume logo on white,
 // a short pink rule, then the product eyebrow. Matches the email brief.
-export default function Shell({ children, maxWidth = 660, subtitle, locked = false }) {
+export default function Shell({ children, maxWidth = 660, subtitle, locked = false, supportBar = null }) {
   return (
     <div style={{ background: UI.paper, minHeight: '100vh', height: locked ? '100dvh' : undefined, overflow: locked ? 'hidden' : 'hidden auto', padding: locked ? 0 : '0 0 60px', display: locked ? 'flex' : undefined, flexDirection: locked ? 'column' : undefined, fontFamily: BODY_FONT, maxWidth: '100%' }}>
-      <style>{`.shell-brand-header{background:${UI.card};border-bottom:1px solid ${UI.line};padding:26px 24px 22px}.shell-brand-logo{display:block;width:210px;max-width:70%;height:auto;margin:0 auto}.shell-brand-rule{height:3px;width:60px;background:${UI.pink};margin:16px auto 0}.shell-brand-eyebrow{color:${UI.ink};font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:600;margin-top:14px;font-family:${BODY_FONT}}.shell-brand-subtitle{color:${UI.muted};font-size:14px;margin-top:6px}@media(max-width:600px){.shell-brand-header{padding:18px 16px 14px}.shell-brand-logo{width:145px;max-width:55%}.shell-brand-rule{width:48px;margin-top:10px}.shell-brand-eyebrow{font-size:10px;letter-spacing:2.2px;margin-top:10px}.shell-brand-subtitle{font-size:12px;margin-top:5px}}`}</style>
+      <style>{`.shell-brand-header{background:${UI.card};border-bottom:1px solid ${UI.line};padding:26px 24px 22px}.shell-brand-logo{display:block;width:210px;max-width:70%;height:auto;margin:0 auto}.shell-brand-rule{height:3px;width:60px;background:${UI.pink};margin:16px auto 0}.shell-brand-eyebrow{color:${UI.ink};font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:600;margin-top:14px;font-family:${BODY_FONT}}.shell-brand-subtitle{color:${UI.muted};font-size:14px;margin-top:6px}.shell-support-spacer{height:38px;flex:0 0 auto}@media(max-width:640px){.shell-support-spacer{height:62px}}@media(max-width:600px){.shell-brand-header{padding:18px 16px 14px}.shell-brand-logo{width:145px;max-width:55%}.shell-brand-rule{width:48px;margin-top:10px}.shell-brand-eyebrow{font-size:10px;letter-spacing:2.2px;margin-top:10px}.shell-brand-subtitle{font-size:12px;margin-top:5px}}`}</style>
       <div style={{ height: 4, background: UI.pink }} />
       <div style={{ height: 3, background: UI.orange }} />
+      {supportBar}
+      {supportBar ? <div className="shell-support-spacer" aria-hidden="true" /> : null}
       <div className="shell-brand-header">
         <div style={{ width: '100%', maxWidth, margin: '0 auto', textAlign: 'center', boxSizing: 'border-box' }}>
           <img

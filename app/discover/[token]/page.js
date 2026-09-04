@@ -18,11 +18,12 @@ export default async function DiscoverPage({ params, searchParams }) {
   const state = discoverStateForBuyer(buyer, { updateMode });
   if (state.redirect) redirect(state.redirect);
   const session = await getDiscoverySessionForBuyer(buyer.id);
+  const supportEmail = process.env.SUPPORT_TO_EMAIL || '';
 
   return (
-    <Shell maxWidth={1800} subtitle="Find the contracting lane that fits what you can actually deliver." locked>
+    <Shell maxWidth={1800} subtitle="Find the contracting lane that fits what you can actually deliver." locked supportBar={<SupportCTA sticky pageContext="discovery" initialEmail={buyer.email} supportEmail={supportEmail} />}>
       <div style={{ height: '100%', overflow: 'hidden' }}>
-        <DiscoveryForm token={token} initial={buyer} initialSession={publicDiscoverySession(session)} supportCta={<SupportCTA pageContext="discovery" compact />} updateMode={state.updateMode} />
+        <DiscoveryForm token={token} initial={buyer} initialSession={publicDiscoverySession(session)} updateMode={state.updateMode} />
       </div>
     </Shell>
   );

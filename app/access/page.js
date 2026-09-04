@@ -1,5 +1,6 @@
 import Shell from '../_components/Shell.jsx';
 import AccessForm from '../_components/AccessForm.jsx';
+import SupportCTA from '../_components/SupportCTA.jsx';
 import { UI, DISPLAY_FONT } from '../../lib/ui.js';
 
 export const runtime = 'nodejs';
@@ -8,8 +9,9 @@ export const dynamic = 'force-dynamic';
 // Magic-link re-entry page. Linked from the Kajabi product so members can reach
 // their contracts without a login: they enter their email, we send the link.
 export default function AccessPage() {
+  const supportEmail = process.env.SUPPORT_TO_EMAIL || '';
   return (
-    <Shell subtitle="Get back to your contracts.">
+    <Shell subtitle="Get back to your contracts." supportBar={<SupportCTA sticky pageContext="portal" supportEmail={supportEmail} />}>
       <div style={{ background: UI.card, border: `1px solid ${UI.line}`, borderRadius: 12, borderTop: `4px solid ${UI.orange}`, padding: 28 }}>
         <h1 style={{ margin: '0 0 8px', fontSize: 24, color: UI.ink, fontFamily: DISPLAY_FONT, letterSpacing: '-0.4px' }}>
           Open your contracts

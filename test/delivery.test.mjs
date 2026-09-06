@@ -41,7 +41,8 @@ test('email renders brand, cards, why-line, and tokenized links', () => {
 
 test('empty batch renders the no-padding message, not fake cards', () => {
   const { html } = buildBatchEmailHTML({ name: 'Jane' }, [], LINKS, { shortfall: 5 });
-  assert.match(html, /rather send you nothing than send you a dud/);
+  assert.match(html, /rather surface nothing than send you a weak-fit opportunity/
+);
   assert.ok(!html.includes('See Full Breakdown'));
 });
 

@@ -98,6 +98,17 @@ test('set-aside eligibility logic', () => {
   assert.equal(buyerQualifiesForSetAside('8A', ['8a', 'sdvosb']), true);
   assert.equal(buyerQualifiesForSetAside('ZZZ-UNKNOWN', ['sdvosb']), false, 'unknown code excluded');
   assert.equal(SAM_TO_INTERNAL.HZC, 'hubzone');
+  assert.equal(isFullAndOpen(''), true);
+assert.equal(isFullAndOpen(null), true);
+assert.equal(isFullAndOpen('NONE'), true);
+assert.equal(isFullAndOpen('none'), true);
+assert.equal(isFullAndOpen(' NONE '), true);
+
+assert.equal(
+  buyerQualifiesForSetAside('NONE', []),
+  true,
+  'SAM NONE means full-and-open',
+);
 });
 
 test('SAM date formatting is MM/dd/yyyy in UTC', () => {

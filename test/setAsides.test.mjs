@@ -13,9 +13,14 @@ import { buyerQualifiesForSetAside, expandHeldSetAsides } from '../lib/sam/setAs
 // VSA vosb, WOSB wosb, EDWOSB edwosb, 8A eight-a, HZC hubzone.
 
 test('full-and-open contracts qualify for everyone, even a buyer with no certs', () => {
-  assert.equal(buyerQualifiesForSetAside('', []), true);
-  assert.equal(buyerQualifiesForSetAside(null, ['sdvosb']), true);
-  assert.equal(buyerQualifiesForSetAside('   ', ['sb']), true);
+assert.equal(buyerQualifiesForSetAside('', []), true);
+assert.equal(buyerQualifiesForSetAside(null, ['sdvosb']), true);
+assert.equal(buyerQualifiesForSetAside('   ', ['sb']), true);
+
+// SAM explicitly returns NONE when no set-aside is used.
+assert.equal(buyerQualifiesForSetAside('NONE', []), true);
+assert.equal(buyerQualifiesForSetAside('none', []), true);
+assert.equal(buyerQualifiesForSetAside(' NONE ', []), true);
 });
 
 test('a plain small business sees SB set-asides and open, but not specialized ones', () => {

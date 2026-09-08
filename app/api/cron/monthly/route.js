@@ -24,6 +24,10 @@ function oneMonthOut(from = new Date()) {
   return d;
 }
 
+export function shouldAdvanceMonthlySchedule(delivered) {
+  return Number(delivered || 0) > 0;
+}
+
 export async function GET(req) {
   if (!authorized(req)) return Response.json({ error: 'unauthorized' }, { status: 401 });
 
@@ -36,11 +40,19 @@ export async function GET(req) {
     for (const buyer of due) {
       try {
         const r = await runBatchForBuyer(buyer, { baseUrl: base, send: true });
-        // Advance the schedule regardless of how many contracts cleared this cycle.
-        await setNextBatchAt(buyer.id, oneMonthOut(now));
+
+        const delivered = r.delivered.inserted.length;
+
+        // Only advance the monthly schedule when a batch was actually delivered.
+        // Zero-result buyers remain due so the daily cron can retry them after
+        // the opportunity pool refreshes.
+        if (shouldAdvanceMonthlySchedule(delivered)) {
+          await setNextBatchAt(buyer.id, oneMonthOut(now));
+        }
+
         results.push({
           buyer_id: buyer.id,
-          delivered: r.delivered.inserted.length,
+          delivered,
           shortfall: r.stats.shortfall,
           sent: !!r.sent && !r.sent.skipped,
           batchStatus: r.batch?.status || null,

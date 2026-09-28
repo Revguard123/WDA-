@@ -65,6 +65,44 @@ test('targeting review form is a concise sectioned summary with edit reveals', (
   assert.ok(form.includes('Nationwide keeps stale state filters out of this search.'));
 });
 
+test('Review Targeting keeps editor component identity stable while controlled fields change', () => {
+  const form = readFileSync('app/_components/NicheForm.jsx', 'utf8');
+  const summarySection = form.indexOf('export function SummarySection');
+  const nicheForm = form.indexOf('export default function NicheForm');
+
+  assert.ok(summarySection >= 0, 'the review section wrapper must be a module-level component');
+  assert.ok(summarySection < nicheForm, 'the review section wrapper must not be recreated inside NicheForm');
+  assert.equal(form.slice(nicheForm).includes('function SummarySection'), false);
+
+  // Every editable review value remains controlled by NicheForm state. Because
+  // the section wrapper above is stable, these updates reconcile the existing
+  // inputs instead of unmounting the focused input after each character.
+  assert.match(form, /value=\{query\}[\s\S]*?onChange=\{\(e\) => setQuery\(e\.target\.value\)\}/);
+  assert.match(form, /value=\{manualCode\}[\s\S]*?onChange=\{\(e\) => setManualCode\(e\.target\.value\)\}/);
+  assert.match(form, /value=\{keywords\}[\s\S]*?onChange=\{\(e\) => setKeywords\(e\.target\.value\)\}/);
+  assert.match(form, /value=\{state\}[\s\S]*?onChange=\{\(e\) => setState\(e\.target\.value\.toUpperCase\(\)\)\}/);
+  assert.match(form, /value=\{sizeMin\}[\s\S]*?onChange=\{\(e\) => setSizeMin\(e\.target\.value\)\}/);
+  assert.match(form, /value=\{sizeMax\}[\s\S]*?onChange=\{\(e\) => setSizeMax\(e\.target\.value\)\}/);
+});
+
+test('Review Targeting preserves raw multi-digit contract input until save and submits every editable field', () => {
+  const form = readFileSync('app/_components/NicheForm.jsx', 'utf8');
+
+  assert.ok(form.includes("const [sizeMin, setSizeMin] = useState(initial.size_min ?? '')"));
+  assert.ok(form.includes("const [sizeMax, setSizeMax] = useState(initial.size_max ?? '')"));
+  assert.ok(form.includes('setSizeMin(e.target.value)'));
+  assert.ok(form.includes('setSizeMax(e.target.value)'));
+  assert.equal(form.includes('setSizeMin(Number('), false);
+  assert.equal(form.includes('setSizeMax(Number('), false);
+
+  const savePayload = form.slice(form.indexOf('body: JSON.stringify({'), form.indexOf('setStatus(\'saved\')'));
+  for (const field of ['name', 'naics', 'keywords', 'set_asides', 'state', 'size_min', 'size_max']) {
+    assert.match(savePayload, new RegExp(`\\b${field}\\b`), `${field} must remain in the profile save payload`);
+  }
+  assert.ok(form.includes("method: 'PUT'"));
+  assert.ok(form.includes('if (afterSaveHref) window.location.href = afterSaveHref'));
+});
+
 test('Direct Targeting build path keeps the generic NAICS/manual builder controls', () => {
   const form = readFileSync('app/_components/NicheForm.jsx', 'utf8');
   assert.ok(form.includes('!reviewMode ?'));

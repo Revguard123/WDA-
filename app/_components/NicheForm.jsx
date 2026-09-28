@@ -55,6 +55,30 @@ function setAsideLabel(value) {
   return SET_ASIDE_OPTIONS.find((option) => option.value === value)?.label || value;
 }
 
+export function SummarySection({ id, title, children, editHint, editor, editing, reviewMode, readOnly, onEdit }) {
+  return (
+    <section className={`targeting-summary-section targeting-section-${id}`} style={{ border: `1px solid ${UI.line}`, borderRadius: 10, background: UI.paper, padding: reviewMode ? 13 : 16, marginTop: reviewMode ? 0 : 14 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start' }}>
+        <div>
+          <div style={{ fontFamily: DISPLAY_FONT, fontSize: 16, fontWeight: 600, color: UI.ink, letterSpacing: 0.2 }}>{title}</div>
+          <div style={{ marginTop: 8 }}>{children}</div>
+        </div>
+        {!editing && !readOnly ? (
+          <button
+            type="button"
+            onClick={() => onEdit(id)}
+            style={{ border: `1px solid ${UI.line}`, background: '#fff', color: UI.ink, fontWeight: 600, fontSize: 13, cursor: 'pointer', borderRadius: 8, padding: '8px 12px', flexShrink: 0 }}
+          >
+            Edit
+          </button>
+        ) : null}
+      </div>
+      {editHint && !editing ? <div className="targeting-summary-hint" style={hintStyle}>{editHint}</div> : null}
+      {editing ? <div style={{ marginTop: 12 }}>{editor}</div> : null}
+    </section>
+  );
+}
+
 export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afterSaveHref, discoveryReview = null, reviewMode = false, readOnly = false }) {
   const [name, setName] = useState(initial.name || '');
   // NAICS as a list of { code, title }. Initial codes have no title yet.
@@ -199,31 +223,6 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
 
   function editSection(section) {
     setEditSections((prev) => ({ ...prev, [section]: true }));
-  }
-
-  function SummarySection({ id, title, children, editHint, editor }) {
-    const editing = editSections[id];
-    return (
-      <section className={`targeting-summary-section targeting-section-${id}`} style={{ border: `1px solid ${UI.line}`, borderRadius: 10, background: UI.paper, padding: reviewMode ? 13 : 16, marginTop: reviewMode ? 0 : 14 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start' }}>
-          <div>
-            <div style={{ fontFamily: DISPLAY_FONT, fontSize: 16, fontWeight: 600, color: UI.ink, letterSpacing: 0.2 }}>{title}</div>
-            <div style={{ marginTop: 8 }}>{children}</div>
-          </div>
-          {!editing && !readOnly ? (
-            <button
-              type="button"
-              onClick={() => editSection(id)}
-              style={{ border: `1px solid ${UI.line}`, background: '#fff', color: UI.ink, fontWeight: 600, fontSize: 13, cursor: 'pointer', borderRadius: 8, padding: '8px 12px', flexShrink: 0 }}
-            >
-              Edit
-            </button>
-          ) : null}
-        </div>
-        {editHint && !editing ? <div className="targeting-summary-hint" style={hintStyle}>{editHint}</div> : null}
-        {editing ? <div style={{ marginTop: 12 }}>{editor}</div> : null}
-      </section>
-    );
   }
 
   const naicsEditor = (
@@ -483,7 +482,7 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
         </>
       ) : (
         <div className="targeting-review-grid">
-          <SummarySection id="industries" title="Industries / NAICS" editHint={discoveryReview ? 'Authoritative NAICS resolved from your selected Discovery niche.' : 'These are the industry codes we will search against.'} editor={naicsEditor}>
+          <SummarySection id="industries" title="Industries / NAICS" editHint={discoveryReview ? 'Authoritative NAICS resolved from your selected Discovery niche.' : 'These are the industry codes we will search against.'} editor={naicsEditor} editing={editSections.industries} reviewMode={reviewMode} readOnly={readOnly} onEdit={editSection}>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {naicsList.map((n) => (
                 <span key={n.code} style={{ display: 'inline-block', fontSize: 13, fontWeight: 600, color: UI.ink, background: '#fff', border: `1px solid ${UI.line}`, borderRadius: 8, padding: '7px 10px' }}>
@@ -492,7 +491,7 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
               ))}
             </div>
           </SummarySection>
-          <SummarySection id="keywords" title="Capabilities / Keywords" editHint={discoveryReview ? 'Pulled from your Discovery capabilities and positive interests.' : 'These sharpen matching without narrowing your eligible universe.'} editor={keywordEditor}>
+          <SummarySection id="keywords" title="Capabilities / Keywords" editHint={discoveryReview ? 'Pulled from your Discovery capabilities and positive interests.' : 'These sharpen matching without narrowing your eligible universe.'} editor={keywordEditor} editing={editSections.keywords} reviewMode={reviewMode} readOnly={readOnly} onEdit={editSection}>
             {keywordItems.length > 0 ? (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {keywordItems.map((item) => (
@@ -503,10 +502,10 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
               <div style={{ fontSize: 14, color: UI.muted }}>No keywords set.</div>
             )}
           </SummarySection>
-          <SummarySection id="serviceArea" title="Service Area" editHint="Nationwide keeps stale state filters out of this search." editor={serviceAreaEditor}>
+          <SummarySection id="serviceArea" title="Service Area" editHint="Nationwide keeps stale state filters out of this search." editor={serviceAreaEditor} editing={editSections.serviceArea} reviewMode={reviewMode} readOnly={readOnly} onEdit={editSection}>
             <div style={{ fontSize: 15, color: UI.ink, fontWeight: 600 }}>{serviceAreaLabel}</div>
           </SummarySection>
-          <SummarySection id="setAsides" title="Set-Asides" editHint="Only supported selected eligibility values are carried forward." editor={setAsideEditor}>
+          <SummarySection id="setAsides" title="Set-Asides" editHint="Only supported selected eligibility values are carried forward." editor={setAsideEditor} editing={editSections.setAsides} reviewMode={reviewMode} readOnly={readOnly} onEdit={editSection}>
             {setAsideItems.length > 0 ? (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {setAsideItems.map((item) => (
@@ -517,7 +516,7 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
               <div style={{ fontSize: 14, color: UI.muted }}>No set-asides selected.</div>
             )}
           </SummarySection>
-          <SummarySection id="size" title="Contract Size" editHint="Blank size answers clear stale minimum or maximum filters." editor={sizeEditor}>
+          <SummarySection id="size" title="Contract Size" editHint="Blank size answers clear stale minimum or maximum filters." editor={sizeEditor} editing={editSections.size} reviewMode={reviewMode} readOnly={readOnly} onEdit={editSection}>
             <div style={{ fontSize: 15, color: UI.ink, fontWeight: 600 }}>{contractSizeLabel(sizeMin, sizeMax)}</div>
           </SummarySection>
         </div>

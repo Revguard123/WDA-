@@ -250,6 +250,131 @@ test('invalid Claude profile update values do not poison saved advisor answers',
   assert.deepEqual(result.answers.set_asides, []);
 });
 
+test('geography accepts state names and stores canonical two-letter codes', () => {
+  const cases = [
+    ['FL', 'FL'],
+    ['fl', 'FL'],
+    ['Florida', 'FL'],
+    ['florida', 'FL'],
+    ['Texas', 'TX'],
+  ];
+
+  for (const [input, expected] of cases) {
+    const turn = fallbackAdvisorTurn({
+      latest_answer: input,
+      answered_category: 'geography',
+    });
+
+    assert.equal(turn.answers.geography_mode, 'single_state');
+    assert.equal(turn.answers.state, expected);
+    assert.equal(turn.resolved_dimensions.includes('geography'), true);
+  }
+});
+
+test('Claude full state names are canonicalized before merging into advisor answers', async () => {
+  const client = {
+    messages: {
+      create: async () => ({
+        content: [{
+          type: 'text',
+          text: JSON.stringify({
+            profile_updates: {
+              geography_mode: 'single_state',
+              state: 'Florida',
+            },
+            resolved_dimensions: ['geography'],
+            course_reason: '',
+            assistant_message: 'Good.',
+            next_question: {
+              category: 'operating_model',
+              input_type: 'single_choice',
+              prompt: 'What type of contract fits best?',
+              helper: '',
+              placeholder: '',
+              options: [],
+            },
+            complete: false,
+          }),
+        }],
+      }),
+    },
+  };
+
+  const result = await advanceAdvisorConversation({
+    answers: {
+      capabilities_text: 'IT support',
+    },
+    resolved_dimensions: [
+      'capability',
+      'opportunity_type',
+      'fulfillment',
+      'experience',
+      'qualifications',
+      'set_asides',
+    ],
+    latest_answer: 'Florida',
+    answered_category: 'geography',
+    turn_count: 6,
+    client,
+    logger: { info() {}, error() {} },
+  });
+
+  assert.equal(result.answers.geography_mode, 'single_state');
+  assert.equal(result.answers.state, 'FL');
+});
+
+test('invalid Claude single-state geography cannot poison a valid advisor geography answer', async () => {
+  const client = {
+    messages: {
+      create: async () => ({
+        content: [{
+          type: 'text',
+          text: JSON.stringify({
+            profile_updates: {
+              geography_mode: 'single_state',
+              state: 'somewhere around Florida',
+            },
+            resolved_dimensions: ['geography'],
+            course_reason: '',
+            assistant_message: 'Good.',
+            next_question: {
+              category: 'operating_model',
+              input_type: 'single_choice',
+              prompt: 'What type of contract fits best?',
+              helper: '',
+              placeholder: '',
+              options: [],
+            },
+            complete: false,
+          }),
+        }],
+      }),
+    },
+  };
+
+  const result = await advanceAdvisorConversation({
+    answers: {
+      capabilities_text: 'IT support',
+    },
+    resolved_dimensions: [
+      'capability',
+      'opportunity_type',
+      'fulfillment',
+      'experience',
+      'qualifications',
+      'set_asides',
+    ],
+    latest_answer: 'Nationwide',
+    answered_category: 'geography',
+    turn_count: 6,
+    client,
+    logger: { info() {}, error() {} },
+  });
+
+  assert.equal(result.answers.geography_mode, 'nationwide');
+  assert.equal(result.answers.state, '');
+});
+
 test('poisoned persisted advisor answers recover on the next conversation turn', async () => {
   const client = { messages: { create: async () => ({ content: [{ type: 'text', text: JSON.stringify({ profile_updates: {}, resolved_dimensions: ['experience'], course_reason: '', assistant_message: 'Good.', next_question: { category: 'qualifications', input_type: 'single_choice', prompt: 'What do you already have?', helper: '', placeholder: '', options: [] }, complete: false }) }] }) } };
   const result = await advanceAdvisorConversation({

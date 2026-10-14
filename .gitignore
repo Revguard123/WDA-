@@ -9,6 +9,8 @@ out/
 build/
 dist/
 
+imports/
+
 # env
 .env
 .env.local

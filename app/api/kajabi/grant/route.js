@@ -11,6 +11,7 @@
 // does not send a second welcome email.
 
 import { createOrGetGrantedBuyer } from '../../../../lib/buyers.js';
+import { tierForKajabiGrant } from '../../../../lib/buyerTiers.js';
 import { buildWelcomeEmailHTML } from '../../../../lib/email/renderWelcomeEmail.js';
 import { sendBatchEmail } from '../../../../lib/email/resend.js';
 import { resolveBaseUrl } from '../../../../lib/baseUrl.js';
@@ -48,16 +49,6 @@ function pickName(body) {
   return joined || null;
 }
 
-// Map a Kajabi offer/product name to an internal tier. Default is 'enlist'
-// (a single brief). An offer whose name mentions deploy / annual / 6 becomes
-// 'deploy' (six briefs). Override directly with body.tier if you send it.
-function pickTier(body) {
-  if (body.tier === 'enlist' || body.tier === 'deploy') return body.tier;
-  const offer = String(body.offer || body.offer_title || body.product || body.product_title || '').toLowerCase();
-  if (/deploy|annual|6|six|year/.test(offer)) return 'deploy';
-  return 'enlist';
-}
-
 export async function POST(req) {
   const url = new URL(req.url);
   if (!authorized(req, url)) return Response.json({ error: 'unauthorized' }, { status: 401 });
@@ -70,10 +61,14 @@ export async function POST(req) {
     body = Object.fromEntries(url.searchParams.entries());
   }
 
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    return Response.json({ error: 'invalid grant payload' }, { status: 400 });
+  }
   const email = pickEmail(body);
   if (!email) return Response.json({ error: 'missing email' }, { status: 400 });
   const name = pickName(body);
-  const tier = pickTier(body);
+  const tier = tierForKajabiGrant(body);
+  if (!tier) return Response.json({ error: 'tier must be accelerator or vanguard' }, { status: 400 });
 
   let buyer;
   let created;

@@ -118,8 +118,14 @@ test('New Discovery reset clears stale recommendations and selected recommendati
   assert.ok(source.includes('setRecs([])'));
   assert.ok(source.includes('setAnswers({})'));
   assert.ok(source.includes('setState(emptyState)'));
-  assert.ok(source.includes('recommendations: [], selected_recommendation: null'));
-  assert.ok(source.includes('start: true, reset: true'));
+  assert.match(
+  source,
+  /recommendations:\s*\[\],\s*selected_recommendation:\s*null/,
+);
+  assert.match(
+  source,
+  /start:\s*true,\s*reset:\s*true/,
+);
   assert.ok(route.includes('const forceReset = body.start && body.reset === true'));
   assert.ok(route.includes('body.start && !forceReset'));
   assert.ok(route.includes('const existingAnswers = forceReset ? {}'));

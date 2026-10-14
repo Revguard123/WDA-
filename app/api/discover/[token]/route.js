@@ -113,9 +113,12 @@ export async function POST(req, { params }) {
       error_message: String(err?.message || 'Discovery recommendation failed').slice(0, 240),
       validation_failure_reason: err?.validation?.errors?.map((e) => e.message).slice(0, 4).join('; ') || undefined,
     }, 'error');
-    return Response.json(
-      { error: 'Could not prepare Playbook recommendations right now. Your answers remain saved.' },
-      { status: 500 },
-    );
+return Response.json(
+  {
+    error: 'Could not prepare Playbook recommendations right now. Your answers remain saved.',
+    retryable: true,
+  },
+  { status: 500 },
+);
   }
 }

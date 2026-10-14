@@ -7,9 +7,10 @@
 //
 // Secret-protected with CRON_SECRET, same as the other operational endpoints.
 //
-// GET /api/admin/grant?secret=<CRON_SECRET>&email=you@example.com&name=Jane&tier=deploy
+// GET /api/admin/grant?secret=<CRON_SECRET>&email=you@example.com&name=Jane&tier=accelerator
 
 import { createOrGetGrantedBuyer } from '../../../../lib/buyers.js';
+import { normalizeBuyerTier } from '../../../../lib/buyerTiers.js';
 import { buildWelcomeEmailHTML } from '../../../../lib/email/renderWelcomeEmail.js';
 import { sendBatchEmail } from '../../../../lib/email/resend.js';
 import { resolveBaseUrl } from '../../../../lib/baseUrl.js';
@@ -32,7 +33,8 @@ export async function GET(req) {
   const email = url.searchParams.get('email');
   if (!email) return Response.json({ error: 'pass ?email=' }, { status: 400 });
   const name = url.searchParams.get('name') || null;
-  const tier = url.searchParams.get('tier') || 'enlist';
+  const tier = normalizeBuyerTier(url.searchParams.get('tier'));
+  if (!tier) return Response.json({ error: 'tier must be accelerator or vanguard' }, { status: 400 });
 
   let buyer;
   let created;

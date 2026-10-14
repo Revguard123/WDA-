@@ -16,6 +16,8 @@ imports/
 .env.local
 .env*.local
 
+/imports
+
 # logs / os
 npm-debug.log*
 yarn-debug.log*

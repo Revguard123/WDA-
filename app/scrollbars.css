@@ -1,0 +1,60 @@
+/* One native scrollbar treatment for pages, readers, chat, forms, menus and
+   horizontal carousels. No scroll interception, overlays or polling. */
+:root {
+  --scrollbar-size: 5px;
+  --scrollbar-track: #FFF3F9;
+  --scrollbar-thumb: #F52EA9;
+  --scrollbar-thumb-end: #FF9F58;
+  --scrollbar-hover: #FF52B9;
+  --scrollbar-hover-end: #FFB477;
+  --scrollbar-active: #E31C97;
+}
+:root[data-theme="dark"] {
+  --scrollbar-track: #241B24;
+  --scrollbar-thumb: #FF78C7;
+  --scrollbar-thumb-end: #FFB477;
+  --scrollbar-hover: #FF8ED1;
+  --scrollbar-hover-end: #FFBC86;
+  --scrollbar-active: #F52EA9;
+}
+/* Slim native fallback, including Firefox; never hide scroll controls. */
+:root, :root * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+@media not (forced-colors: active) {
+  @supports selector(::-webkit-scrollbar) {
+    /* Non-auto standard colors override WebKit's custom thumb and dimensions
+       in modern Chromium. Reset them only where these pseudo-elements work. */
+    :root, :root * { scrollbar-width: auto; scrollbar-color: auto; }
+    :root::-webkit-scrollbar, :root *::-webkit-scrollbar {
+      display: block; width: var(--scrollbar-size); height: var(--scrollbar-size);
+    }
+    :root::-webkit-scrollbar-track, :root *::-webkit-scrollbar-track {
+      background: var(--scrollbar-track); border-radius: 999px;
+    }
+    :root::-webkit-scrollbar-thumb, :root *::-webkit-scrollbar-thumb {
+      --scrollbar-angle: 180deg;
+      border: 0; outline: 0; border-radius: 999px;
+      background-color: var(--scrollbar-thumb);
+      background-image: linear-gradient(var(--scrollbar-angle),var(--scrollbar-thumb),var(--scrollbar-thumb-end));
+      box-shadow: none;
+    }
+    :root::-webkit-scrollbar-thumb:vertical, :root *::-webkit-scrollbar-thumb:vertical { min-height: 44px; }
+    :root::-webkit-scrollbar-thumb:horizontal, :root *::-webkit-scrollbar-thumb:horizontal {
+      --scrollbar-angle: 90deg; min-width: 44px;
+    }
+    :root::-webkit-scrollbar-thumb:hover, :root *::-webkit-scrollbar-thumb:hover {
+      background-image: linear-gradient(var(--scrollbar-angle),var(--scrollbar-hover),var(--scrollbar-hover-end));
+    }
+    :root::-webkit-scrollbar-thumb:active, :root *::-webkit-scrollbar-thumb:active {
+      background-color: var(--scrollbar-active); background-image: none;
+    }
+    :root::-webkit-scrollbar-corner, :root *::-webkit-scrollbar-corner { background: var(--scrollbar-track); }
+    :root::-webkit-scrollbar-button, :root *::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+  }
+}
+/* Let the OS own sizing, colors and arrow controls in high-contrast modes. */
+@media (forced-colors: active) {
+  :root, :root * { scrollbar-width: auto; scrollbar-color: auto; }
+}

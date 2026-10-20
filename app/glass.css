@@ -1,0 +1,324 @@
+/* Shared, borderless glass for navigation, chat controls, loading and the brief.
+   Opaque defaults remain usable without backdrop-filter or transparency. */
+.wda-discovery-app,
+.is-workspace .wda-setup-rail,
+.is-workspace .wda-setup-mobile {
+  --starter-glass-solid: #F6F3F5;
+  --starter-glass-fill: rgba(255,255,255,.46);
+  --starter-glass-hover: rgba(255,255,255,.58);
+  --starter-glass-draft: rgba(255,241,249,.72);
+  --starter-glass-highlight: rgba(255,255,255,.7);
+  --starter-glass-shade: rgba(93,60,79,.13);
+  --starter-glass-shadow: rgba(49,31,42,.075);
+  --starter-glass-ink: #292329;
+  --starter-glass-muted: #60535D;
+}
+:root[data-theme="dark"] .wda-discovery-app,
+:root[data-theme="dark"] .is-workspace .wda-setup-rail,
+:root[data-theme="dark"] .is-workspace .wda-setup-mobile {
+  --starter-glass-solid: #242127;
+  --starter-glass-fill: rgba(28,25,32,.48);
+  --starter-glass-hover: rgba(42,35,46,.6);
+  --starter-glass-draft: rgba(60,35,53,.7);
+  --starter-glass-highlight: rgba(255,255,255,.28);
+  --starter-glass-shade: rgba(0,0,0,.28);
+  --starter-glass-shadow: rgba(0,0,0,.18);
+  --starter-glass-ink: #FAF4F9;
+  --starter-glass-muted: #D5C5D1;
+}
+:root .wda-discovery-app {
+  --skeleton-glass-bar: rgba(93,60,79,.15);
+  --skeleton-glass-shine: rgba(255,255,255,.65);
+}
+:root[data-theme="dark"] .wda-discovery-app {
+  --skeleton-glass-bar: rgba(236,205,227,.16);
+  --skeleton-glass-shine: rgba(255,212,235,.29);
+}
+/* Skeletons describe layout, not clickable cards. Use the same material but
+   leave the existing sizes, mobile carousel and calm shimmer timing intact. */
+:root .wda-discovery-app :is(.wda-skeleton-card,.wda-loading-mark) {
+  border: 0; background: var(--starter-glass-solid);
+  box-shadow: 0 4px 14px var(--starter-glass-shadow);
+}
+:root .wda-discovery-app .wda-skeleton-card {
+  isolation: isolate; border-radius: 24px;
+}
+:root .wda-discovery-app .wda-skeleton-card::before {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  border-radius: inherit; pointer-events: none;
+  background: linear-gradient(175deg,rgba(255,255,255,.12),transparent 42%,rgba(255,255,255,.025));
+}
+:root .wda-discovery-app .wda-skeleton-card :is(.wda-skeleton-badge,.wda-skeleton-title,.wda-skeleton-industry,.wda-skeleton-line,.wda-skeleton-tags span,.wda-skeleton-btn) {
+  background: linear-gradient(105deg,var(--skeleton-glass-bar) 25%,var(--skeleton-glass-shine) 44%,var(--skeleton-glass-bar) 63%);
+  background-size: 240% 100%;
+}
+:root .wda-discovery-app .wda-skeleton-footer { border: 0; }
+:root .wda-discovery-app :is(.wda-loading-heading p,.wda-loading-note) { color: var(--starter-glass-muted); }
+/* Keep recommendation reading surfaces steady; nested actions own motion. */
+:root .wda-discovery-app .wda-rec-card,
+:root .wda-discovery-app .wda-rec-card:is(:hover,:focus-within) {
+  --rec-glass-number: #9B0E65;
+  --starter-glass-fill: rgba(255,255,255,.66);
+  position: relative; isolation: isolate;
+  border: 0; border-radius: 24px; background: var(--starter-glass-solid);
+  box-shadow: 0 4px 14px var(--starter-glass-shadow); transform: none;
+}
+:root[data-theme="dark"] .wda-discovery-app .wda-rec-card { --rec-glass-number: #FF9BD6; --starter-glass-fill: rgba(28,25,32,.68); }
+/* Targeting and archive cards use the exact calm fill of the student bubble.
+   Explicit dark scope outranks older grouped theme/featured-card backgrounds. */
+:root .wda-setup-app :is(.wda-setup-path,.wda-setup-selected,.targeting-page-panel,.targeting-form-heading,.targeting-summary-section,.targeting-form-footer,.contracts-title-card,.contracts-card,.contracts-empty,.contracts-targeting),
+:root[data-theme="dark"] .wda-setup-app :is(.wda-setup-path,.wda-setup-selected,.targeting-page-panel,.targeting-form-heading,.targeting-summary-section,.targeting-form-footer,.contracts-title-card,.contracts-card,.contracts-empty,.contracts-targeting) {
+  position: relative; isolation: isolate;
+  border: 0; border-radius: 22px; background: var(--theme-soft-surface);
+  box-shadow: none; transform: none;
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  --setup-ink: var(--theme-ink);
+  --setup-text: var(--theme-text);
+  --setup-muted: var(--theme-soft-muted);
+  color: var(--theme-text);
+}
+/* Retain dropdown overlap without clipping editor focus rings. */
+:root .is-workspace .targeting-summary-section:focus-within { z-index: 2; }
+:root .wda-setup-app .contracts-title-card::before { display: none; }
+:root .wda-setup-app :is(.contracts-card-title,.contracts-summary-count dd,.contracts-verify strong,.contracts-empty h2) { color: var(--theme-ink); }
+:root .wda-setup-app :is(.contracts-why p,.contracts-deadline) { color: var(--theme-text); }
+:root .wda-setup-app :is(.contracts-account,.contracts-subtitle,.contracts-summary dt,.contracts-targeting-label,.contracts-targeting > p,.contracts-agency,.contracts-verify,.contracts-side-label,.contracts-deadline small,.contracts-empty p) { color: var(--theme-soft-muted); }
+:root .wda-discovery-app .wda-rec-card::before {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  border-radius: inherit; pointer-events: none;
+  background: linear-gradient(175deg,rgba(255,255,255,.12),transparent 42%,rgba(255,255,255,.025));
+}
+/* Preserve shared nested-action suppression: no second highlight under the CTA. */
+:root .wda-discovery-app .wda-rec-card::after {
+  background: radial-gradient(ellipse 230px 120px at var(--liquid-x) var(--liquid-y),rgba(255,255,255,.12),transparent 72%);
+}
+:root .wda-discovery-app .wda-rec-card .wda-rec-number {
+  position: absolute; top: 0; right: 0;
+  display: grid; place-items: center; min-width: 56px; height: 52px;
+  padding: 0 12px; box-sizing: border-box;
+  border: 0; border-radius: 0 24px 0 18px;
+  background: linear-gradient(135deg,rgba(245,46,169,.12),rgba(255,159,88,.18));
+  color: var(--rec-glass-number);
+  font-family: 'Zuume Rough', Impact, sans-serif;
+  font-size: 30px; font-weight: 700; line-height: 1; letter-spacing: .015em;
+  font-variant-numeric: tabular-nums; pointer-events: none;
+}
+:root[data-theme="dark"] .wda-discovery-app .wda-rec-card .wda-rec-number {
+  background: linear-gradient(135deg,rgba(245,46,169,.16),rgba(255,159,88,.12));
+}
+/* Leave room for the attached badge even on the narrow mobile carousel cards. */
+:root .wda-discovery-app .wda-rec-card :is(.wda-rec-title,.wda-rec-industry) { padding-right: 52px; }
+:root .wda-discovery-app .wda-rec-card :is(.wda-rec-title,.wda-rec-detail) { color: var(--starter-glass-ink); }
+:root .wda-discovery-app .wda-rec-card :is(.wda-rec-industry,.wda-rec-codes) { color: var(--starter-glass-muted); }
+:root .wda-discovery-app button.wda-suggestion {
+  position: relative; isolation: isolate; overflow: hidden;
+  min-height: 56px; border-radius: 24px;
+  border: 0;
+  background: var(--starter-glass-solid); color: var(--starter-glass-ink);
+  box-shadow: 0 4px 14px var(--starter-glass-shadow);
+  transform: none;
+  transition: transform .45s cubic-bezier(.2,.8,.2,1),border-radius .45s cubic-bezier(.2,.8,.2,1),background .25s ease,box-shadow .35s ease;
+}
+/* A broad reflection provides depth without drawing a rim or faux border.
+   Pointer coordinates come from the existing, frame-throttled hover handler. */
+:root .wda-discovery-app button.wda-suggestion::before {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  border-radius: inherit; pointer-events: none;
+  background: linear-gradient(175deg,rgba(255,255,255,.12),transparent 42%,rgba(255,255,255,.025));
+  box-shadow: none;
+}
+:root .wda-discovery-app button.wda-suggestion::after {
+  background: radial-gradient(ellipse 190px 70px at var(--liquid-x) var(--liquid-y),var(--starter-glass-highlight),transparent 72%);
+  opacity: 0; transform: none; transition: opacity .3s ease;
+}
+:root .wda-discovery-app .wda-suggestion :is(.wda-starter-number,.wda-starter-action) { color: var(--starter-glass-muted); }
+:root .wda-discovery-app button.wda-suggestion:focus-visible {
+  outline: 2px solid var(--wda-brand-pink-ink); outline-offset: 3px;
+}
+:root .wda-discovery-app button.wda-suggestion:disabled { opacity: .6; transform: none; cursor: wait; }
+:root .wda-discovery-app button.wda-suggestion:disabled::after { opacity: 0; }
+:root .wda-discovery-app button.wda-suggestion.is-drafting {
+  opacity: 1;
+  box-shadow: 0 4px 14px var(--starter-glass-shadow);
+}
+:root .wda-setup-app.is-workspace :is(.wda-setup-rail,.wda-setup-mobile) {
+  border: 0; box-shadow: none;
+  background: linear-gradient(155deg,rgba(255,255,255,.07),transparent 55%),var(--starter-glass-solid);
+}
+/* The rail has its own restrained brand wash, independent of the main aurora.
+   Reflection layers sit behind content, never on top of navigation targets. */
+:root .wda-setup-app.is-workspace .wda-setup-rail {
+  position: relative; isolation: isolate;
+  --rail-pink: rgba(245,46,169,.18);
+  --rail-orange: rgba(255,159,88,.25);
+  --rail-reflection: rgba(255,255,255,.8);
+  --rail-sheen: .75;
+}
+:root[data-theme="dark"] .wda-setup-app.is-workspace .wda-setup-rail {
+  --rail-pink: rgba(245,46,169,.10);
+  --rail-orange: rgba(255,159,88,.12);
+  --rail-reflection: rgba(255,255,255,.13);
+  --rail-sheen: .5;
+}
+/* Contain oversized reflections separately: they must not increase the rail's
+   scrollHeight when a short viewport needs actual navigation scrolling. */
+.is-workspace .wda-rail-light {
+  position: absolute; inset: 0; z-index: -1; overflow: hidden;
+  contain: paint; isolation: isolate; border-radius: inherit; pointer-events: none;
+}
+@media (min-width: 601px) {
+  :root .wda-setup-app.is-workspace .wda-rail-light::before,
+  :root .wda-setup-app.is-workspace .wda-rail-light::after {
+    content: ''; position: absolute; z-index: -1; pointer-events: none;
+  }
+  :root .wda-setup-app.is-workspace .wda-rail-light::before {
+    inset: -8% -55%; border-radius: 42% 58% 62% 38% / 45% 35% 65% 55%;
+    background: radial-gradient(ellipse at 20% 25%,var(--rail-pink),transparent 62%),
+      radial-gradient(ellipse at 80% 78%,var(--rail-orange),transparent 62%);
+    filter: blur(22px); animation: wdaRailMercury 22s ease-in-out infinite alternate;
+  }
+  :root .wda-setup-app.is-workspace .wda-rail-light::after {
+    width: 310px; height: 350px;
+    left: var(--liquid-x,50%); top: var(--liquid-y,50%);
+    transform: translate(-50%,-50%) rotate(-18deg);
+    border-radius: 38% 62% 58% 42% / 62% 40% 60% 38%;
+    background: radial-gradient(ellipse at 35% 28%,var(--rail-reflection),transparent 48%),
+      radial-gradient(ellipse at 62% 48%,var(--rail-pink),transparent 58%),
+      radial-gradient(ellipse at 38% 72%,var(--rail-orange),transparent 60%);
+    filter: blur(16px); opacity: 0;
+    transition: left .65s cubic-bezier(.2,.8,.2,1),top .65s cubic-bezier(.2,.8,.2,1),opacity .55s ease;
+  }
+}
+@keyframes wdaRailMercury {
+  0% { transform: translate(-5%,-3%) rotate(-9deg) scale(.96,1.04); border-radius: 42% 58% 62% 38% / 45% 35% 65% 55%; }
+  45% { transform: translate(7%,3%) rotate(8deg) scale(1.08,.97); border-radius: 61% 39% 44% 56% / 38% 58% 42% 62%; }
+  100% { transform: translate(-2%,6%) rotate(-4deg) scale(1.02,1.08); border-radius: 36% 64% 57% 43% / 60% 42% 58% 40%; }
+}
+:root .is-workspace .wda-setup-rail :is(.wda-workspace-support,.wda-sidebar-support-actions,.wda-workspace-products,nav > *) { border: 0; }
+:root .is-workspace .wda-setup-mobile nav > * { border: 0; }
+:root .wda-discovery-app form.wda-composer,
+:root .wda-discovery-app form.wda-composer:is(:hover,:focus-within,.is-drafting) {
+  border: 0; outline: none; border-radius: 26px; background: var(--starter-glass-solid);
+  box-shadow: 0 4px 14px var(--starter-glass-shadow);
+}
+:root .wda-discovery-app form.wda-composer.is-drafting { --draft-surface: var(--starter-glass-solid); }
+:root .wda-discovery-app form.wda-composer.is-drafting::after { inset: 0; }
+:root .wda-discovery-app .wda-composer-wrap { background: transparent; }
+/* A diffuse lift and the caret show focus without an outlined input shell. */
+:root .wda-discovery-app form.wda-composer:has(textarea:focus-visible) { outline: none; box-shadow: 0 8px 24px var(--starter-glass-shadow); }
+:root .wda-discovery-app form.wda-composer textarea { border: 0 !important; background: transparent !important; box-shadow: none; }
+:root .wda-discovery-app form.wda-composer:not(.is-drafting)::after { background: radial-gradient(ellipse 200px 70px at var(--liquid-x) var(--liquid-y),var(--starter-glass-highlight),transparent 72%); }
+:root .wda-discovery-app form.wda-composer.is-drafting { box-shadow: 0 0 18px rgba(245,46,169,.06),0 0 18px rgba(255,159,88,.06); }
+/* Both reader columns share one matte material: blush by day, the same
+   charcoal as the archive and chat bubbles at night. Preserve sticky layout. */
+:root .is-workspace :is(.ctc-opportunity-card,.ctc-breakdown-document),
+:root[data-theme="dark"] .is-workspace :is(.ctc-opportunity-card,.ctc-breakdown-document) {
+  --reader-surface: #F8EDF3;
+  --reader-ink: var(--theme-ink);
+  --reader-text: var(--theme-text);
+  --reader-muted: var(--theme-soft-muted);
+  border: 0; border-radius: 22px; background: var(--reader-surface);
+  box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none;
+  color: var(--reader-text);
+}
+:root[data-theme="dark"] .is-workspace :is(.ctc-opportunity-card,.ctc-breakdown-document) { --reader-surface: var(--theme-soft-surface); }
+:root .is-workspace .ctc-opportunity-card-footer,
+:root[data-theme="dark"] .is-workspace .ctc-opportunity-card-footer { background: transparent; }
+:root .is-workspace .ctc-breakdown-document :is(h2,h3),
+:root .is-workspace .ctc-opportunity-card .ctc-opportunity-overview h2 { color: var(--reader-ink); }
+:root .is-workspace .ctc-breakdown-document :is(.ctc-brief-section p,.ctc-brief-empty),
+:root .is-workspace .ctc-opportunity-card :is(.ctc-overview-copy,.ctc-breakdown-metadata dd) { color: var(--reader-text); }
+:root .is-workspace .ctc-breakdown-document :is(.ctc-decision-intro p,.ctc-brief-index,.ctc-breakdown-footer,.ctc-brief-section-heading > .ctc-icon),
+:root .is-workspace .ctc-opportunity-card :is(.ctc-breakdown-agency,.ctc-breakdown-metadata dt,.ctc-opportunity-card-footer p) { color: var(--reader-muted); }
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root .wda-discovery-app button.wda-suggestion,
+  :root .wda-discovery-app :is(.wda-skeleton-card,.wda-loading-mark),
+  :root .wda-discovery-app .wda-rec-card,
+  :root .wda-discovery-app .wda-rec-card:is(:hover,:focus-within),
+  :root .wda-setup-app.is-workspace :is(.wda-setup-rail,.wda-setup-mobile),
+  :root .wda-discovery-app form.wda-composer,
+  :root .wda-discovery-app form.wda-composer:is(:hover,:focus-within,.is-drafting) {
+    background: var(--starter-glass-fill);
+    -webkit-backdrop-filter: blur(14px) saturate(145%) contrast(1.04);
+    backdrop-filter: blur(14px) saturate(145%) contrast(1.04);
+  }
+  :root .wda-setup-app.is-workspace :is(.wda-setup-rail,.wda-setup-mobile) { background: linear-gradient(155deg,rgba(255,255,255,.07),transparent 55%),var(--starter-glass-fill); }
+  :root .wda-discovery-app form.wda-composer.is-drafting { --draft-surface: var(--starter-glass-fill); }
+  :root .wda-discovery-app button.wda-suggestion.is-drafting { background: var(--starter-glass-draft); }
+  @media (hover: hover) and (pointer: fine) {
+    :root .wda-discovery-app button.wda-suggestion:hover:not(:disabled) { background: var(--starter-glass-hover); }
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  :root .wda-setup-app.is-workspace .wda-setup-rail:hover .wda-rail-light::after { opacity: var(--rail-sheen); }
+  :root .wda-discovery-app button.wda-suggestion:hover:not(:disabled) {
+    transform: translateY(-1px) scale(1.003); border-radius: 26px;
+    color: var(--starter-glass-ink);
+    box-shadow: 0 7px 20px var(--starter-glass-shadow);
+  }
+  :root .wda-discovery-app button.wda-suggestion:hover:not(:disabled)::after { opacity: .22; }
+}
+:root .wda-discovery-app button.wda-suggestion:active:not(:disabled) { transform: scale(.988,.97); border-radius: 22px; }
+@media (prefers-reduced-motion: reduce) {
+  :root .wda-discovery-app .wda-rec-card,
+  :root .wda-discovery-app .wda-rec-card:is(:hover,:focus-within) { transform: none !important; transition: none !important; }
+  :root .wda-discovery-app .wda-rec-card::after { display: none; }
+  :root .wda-discovery-app :is(.wda-skeleton-card,.wda-skeleton-card *,.wda-loading-mark,.wda-loading-mark *) { animation: none !important; transition: none !important; }
+  :root .wda-setup-app.is-workspace .wda-rail-light::before { animation: none; transform: none !important; }
+  :root .wda-setup-app.is-workspace .wda-rail-light::after { display: none; }
+  :root .wda-discovery-app button.wda-suggestion,
+  :root .wda-discovery-app button.wda-suggestion:is(:hover,:active,:focus-visible) { transform: none !important; transition: none !important; border-radius: 24px !important; }
+  :root .wda-discovery-app button.wda-suggestion::after { display: none; }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  :root .wda-discovery-app button.wda-suggestion,
+  :root .wda-discovery-app button.wda-suggestion:is(:hover,:active,.is-drafting),
+  :root .wda-discovery-app :is(.wda-skeleton-card,.wda-loading-mark),
+  :root .wda-discovery-app .wda-rec-card,
+  :root .wda-discovery-app .wda-rec-card:is(:hover,:focus-within),
+  :root .wda-setup-app.is-workspace :is(.wda-setup-rail,.wda-setup-mobile),
+  :root .wda-discovery-app form.wda-composer,
+  :root .wda-discovery-app form.wda-composer:is(:hover,:focus-within,.is-drafting) {
+    background: var(--starter-glass-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  }
+  :root .wda-discovery-app form.wda-composer.is-drafting { --draft-surface: var(--starter-glass-solid); }
+  :root .wda-discovery-app button.wda-suggestion::before,
+  :root .wda-discovery-app button.wda-suggestion::after,
+  :root .wda-discovery-app .wda-skeleton-card::before,
+  :root .wda-discovery-app .wda-rec-card::before,
+  :root .wda-discovery-app .wda-rec-card::after,
+  :root .wda-setup-app.is-workspace .wda-rail-light::before,
+  :root .wda-setup-app.is-workspace .wda-rail-light::after { display: none; }
+}
+@media (forced-colors: active) {
+  :root .is-workspace :is(.ctc-opportunity-card,.ctc-breakdown-document) {
+    --reader-surface: ButtonFace; --reader-ink: ButtonText; --reader-text: ButtonText; --reader-muted: ButtonText;
+    background: ButtonFace !important; color: ButtonText !important; box-shadow: none; -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  }
+  :root .is-workspace :is(.ctc-opportunity-card,.ctc-breakdown-document) :is(h1,h2,h3,p,dt,dd,.ctc-brief-index,.ctc-icon,.ctc-breakdown-footer) { color: ButtonText !important; }
+  :root .wda-discovery-app button.wda-suggestion,
+  :root .wda-discovery-app button.wda-suggestion:is(:hover,:active,:focus-visible,.is-drafting),
+  :root .wda-discovery-app :is(.wda-skeleton-card,.wda-loading-mark),
+  :root .wda-discovery-app .wda-rec-card,
+  :root .wda-discovery-app .wda-rec-card:is(:hover,:focus-within),
+  :root .wda-setup-app.is-workspace :is(.wda-setup-rail,.wda-setup-mobile),
+  :root .wda-discovery-app form.wda-composer,
+  :root .wda-discovery-app form.wda-composer:is(:hover,:focus-within,.is-drafting) { background: ButtonFace !important; color: ButtonText !important; box-shadow: none; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  :root .wda-discovery-app .wda-suggestion :is(.wda-starter-number,.wda-starter-action) { color: ButtonText; }
+  :root .wda-discovery-app button.wda-suggestion::before,
+  :root .wda-discovery-app button.wda-suggestion::after,
+  :root .wda-discovery-app .wda-skeleton-card::before,
+  :root .wda-discovery-app .wda-rec-card::before,
+  :root .wda-discovery-app .wda-rec-card::after,
+  :root .wda-setup-app.is-workspace .wda-rail-light::before,
+  :root .wda-setup-app.is-workspace .wda-rail-light::after { display: none; }
+  :root .wda-discovery-app form.wda-composer:has(textarea:focus-visible) { outline: 2px solid Highlight; outline-offset: 3px; }
+  :root .wda-discovery-app .wda-rec-card :is(.wda-rec-number,.wda-rec-title,.wda-rec-detail,.wda-rec-industry,.wda-rec-codes) { color: ButtonText !important; }
+  :root .wda-discovery-app .wda-rec-card .wda-rec-number { background: ButtonFace !important; }
+  :root .wda-setup-app :is(.wda-setup-path,.wda-setup-selected,.targeting-page-panel,.targeting-form-heading,.targeting-summary-section,.targeting-form-footer,.contracts-title-card,.contracts-card,.contracts-empty,.contracts-targeting) {
+    background: ButtonFace !important; color: ButtonText !important;
+    --theme-ink: ButtonText; --theme-text: ButtonText; --theme-soft-muted: ButtonText;
+    --setup-ink: ButtonText; --setup-text: ButtonText; --setup-muted: ButtonText;
+  }
+  :root .wda-discovery-app .wda-skeleton-card :is(.wda-skeleton-badge,.wda-skeleton-title,.wda-skeleton-industry,.wda-skeleton-line,.wda-skeleton-tags span,.wda-skeleton-btn) { background: ButtonText !important; }
+}

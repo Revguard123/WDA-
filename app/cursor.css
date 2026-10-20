@@ -1,0 +1,39 @@
+/* Cached native frames animate only the fill, never pointer position. Coarse
+   pointers/high-contrast modes keep OS defaults; reduced motion stays static. */
+@media (hover: hover) and (pointer: fine) and (forced-colors: none) and (prefers-contrast: no-preference) {
+  html, body { cursor: var(--wda-cursor, auto); }
+  :where(
+    a[href]:not([aria-disabled="true"]),
+    button:not(:disabled):not([aria-disabled="true"]),
+    [role="button"]:not([aria-disabled="true"]),
+    [role="option"]:not([aria-disabled="true"]),
+    summary,
+    select:not(:disabled),
+    input:is([type="button"],[type="submit"],[type="reset"]):not(:disabled),
+    label[for]:not(:has(input:disabled)),
+    label:has(input:is([type="checkbox"],[type="radio"]):not(:disabled)),
+    input:is([type="checkbox"],[type="radio"],[type="range"]):not(:disabled)
+  ) { cursor: var(--wda-cursor-action, pointer) !important; }
+  :where(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not(:disabled),
+    textarea:not(:disabled),
+    [contenteditable="true"],
+    [data-cursor="text"]
+  ) { cursor: var(--wda-cursor-text, text) !important; }
+  :where([draggable="true"],[data-cursor="grab"]) { cursor: var(--wda-cursor-grab, grab) !important; }
+  :where([draggable="true"]:active,[data-cursor="grabbing"]) { cursor: var(--wda-cursor-grabbing, grabbing) !important; }
+  :where([data-cursor="move"]) { cursor: var(--wda-cursor-move, move) !important; }
+  :where(input[type="range"]:not(:disabled),[data-cursor="ew-resize"]) { cursor: var(--wda-cursor-ew-resize, ew-resize) !important; }
+  :where([data-cursor="ns-resize"]) { cursor: var(--wda-cursor-ns-resize, ns-resize) !important; }
+  :where([data-cursor="nesw-resize"]) { cursor: var(--wda-cursor-nesw-resize, nesw-resize) !important; }
+  :where([data-cursor="nwse-resize"]) { cursor: var(--wda-cursor-nwse-resize, nwse-resize) !important; }
+  :where([data-cursor="zoom-in"]) { cursor: var(--wda-cursor-zoom-in, zoom-in) !important; }
+  :where([data-cursor="zoom-out"]) { cursor: var(--wda-cursor-zoom-out, zoom-out) !important; }
+  :where([data-cursor="help"],abbr[title]) { cursor: var(--wda-cursor-help, help) !important; }
+  :where([data-cursor="copy"]) { cursor: var(--wda-cursor-copy, copy) !important; }
+  :where(:disabled,[aria-disabled="true"],[aria-disabled="true"] *,[data-cursor="disabled"]) { cursor: var(--wda-cursor-disabled, not-allowed) !important; }
+  /* Busy comes last: a temporarily disabled loading button is working, not
+     unavailable. Its nested icon/text and busy form share the same cursor. */
+  :where([aria-busy="true"],[aria-busy="true"] *,.is-loading,.is-loading *,.is-busy,.is-busy *,[data-cursor="progress"]) { cursor: var(--wda-cursor-progress, progress) !important; }
+  :where([data-cursor="wait"],[data-cursor="wait"] *) { cursor: var(--wda-cursor-wait, wait) !important; }
+}

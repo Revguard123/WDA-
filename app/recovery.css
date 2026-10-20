@@ -1,0 +1,49 @@
+/* Focused recovery surfaces share the product's type, warm neutrals and actions. */
+.wda-recovery-page { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; background: #FDFBF9; color: #292522; font-family: var(--font-inter), Inter, sans-serif; }
+.wda-recovery-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 20px 40px; border-bottom: 1px solid #EAE4DD; }
+.wda-recovery-brand { display: inline-flex; align-items: center; gap: 22px; text-decoration: none; color: #544A43; }
+.wda-recovery-brand img { display: block; width: 88px; height: auto; }
+.wda-recovery-brand > span { border-left: 1px solid #DED6CF; padding-left: 22px; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.wda-recovery-platform { font-size: 11px; color: #776E66; }
+.wda-recovery-main { flex: 1; width: 100%; max-width: 1060px; margin: 0 auto; padding: 64px 40px 88px; display: flex; align-items: center; outline: none; }
+.wda-recovery-layout { display: grid; grid-template-columns: 250px minmax(0,1fr); align-items: center; gap: 68px; width: 100%; }
+.wda-recovery-visual { width: 100%; max-width: 250px; }
+.wda-recovery-visual svg { display: block; width: 100%; height: auto; }
+.wda-recovery-code { font-family: 'Zuume Rough', Impact, sans-serif; font-size: 76px; font-weight: 700; letter-spacing: .02em; }
+.wda-recovery-copy { min-width: 0; animation: wdaRecoveryEnter .32s ease-out both; }
+.wda-recovery-eyebrow { margin: 0 0 12px; font-size: 10px; font-weight: 600; letter-spacing: .12em; line-height: 1.6; color: #A65B25; text-transform: uppercase; }
+.wda-recovery-copy h1 { font-family: 'Zuume Rough', Impact, sans-serif; font-weight: 700; font-size: clamp(34px,3.4vw,46px); line-height: 1.1; letter-spacing: .02em; color: var(--wda-brand-pink-ink, #C81E86); margin: 0 0 18px; }
+.wda-recovery-description { font-size: 14px; line-height: 1.8; color: #6F665E; max-width: 540px; margin: 0; }
+.wda-recovery-reference { padding: 13px 16px; margin: 20px 0 0; border: 1px solid #E7E0D9; background: #fff; border-radius: 9px; }
+.wda-recovery-reference dt { font-size: 10px; line-height: 1.5; color: #776E66; margin: 0 0 5px; }
+.wda-recovery-reference dd { font-size: 13px; font-weight: 500; color: #443A33; line-height: 1.6; margin: 0; overflow-wrap: anywhere; }
+.wda-recovery-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.wda-recovery-actions .wda-btn { min-height: 44px; font-size: 12px; }
+.wda-recovery-note { margin: 22px 0 0; padding-top: 18px; border-top: 1px solid #EAE4DD; color: #776E66; font-size: 11px; line-height: 1.75; }
+.wda-recovery-footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; padding: 20px 40px; border-top: 1px solid #EAE4DD; font-size: 10px; line-height: 1.6; color: #776E66; }
+.wda-recovery-brand:focus-visible, .wda-recovery-skip:focus-visible { outline: 2px solid #C82584; outline-offset: 5px; border-radius: 3px; }
+.wda-recovery-skip { position: absolute; top: 8px; left: 12px; transform: translateY(-180%); z-index: 100; padding: 10px 14px; background: #fff; color: #75104E; font-size: 13px; border-radius: 6px; }
+.wda-recovery-skip:focus { transform: none; }
+@keyframes wdaRecoveryEnter { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 760px) {
+  .wda-recovery-header { padding: 18px 24px; }
+  .wda-recovery-layout { grid-template-columns: minmax(0,1fr); gap: 24px; }
+  .wda-recovery-main { padding: 36px 24px 48px; }
+  .wda-recovery-visual { max-width: 140px; }
+  .wda-recovery-copy h1 { font-size: 36px; }
+  .wda-recovery-footer { padding: 18px 24px; }
+}
+@media (max-width: 460px) {
+  .wda-recovery-header { padding: 16px 20px; }
+  .wda-recovery-brand { gap: 14px; }
+  .wda-recovery-brand > span { font-size: 9px; padding-left: 14px; letter-spacing: .08em; }
+  .wda-recovery-brand img { width: 70px; }
+  .wda-recovery-platform { display: none; }
+  .wda-recovery-main { padding: 28px 20px 40px; }
+  .wda-recovery-visual { max-width: 112px; }
+  .wda-recovery-actions { align-items: stretch; flex-direction: column; margin-top: 24px; }
+  .wda-recovery-actions .wda-btn { width: 100%; }
+  .wda-recovery-description { font-size: 13px; }
+  .wda-recovery-footer { padding: 16px 20px; }
+}
+@media (prefers-reduced-motion: reduce) { .wda-recovery-copy { animation: none; } }

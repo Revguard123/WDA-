@@ -1,7 +1,11 @@
 'use client';
 
-import { useEffect, useId, useState } from 'react';
-import { UI, BODY_FONT, DISPLAY_FONT } from '../../lib/ui.js';
+import { useEffect, useState } from 'react';
+import Button from './Button.jsx';
+import Modal from './Modal.jsx';
+import Select from './Select.jsx';
+import CTCIcon from './CTCIcon.jsx';
+import { UI, BODY_FONT } from '../../lib/ui.js';
 
 const CONTEXT_LABELS = {
   portal: 'Portal',
@@ -20,17 +24,6 @@ const FEEDBACK_CATEGORIES = [
   'Account/access issue',
   'Other',
 ];
-
-const overlayStyle = {
-  position: 'fixed',
-  inset: 0,
-  background: 'rgba(26,26,26,0.45)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: 18,
-  zIndex: 1000,
-};
 
 const inputStyle = {
   width: '100%',
@@ -99,7 +92,7 @@ function collectTechnicalContext() {
   };
 }
 
-export default function SupportCTA({ pageContext, compact = false, sticky = false, initialEmail = '', supportEmail = '' }) {
+export default function SupportCTA({ pageContext, compact = false, sticky = false, sidebar = false, liquid = false, initialEmail = '', supportEmail = '' }) {
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState('feedback');
   const [email, setEmail] = useState(initialEmail || '');
@@ -108,8 +101,6 @@ export default function SupportCTA({ pageContext, compact = false, sticky = fals
   const [company, setCompany] = useState('');
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
-  const titleId = useId();
-  const messageId = useId();
   const validContext = Object.hasOwn(CONTEXT_LABELS, pageContext) ? pageContext : 'portal';
   const sending = status === 'sending';
   const feedbackMode = mode === 'feedback';
@@ -118,12 +109,7 @@ export default function SupportCTA({ pageContext, compact = false, sticky = fals
   useEffect(() => {
     if (!open) return undefined;
     if (initialEmail && !email) setEmail(initialEmail);
-    function onKeyDown(event) {
-      if (event.key === 'Escape' && !sending) setOpen(false);
-    }
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [open, sending, initialEmail, email]);
+  }, [open, initialEmail, email]);
 
   function close() {
     if (sending) return;
@@ -176,13 +162,13 @@ export default function SupportCTA({ pageContext, compact = false, sticky = fals
     }
   }
 
-  const containerStyle = sticky
+  const containerStyle = sidebar ? undefined : sticky
     ? {
-        position: 'fixed',
+        position: 'sticky',
         top: 0,
-        left: 0,
-        right: 0,
         zIndex: 900,
+        width: '100%',
+        flex: '0 0 auto',
         background: '#fffaf4',
         borderBottom: `1px solid ${UI.line}`,
         color: UI.muted,
@@ -200,11 +186,19 @@ export default function SupportCTA({ pageContext, compact = false, sticky = fals
         borderLeft: `3px solid ${UI.pink}`,
         borderRadius: '0 12px 12px 0',
         padding: compact ? '12px 14px' : '14px 16px',
-        background: compact ? '#fff' : '#fffaf4',
+        background: compact ? UI.card : 'var(--theme-support-surface, #fffaf4)',
       };
 
   return (
-    <div className={sticky ? 'ctc-beta-support-bar' : undefined} style={containerStyle}>
+    <div className={sidebar ? 'wda-sidebar-support' : sticky ? 'ctc-beta-support-bar' : undefined} style={containerStyle}>
+      {sidebar ? (
+        <div className="wda-sidebar-support-actions">
+          <p className="wda-sidebar-support-label">Help & feedback</p>
+          <button data-liquid={liquid ? '' : undefined} type="button" data-sidebar-hint="Send feedback" onClick={() => openModal('feedback')}><CTCIcon name="message" />Send feedback</button>
+          {supportEmail ? <a data-liquid={liquid ? '' : undefined} href={`mailto:${supportEmail}`} data-sidebar-hint="Email support"><CTCIcon name="mail" />Email support</a>
+            : <button data-liquid={liquid ? '' : undefined} type="button" data-sidebar-hint="Contact support" onClick={() => openModal('support')}><CTCIcon name="mail" />Contact support</button>}
+        </div>
+      ) : <>
       {sticky ? (
         <style>{`
           .ctc-beta-support-bar-inner{max-width:1120px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;line-height:1.35}
@@ -254,60 +248,21 @@ export default function SupportCTA({ pageContext, compact = false, sticky = fals
       )}
         </span>
       </div>
+      </>}
 
-      {open ? (
-        <div style={overlayStyle} role="presentation" onMouseDown={(event) => {
-          if (event.target === event.currentTarget) close();
-        }}>
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={titleId}
-            aria-describedby={messageId}
-            style={{
-              width: '100%',
-              maxWidth: 500,
-              maxHeight: '90vh',
-              overflowY: 'auto',
-              background: UI.card,
-              border: `1px solid ${UI.line}`,
-              borderTop: `4px solid ${UI.pink}`,
-              borderRadius: 12,
-              boxShadow: '0 24px 80px rgba(0,0,0,0.22)',
-              padding: 24,
-              textAlign: 'left',
-              boxSizing: 'border-box',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start' }}>
-              <div>
-                <h2 id={titleId} style={{ margin: 0, color: UI.ink, fontSize: 24, fontFamily: DISPLAY_FONT }}>
-                  {feedbackMode ? 'Send beta feedback' : 'Need help?'}
-                </h2>
-                <p id={messageId} style={{ color: UI.muted, fontSize: 14.5, lineHeight: 1.55, margin: '8px 0 0' }}>
-                  {feedbackMode
-                    ? "Tell us what isn't working. The WDA team will see it directly."
-                    : "Tell us what you're having trouble with and our support team will take a look."}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={close}
-                disabled={sending}
-                aria-label="Close support form"
-                style={{ border: 'none', background: 'transparent', color: UI.muted, fontSize: 24, lineHeight: 1, cursor: sending ? 'default' : 'pointer' }}
-              >
-                &times;
-              </button>
-            </div>
-
+      <Modal open={open} onClose={close} busy={sending} form
+        kind={status === 'sent' ? 'success' : 'feedback'}
+        title={status === 'sent' ? 'Thank you for reaching out' : feedbackMode ? 'Send beta feedback' : 'Need help?'}
+        description={status === 'sent' ? 'Your message is with the WDA team.' : feedbackMode
+          ? "Tell us what isn't working. The WDA team will see it directly."
+          : "Tell us what you're having trouble with and our support team will take a look."}>
             {status === 'sent' ? (
-              <div style={{ background: UI.paper, border: `1px solid ${UI.line}`, borderLeft: `3px solid ${UI.pink}`, borderRadius: '0 8px 8px 0', padding: '13px 14px', marginTop: 18, color: UI.text, fontSize: 14.5, lineHeight: 1.55 }}>
+              <div className="wda-popup-success" role="status">
                 {feedbackMode ? 'Thanks, we got it. The WDA team will take a look.' : "Your support request has been sent. We'll get back to you as soon as we can."}
-                <div style={{ marginTop: 14 }}>
-                  <button type="button" onClick={close} style={{ background: UI.ink, color: '#fff', border: 'none', borderRadius: 8, padding: '10px 16px', fontWeight: 600, cursor: 'pointer' }}>
+                <div className="wda-popup-actions">
+                  <Button variant="ghost" onClick={close} showArrow={false}>
                     Close
-                  </button>
+                  </Button>
                 </div>
               </div>
             ) : (
@@ -336,14 +291,14 @@ export default function SupportCTA({ pageContext, compact = false, sticky = fals
                 {feedbackMode ? (
                   <>
                     <label style={labelStyle} htmlFor="support-category">Category</label>
-                    <select
+                    <Select
                       id="support-category"
-                      style={inputStyle}
+                      name="category"
                       value={category}
-                      onChange={(event) => setCategory(event.target.value)}
-                    >
-                      {FEEDBACK_CATEGORIES.map((item) => <option key={item}>{item}</option>)}
-                    </select>
+                      onChange={setCategory}
+                      options={FEEDBACK_CATEGORIES}
+                      disabled={sending}
+                    />
                   </>
                 ) : null}
 
@@ -372,28 +327,28 @@ export default function SupportCTA({ pageContext, compact = false, sticky = fals
                   </div>
                 ) : null}
 
-                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 18 }}>
-                  <button
+                <div className="wda-popup-actions">
+                  <Button
                     type="submit"
+                    variant="solid"
                     disabled={sending}
-                    style={{ background: UI.pink, color: '#fff', border: 'none', borderRadius: 8, padding: '11px 16px', fontSize: 14, fontWeight: 600, cursor: sending ? 'default' : 'pointer', opacity: sending ? 0.72 : 1 }}
+                    loading={sending}
+                    loadingText="Sending…"
                   >
-                    {sending ? 'Sending...' : feedbackMode ? 'Send feedback' : 'Send support request'}
-                  </button>
-                  <button
-                    type="button"
+                    {feedbackMode ? 'Send feedback' : 'Send support request'}
+                  </Button>
+                  <Button
+                    variant="ghost"
                     onClick={close}
                     disabled={sending}
-                    style={{ background: '#fff', color: UI.ink, border: `1px solid ${UI.line}`, borderRadius: 8, padding: '11px 16px', fontSize: 14, fontWeight: 600, cursor: sending ? 'default' : 'pointer', opacity: sending ? 0.72 : 1 }}
+                    showArrow={false}
                   >
                     Cancel
-                  </button>
+                  </Button>
                 </div>
               </form>
             )}
-          </div>
-        </div>
-      ) : null}
+      </Modal>
     </div>
   );
 }

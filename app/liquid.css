@@ -1,0 +1,70 @@
+/* Opt-in sheen for surfaced controls and cards, never plain inline text.
+   Keep specificity low so existing layouts/positions remain authoritative. */
+:root {
+  --wda-action-fill: linear-gradient(135deg, #C81E86, #B91A7C);
+  --wda-action-hover: linear-gradient(135deg, #C11B80, #AD1773);
+}
+
+:where(.wda-btn, .contracts-button, .contracts-pill, [data-liquid]) {
+  position: relative;
+  isolation: isolate;
+  --liquid-x: 50%;
+  --liquid-y: 50%;
+  --liquid-pink: rgba(245, 46, 169, .18);
+  --liquid-warm: rgba(255, 159, 88, .12);
+}
+
+:where(.wda-btn, .contracts-button, .contracts-pill, [data-liquid])::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 130px 75px at var(--liquid-x) var(--liquid-y), var(--liquid-pink), transparent 75%),
+    radial-gradient(ellipse 100px 65px at calc(var(--liquid-x) + 12%) calc(var(--liquid-y) + 8%), var(--liquid-warm), transparent 80%);
+  opacity: 0;
+  transform: scale(.94);
+  transition: opacity .3s ease, transform .6s cubic-bezier(.2,.9,.25,1.2);
+}
+
+/* Slightly richer pink/amber light on dark actions; never a white spotlight. */
+:where(.wda-btn-solid, .wda-send, .contracts-button:not(.secondary), .contracts-pill.primary) {
+  --liquid-pink: rgba(245, 46, 169, .26);
+  --liquid-warm: rgba(255, 159, 88, .16);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where(.wda-btn, .contracts-button, .contracts-pill, [data-liquid]):hover::after {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+:where(button, a.wda-btn, a[role="button"], .contracts-button, .contracts-pill, [data-liquid]):focus-visible {
+  outline: 2px solid #C81E86;
+  outline-offset: 3px;
+}
+:where(.wda-btn, .contracts-button, .contracts-pill, [data-liquid]):focus-visible::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* A hovered descendant also matches its ancestors' hover state. A nested action owns its glow exclusively;
+   hide the parent sheen immediately rather than leaving a fading second glow. */
+:where(.wda-btn, .contracts-button, .contracts-pill, [data-liquid]):has(:where(button, a[href], [role="button"]):is(:hover, :focus-visible))::after {
+  opacity: 0;
+  transition: none;
+}
+
+:where(.wda-btn, .contracts-button, .contracts-pill, [data-liquid]):is(:disabled, [aria-disabled="true"], [aria-busy="true"], .is-loading)::after {
+  opacity: 0;
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(.wda-btn, .contracts-button, .contracts-pill, [data-liquid])::after {
+    display: none;
+  }
+}

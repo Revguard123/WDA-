@@ -1,6 +1,7 @@
 # Five-day platform refresh release plan
 
-Dates: October 19-23, 2026 (Asia/Karachi). Day 1 includes today.
+Planned release dates: October 19-23, 2026 (Asia/Karachi). Day 1 is October 19.
+Batch labels describe the plan; record actual preparation/commit dates.
 Branch: `revamp/curated-targeted-contracts`. All five daily batches will be
 committed and pushed to this same branch.
 
@@ -50,6 +51,9 @@ and `lib/ui.js` if required by those components. Include AccessForm,
 PortalEmailForm, SupportCTA and the `/`, `/portal`, `/access`, and not-found pages
 with all transitive local imports. Keep illustration-only components with the
 first page that consumes them. Include only actually referenced brand assets.
+Include Shell here as shared recovery/theme chrome: its NotFound export must
+use RecoveryScreen and its header must expose a theme slot. The workspace and
+page rewrites that consume this foundation stay in their later batches.
 
 Tests: access/portal/recovery presentation, theme, glass, dropdowns, dialogs,
 liquid/ambient/access motion, cursor, scrollbars, and updated support tests.
@@ -58,7 +62,7 @@ motion, native fallback behavior, and no broken imports or asset requests.
 
 ## Day 3: workspace, account and targeting
 
-Include SetupWorkspace, WorkspaceNavigation, Shell, NicheForm, GoButton,
+Include SetupWorkspace, WorkspaceNavigation, NicheForm, GoButton,
 targetingControls, setup/start/targeting legacy page implementations, and their
 required illustrations. Verify transitive imports against Days 1-2. Include
 workspaceNavigation, setupPresentation, targetingControls, startUx and
@@ -89,7 +93,10 @@ and hover/focus-only user actions that remain usable on touch devices.
 Include contracts/deep-dive legacy pages, AssetViewer, DecisionBrief,
 ContractArchiveIllustration, `lib/contractsPresentation.js`, `lib/briefMotion.js`,
 contractsPresentation/contractsScreen/contractFlowPresentation/readerWorkspace/
-briefMotion tests, and the final `docs/PRIVATE-BROWSER-ACCESS.md`. Review
+briefMotion tests, `test/visualIntegration.test.mjs`, and the final
+`docs/PRIVATE-BROWSER-ACCESS.md`. The visual integration tests retain all
+cross-page assertions separated from the independent Day 2 foundation tests;
+keep this file unstaged until the dependent page rewrites are included. Review
 `docs/DESIGN.md` and include only relevant, intentional documentation/assets.
 
 Gate: matching pink/charcoal cards, equal-height CTAs, external-link icons,
@@ -116,8 +123,8 @@ props and clean browser navigation, not just server unit tests.
 5. Record actual checks and results in the commit/PR notes. Keep future changes
    unstaged. Dates are targets: do not publish a broken batch to meet cadence.
 
-Current preparation authorizes a new local branch and Day 1 staging only.
-It does not authorize a commit, push, deployment, or scheduled future action.
+Prepare and stage a daily batch when requested by the user. Preparation alone
+does not authorize a commit, push, deployment, or scheduled future action.
 
 ## Preparation verification: October 19
 
@@ -138,3 +145,44 @@ It does not authorize a commit, push, deployment, or scheduled future action.
 - No commit, push, deployment, or future automation was performed. Keep the
   remaining UI changes unstaged. Manual browser acceptance and the existing
   failing assertions still require review before publication.
+
+## October 20 batch: prepared October 21
+
+The user requested preparation/staging of the October 20 batch on October 21.
+The October 19 foundation is already committed as `17794db`; it is not staged
+again. Keep the existing `revamp/curated-targeted-contracts` branch and actual
+Git timestamps. No commit or push is part of this preparation.
+
+Scope: shared UI/theme/control helpers and all CSS imported by the root layout;
+home, portal, access, recovery and not-found pages; shared Shell recovery/theme
+chrome; support form styling; independent presentation/interaction tests. All
+required logos and heading fonts are already tracked. Unused generated images,
+design references, environment files, and later page rewrites stay unstaged.
+
+The shared glass/theme/scrollbar tests retain their CSS, contrast and behavior
+coverage. Cross-page wiring assertions have moved intact to the unstaged
+`test/visualIntegration.test.mjs` for the final dependent batch. Support tests
+now check the shared Modal/dialog boundary and the existing Slack report layout,
+retaining category, technical context, sanitization and credential-redaction
+assertions. No support transport/provider behavior was changed.
+
+Verification of the independently exported index:
+
+- All 112 tests for this batch pass: entry/recovery presentation, theme, glass,
+  motion, cursor, dropdowns, dialogs, scrollbars, and support.
+- Full snapshot suite: 451 tests, 449 passed, one failed, one skipped. The
+  remaining failure is the preexisting compact playbook ranking output-limit
+  assertion, owned by the later Discovery review. The three stale support
+  assertions documented on October 19 are now aligned and pass.
+- Production build passes compilation, type/lint checks, static generation and
+  build tracing. The isolated snapshot contains no local environment files.
+- Production HTTP smoke checks return the expected branded frames: `/`,
+  `/portal`, and `/access` return 200; a missing page returns the branded 404.
+  Entry responses retain private/no-store and no-referrer headers. Referenced
+  logos and both Zuume heading fonts return 200 and are already in Git.
+- The eight moved cross-page integration checks pass against the full local
+  redesign; their test file intentionally remains unstaged with later pages.
+  Interactive browser/visual acceptance is not claimed by these checks.
+- 55 files staged on the existing revamp branch. Later page/component rewrites,
+  unused assets, and cross-page integration tests remain unstaged. No commit,
+  push, deployment, scheduled action, or backdated Git operation was performed.

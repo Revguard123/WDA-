@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 const source = readFileSync('app/_components/GoButton.jsx', 'utf8');
 
 test('successful start flow redirects directly to contracts without a found-count flash', () => {
-  assert.match(source, /window\.location\.href = `\/contracts\/\$\{token\}`/);
+  assert.match(source, /window\.location\.href = buyerPagePath\('contracts', token\)/);
   assert.ok(!source.includes('We found ${n}'));
   assert.ok(!source.includes('contract opportunities for you. Taking you there now'));
   assert.ok(!source.includes('You are in.'));

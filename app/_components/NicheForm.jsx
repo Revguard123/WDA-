@@ -1,21 +1,24 @@
 'use client';
 
-import { useState } from 'react';
-import { UI, SET_ASIDE_OPTIONS, BODY_FONT, DISPLAY_FONT } from '../../lib/ui.js';
+import { useEffect, useRef, useState } from 'react';
+import Button from './Button.jsx';
+import CTCIcon from './CTCIcon.jsx';
+import { UI, SET_ASIDE_OPTIONS, BODY_FONT } from '../../lib/ui.js';
+import { scheduleNaicsSearch, budgetStops, budgetPosition, budgetAmount, US_STATES } from '../../lib/targetingControls.js';
 
 const inputStyle = {
   width: '100%',
   padding: '11px 13px',
-  fontSize: 15,
-  border: `1px solid ${UI.line}`,
+  fontSize: 14,
+  border: '1px solid var(--theme-border, #E6E1DB)',
   borderRadius: 8,
   boxSizing: 'border-box',
-  background: '#fff',
+  background: 'var(--theme-inset, #F8F8F8)',
   color: UI.text,
   fontFamily: BODY_FONT,
 };
-const labelStyle = { display: 'block', fontSize: 13, fontWeight: 600, color: UI.ink, margin: '18px 0 6px', letterSpacing: 0.2 };
-const hintStyle = { fontSize: 12.5, color: UI.muted, marginTop: 5, lineHeight: 1.5 };
+const labelStyle = { display: 'block', fontSize: 12, fontWeight: 600, color: UI.text, margin: '0 0 8px' };
+const hintStyle = { fontSize: 12, color: UI.muted, marginTop: 8, lineHeight: 1.7 };
 
 const MAX_NAICS = 5;
 
@@ -39,7 +42,7 @@ function moneyLabel(value) {
   if (value === '' || value == null) return '';
   const numeric = Number(value);
   if (!Number.isFinite(numeric)) return String(value);
-  return `$${numeric.toLocaleString()}`;
+  return `$${numeric.toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
 }
 
 function contractSizeLabel(min, max) {
@@ -56,30 +59,42 @@ function setAsideLabel(value) {
 }
 
 export function SummarySection({ id, title, children, editHint, editor, editing, reviewMode, readOnly, onEdit }) {
+  const order = ['industries', 'keywords', 'serviceArea', 'setAsides', 'size'].indexOf(id) + (reviewMode ? 1 : 2);
   return (
-    <section className={`targeting-summary-section targeting-section-${id}`} style={{ border: `1px solid ${UI.line}`, borderRadius: 10, background: UI.paper, padding: reviewMode ? 13 : 16, marginTop: reviewMode ? 0 : 14 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start' }}>
+    <section className={`targeting-summary-section targeting-section-${id}`} aria-labelledby={`targeting-title-${id}`}>
+      <div className="targeting-section-heading">
         <div>
-          <div style={{ fontFamily: DISPLAY_FONT, fontSize: 16, fontWeight: 600, color: UI.ink, letterSpacing: 0.2 }}>{title}</div>
-          <div style={{ marginTop: 8 }}>{children}</div>
+          <span className="targeting-section-number" aria-hidden="true">{String(order).padStart(2, '0')}</span>
+          <h2 id={`targeting-title-${id}`}>{title}</h2>
         </div>
-        {!editing && !readOnly ? (
+        {editHint ? <p className="targeting-summary-hint">{editHint}</p> : null}
+      </div>
+      <div className="targeting-section-body">
+        {!editing ? <div className="targeting-section-overview">
+          <div className="targeting-section-summary">{children}</div>
+          {!readOnly ? (
           <button
+            data-liquid=""
+            className="targeting-edit"
             type="button"
             onClick={() => onEdit(id)}
-            style={{ border: `1px solid ${UI.line}`, background: '#fff', color: UI.ink, fontWeight: 600, fontSize: 13, cursor: 'pointer', borderRadius: 8, padding: '8px 12px', flexShrink: 0 }}
+            aria-label={`Edit ${title}`}
+            aria-controls={`targeting-editor-${id}`}
+            aria-expanded={false}
           >
-            Edit
+            <CTCIcon name="edit" />Edit
           </button>
-        ) : null}
+          ) : null}
+        </div> : null}
+        <div id={`targeting-editor-${id}`} className="targeting-section-editor" hidden={!editing}>
+          {editing ? editor : null}
+        </div>
       </div>
-      {editHint && !editing ? <div className="targeting-summary-hint" style={hintStyle}>{editHint}</div> : null}
-      {editing ? <div style={{ marginTop: 12 }}>{editor}</div> : null}
     </section>
   );
 }
 
-export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afterSaveHref, discoveryReview = null, reviewMode = false, readOnly = false }) {
+export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afterSaveHref, discoveryReview = null, reviewMode = false, readOnly = false, updateMode = false, expandedEditors = false, editHref, editLabel = 'Update for Future Batches' }) {
   const [name, setName] = useState(initial.name || '');
   // NAICS as a list of { code, title }. Initial codes have no title yet.
   const [naicsList, setNaicsList] = useState(normalizeInitialNaics(initial.naics));
@@ -87,25 +102,57 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [activeResult, setActiveResult] = useState(-1);
+  const searchCache = useRef(new Map());
+  const searchInput = useRef(null);
+  const stateInput = useRef(null);
+  const [searchRevision, setSearchRevision] = useState(0);
   const [manualCode, setManualCode] = useState('');
   const [showManual, setShowManual] = useState(false);
   const [editSections, setEditSections] = useState({
-    industries: !reviewMode,
-    keywords: !reviewMode,
-    setAsides: !reviewMode,
-    serviceArea: !reviewMode,
-    size: !reviewMode,
+    industries: !reviewMode || (expandedEditors && !readOnly),
+    keywords: !reviewMode || (expandedEditors && !readOnly),
+    setAsides: !reviewMode || (expandedEditors && !readOnly),
+    serviceArea: !reviewMode || (expandedEditors && !readOnly),
+    size: !reviewMode || (expandedEditors && !readOnly),
   });
 
   const [keywords, setKeywords] = useState((initial.keywords || []).join(', '));
   const [setAsides, setSetAsides] = useState(new Set(initial.set_asides || []));
   const [state, setState] = useState(initial.state || '');
+  const [singleState, setSingleState] = useState(Boolean(initial.state));
+  const [stateOpen, setStateOpen] = useState(false);
+  const [activeState, setActiveState] = useState(-1);
+  const [stateFilter, setStateFilter] = useState('');
   const [sizeMin, setSizeMin] = useState(initial.size_min ?? '');
   const [sizeMax, setSizeMax] = useState(initial.size_max ?? '');
+  const [sliderCeiling, setSliderCeiling] = useState(() => budgetStops(initial.size_min, initial.size_max).at(-1));
   const [status, setStatus] = useState('idle'); // idle | saving | saved | error
   const [message, setMessage] = useState('');
 
   const full = naicsList.length >= MAX_NAICS;
+
+  useEffect(() => {
+    if (readOnly || !editSections.industries || full) return;
+    return scheduleNaicsSearch(query, ({ results: matches, searching: pending, error }) => {
+      setResults(matches);
+      setSearching(pending);
+      setSearchError(error);
+      setActiveResult(-1);
+    }, { cache: searchCache.current });
+  }, [query, readOnly, editSections.industries, full, searchRevision]);
+
+  useEffect(() => {
+    const ceiling = budgetStops(sizeMin, sizeMax).at(-1);
+    setSliderCeiling((previous) => Math.max(previous, ceiling));
+  }, [sizeMin, sizeMax]);
+
+  useEffect(() => {
+    const id = stateOpen && activeState >= 0 ? `state-option-${activeState}`
+      : searchOpen && activeResult >= 0 ? `naics-option-${results.filter((item) => !naicsList.some((selected) => selected.code === item.code))[activeResult]?.code}` : null;
+    if (id) document.getElementById(id)?.scrollIntoView({ block: 'nearest' });
+  }, [stateOpen, activeState, searchOpen, activeResult, results, naicsList]);
 
   function addNaics(code, title) {
     const clean = String(code).replace(/\D/g, '');
@@ -119,31 +166,6 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
 
   function removeNaics(code) {
     setNaicsList((prev) => prev.filter((n) => n.code !== code));
-  }
-
-  async function doSearch() {
-    const q = query.trim();
-    if (!q) return;
-    setSearching(true);
-    setSearchError('');
-    setResults([]);
-    try {
-      const res = await fetch('/api/naics/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: q }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Search failed');
-      setResults(data.matches || []);
-      if (!data.matches || data.matches.length === 0) {
-        setSearchError('No matches. Try a simpler word, like "construction" or "cleaning".');
-      }
-    } catch (err) {
-      setSearchError('Could not search right now. You can type a NAICS code directly below.');
-    } finally {
-      setSearching(false);
-    }
   }
 
   function addManual() {
@@ -173,6 +195,16 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
       setMessage('Add at least one industry above so we know what work to look for.');
       return;
     }
+    if (singleState && !/^[A-Z]{2}$/.test(state)) {
+      setStatus('error');
+      setMessage('Enter a two-letter state abbreviation, or choose Nationwide.');
+      return;
+    }
+    if (rangeInvalid) {
+      setStatus('error');
+      setMessage('Use positive amounts or zero, and keep the maximum at or above the minimum. Leave either field blank for no limit.');
+      return;
+    }
     setStatus('saving');
     setMessage('');
     try {
@@ -200,23 +232,7 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
     }
   }
 
-  const selChipStyle = (active) => ({
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 6,
-    fontSize: 13,
-    color: active ? UI.pinkDeep : UI.text,
-    border: `1px solid ${active ? UI.pink : UI.line}`,
-    background: active ? '#fdeaf6' : '#fff',
-    borderRadius: 8,
-    padding: '7px 11px',
-    cursor: 'pointer',
-    fontWeight: active ? 700 : 400,
-  });
-
   const busy = status === 'saving';
-  const buttonLabel = status === 'saving' ? 'Saving...' : ctaLabel;
-  const showNaicsSearch = editSections.industries || naicsList.length === 0;
   const keywordItems = keywordsList(keywords);
   const setAsideItems = [...setAsides];
   const serviceAreaLabel = state ? state : 'Nationwide';
@@ -225,118 +241,99 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
     setEditSections((prev) => ({ ...prev, [section]: true }));
   }
 
+  const selectableResults = results.filter((item) => !naicsList.some((selected) => selected.code === item.code));
+  const stateOptions = US_STATES.filter((item) => !stateFilter || item.code.includes(stateFilter.toUpperCase()) || item.name.toUpperCase().startsWith(stateFilter.toUpperCase()));
+  const stops = budgetStops(sliderCeiling, 0);
+  const minPosition = budgetPosition(sizeMin, stops);
+  const maxPosition = sizeMax === '' || sizeMax == null ? 1000 : budgetPosition(sizeMax, stops);
+  const rangeInvalid = (sizeMin !== '' && (!Number.isFinite(Number(sizeMin)) || Number(sizeMin) < 0))
+    || (sizeMax !== '' && (!Number.isFinite(Number(sizeMax)) || Number(sizeMax) < 0))
+    || (sizeMin !== '' && sizeMax !== '' && Number(sizeMin) > Number(sizeMax));
+
   const naicsEditor = (
     <>
-      <label style={labelStyle}>{discoveryReview ? 'Edit official NAICS for this selected niche' : 'What kind of work do you do?'}</label>
-      <div style={{ display: 'flex', gap: 8 }}>
+      <label htmlFor="targeting-naics-query" style={labelStyle}>{discoveryReview ? 'Find an industry or NAICS code' : 'What kind of work do you do?'}</label>
+      <div className="targeting-combobox" onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) { setSearchOpen(false); setActiveResult(-1); }
+      }}>
+      <div className="targeting-search-field">
+        <CTCIcon name="search" />
         <input
-          style={inputStyle}
+          id="targeting-naics-query"
+          ref={searchInput}
+          aria-describedby="targeting-naics-hint"
+          role="combobox" aria-autocomplete="list" autoComplete="off"
+          aria-expanded={searchOpen && query.trim().length >= 2 && !full}
+          aria-controls="targeting-naics-options"
+          aria-activedescendant={searchOpen && selectableResults[activeResult] ? `naics-option-${selectableResults[activeResult].code}` : undefined}
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => { setQuery(e.target.value); setResults([]); setSearchError(''); setSearching(e.target.value.trim().length >= 2); setSearchOpen(true); setActiveResult(-1); }}
+          onFocus={() => setSearchOpen(true)}
           onKeyDown={(e) => {
+            if (e.key === 'Escape') { e.preventDefault(); setSearchOpen(false); setActiveResult(-1); }
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+              e.preventDefault(); setSearchOpen(true);
+              setActiveResult((index) => Math.max(0, Math.min(selectableResults.length - 1, index + (e.key === 'ArrowDown' ? 1 : -1))));
+            }
             if (e.key === 'Enter') {
               e.preventDefault();
-              doSearch();
+              const item = searchOpen ? selectableResults[activeResult] : null;
+              if (item) { addNaics(item.code, item.title); setActiveResult(-1); }
             }
           }}
-          placeholder="e.g. office cleaning, commercial construction, IT support"
+          placeholder="Search by work type or industry code"
+          maxLength={200}
           disabled={full}
         />
-        <button
-          type="button"
-          onClick={doSearch}
-          disabled={searching || full || !query.trim()}
-          style={{
-            flexShrink: 0,
-            background: UI.pink,
-            color: '#fff',
-            border: 'none',
-            borderRadius: 8,
-            padding: '0 18px',
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: searching || full ? 'default' : 'pointer',
-            opacity: searching || full || !query.trim() ? 0.6 : 1,
-          }}
-        >
-          {searching ? 'Searching...' : 'Search'}
-        </button>
+        {searching && !full ? <span className="targeting-search-spinner" aria-hidden="true" /> : query ? <button className="targeting-search-clear" type="button" aria-label="Clear industry search" onClick={() => { setQuery(''); setResults([]); setSearching(false); setSearchOpen(false); searchInput.current?.focus(); }}>×</button> : null}
       </div>
-      <div style={hintStyle}>
-        {discoveryReview
-          ? `Discovery loaded the authoritative NAICS for this niche. Search only if you need to fine-tune the official industry codes. Pick up to ${MAX_NAICS}.`
-          : `Just describe your work in plain words. We will find the right industry codes for you. Pick up to ${MAX_NAICS}.`}
-      </div>
-
-      {results.length > 0 ? (
-        <div style={{ marginTop: 10, border: `1px solid ${UI.line}`, borderRadius: 8, overflow: 'hidden' }}>
+      {searchOpen && query.trim().length >= 2 && !full ? (
+        <div className="targeting-dropdown">
+          <div className="targeting-dropdown-heading" role="status" aria-live="polite">{searching ? 'Finding industries…' : searchError ? 'Search unavailable' : results.length ? `${results.length} matching industries` : 'No matching industries'}</div>
+          <div id="targeting-naics-options" role="listbox" aria-label="Industry search results" aria-multiselectable="true" aria-busy={searching}>
           {results.map((r) => {
             const already = naicsList.some((n) => n.code === r.code);
             return (
-              <button
-                key={r.code}
-                type="button"
-                onClick={() => addNaics(r.code, r.title)}
-                disabled={already || full}
-                style={{
-                  display: 'flex',
-                  width: '100%',
-                  textAlign: 'left',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 10,
-                  background: already ? UI.panel : '#fff',
-                  border: 'none',
-                  borderBottom: `1px solid ${UI.line}`,
-                  padding: '11px 13px',
-                  cursor: already || full ? 'default' : 'pointer',
-                  fontFamily: BODY_FONT,
-                }}
-              >
-                <span style={{ minWidth: 0 }}>
-                  <span style={{ display: 'block', fontSize: 14, color: UI.ink, fontWeight: 600 }}>{r.title}</span>
-                  <span style={{ fontSize: 12, color: UI.muted }}>NAICS {r.code}</span>
-                </span>
-                <span style={{ flexShrink: 0, fontSize: 13, fontWeight: 600, color: already ? UI.muted : UI.pink }}>
-                  {already ? 'Added' : '+ Add'}
-                </span>
-              </button>
+              <div key={r.code} id={`naics-option-${r.code}`} role="option" aria-selected={already} aria-disabled={already}
+                className={`targeting-dropdown-option${selectableResults[activeResult]?.code === r.code ? ' is-active' : ''}`}
+                onPointerDown={(event) => event.preventDefault()}
+                onPointerMove={() => setActiveResult(selectableResults.findIndex((item) => item.code === r.code))}
+                onClick={() => { if (!already) { addNaics(r.code, r.title); setActiveResult(-1); } }}>
+                <span><strong>{r.title}</strong><small>NAICS {r.code}</small></span>
+                <span className="targeting-option-action">{already ? <><CTCIcon name="check" />Added</> : '+ Add'}</span>
+              </div>
             );
           })}
+          </div>
+          {!searching && !results.length ? <p className="targeting-dropdown-empty">{searchError || 'Try a broader description, such as “IT support” or “office cleaning”.'}</p> : null}
+          {searchError ? <div className="targeting-search-recovery"><button className="targeting-inline-action" type="button" onClick={() => setSearchRevision((value) => value + 1)}>Try search again</button><button className="targeting-text-button" type="button" onClick={() => { setShowManual(true); setSearchOpen(false); }}>Enter a NAICS code instead</button></div> : null}
+          <div className="targeting-dropdown-footer">Use ↑ ↓ to browse · Enter to add · Esc to close</div>
         </div>
       ) : null}
-      {searchError ? <div style={{ ...hintStyle, color: UI.orangeDeep, fontWeight: 600 }}>{searchError}</div> : null}
+      </div>
+      <div id="targeting-naics-hint" style={hintStyle}>{full ? `You have selected ${MAX_NAICS} industries. Remove one to add another.` : discoveryReview
+        ? 'Your Discovery industry codes are already selected. Search to refine them, up to five in total.'
+        : 'Type at least two characters to find industry codes. Choose up to five.'}</div>
 
       {naicsList.length > 0 ? (
         <div style={{ marginTop: 12 }}>
           <div style={{ fontSize: 12.5, color: UI.muted, fontWeight: 600, marginBottom: 6 }}>
             Your industries ({naicsList.length}/{MAX_NAICS})
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          <div className="targeting-selected-naics">
             {naicsList.map((n) => (
               <span
                 key={n.code}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  fontSize: 13,
-                  color: UI.text,
-                  border: `1px solid ${UI.pink}`,
-                  background: '#fdeaf6',
-                  borderRadius: 8,
-                  padding: '7px 8px 7px 11px',
-                }}
+                className="targeting-naics-chip"
               >
                 <span>
-                  <strong style={{ color: UI.ink, fontWeight: 600 }}>{n.title || `NAICS ${n.code}`}</strong>
+                  <strong>{n.title || `NAICS ${n.code}`}</strong>
                   {n.title ? <span style={{ color: UI.muted }}> &middot; {n.code}</span> : null}
                 </span>
                 <button
                   type="button"
                   onClick={() => removeNaics(n.code)}
                   aria-label={`Remove ${n.code}`}
-                  style={{ border: 'none', background: 'transparent', color: UI.pinkDeep, fontSize: 16, lineHeight: 1, cursor: 'pointer', fontWeight: 600 }}
                 >
                   &times;
                 </button>
@@ -346,10 +343,11 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
         </div>
       ) : null}
 
-      <div style={{ marginTop: 10 }}>
+      <div className="targeting-manual">
         {showManual ? (
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <input
+              aria-label="Six-digit NAICS code"
               style={{ ...inputStyle, maxWidth: 160 }}
               value={manualCode}
               onChange={(e) => setManualCode(e.target.value)}
@@ -364,45 +362,34 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
               maxLength={6}
               disabled={full}
             />
-            <button
-              type="button"
+            <Button showArrow={false}
               onClick={addManual}
               disabled={full || !/^\d{6}$/.test(manualCode.replace(/\D/g, ''))}
-              style={{ background: UI.ink, color: '#fff', border: 'none', borderRadius: 8, padding: '11px 16px', fontSize: 14, fontWeight: 600, cursor: 'pointer', opacity: full || !/^\d{6}$/.test(manualCode.replace(/\D/g, '')) ? 0.6 : 1 }}
             >
               Add
-            </button>
+            </Button>
           </div>
         ) : (
           <button
+            className="targeting-inline-action"
             type="button"
             onClick={() => setShowManual(true)}
-            style={{ border: 'none', background: 'transparent', color: UI.ink, fontWeight: 600, fontSize: 13, cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
           >
-            Already know your NAICS code? Add it directly
+            <span aria-hidden="true">+</span> Enter a NAICS code
           </button>
         )}
       </div>
 
       {!reviewMode ? (
-        <div
-          style={{
-            marginTop: 12,
-            background: UI.panel,
-            border: `1px solid ${UI.line}`,
-            borderLeft: `3px solid ${UI.orange}`,
-            borderRadius: '0 8px 8px 0',
-            padding: '12px 14px',
-          }}
-        >
-          <div style={{ fontFamily: DISPLAY_FONT, fontSize: 15, fontWeight: 600, color: UI.ink, letterSpacing: 0.2 }}>
+        <div className="targeting-industry-tip">
+          <strong>
             Two or three is the sweet spot.
-          </div>
-          <div style={{ fontSize: 13, color: UI.text, lineHeight: 1.55, marginTop: 5 }}>
+          </strong>
+          <p>
             The whole idea of the course is to own one niche: learn how buyers in it talk, learn what a good price looks
             like, and win it again and again. Two or three related industries keeps you focused and still gives us plenty
             to pull from.
-          </div>
+          </p>
         </div>
       ) : null}
     </>
@@ -410,7 +397,8 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
 
   const keywordEditor = (
     <>
-      <input style={inputStyle} value={keywords} onChange={(e) => setKeywords(e.target.value)} placeholder="renovation, repair, HVAC, day porter" />
+      <label className="targeting-field-label" htmlFor="targeting-keywords">Keywords / capabilities (optional)</label>
+      <textarea id="targeting-keywords" style={inputStyle} rows={3} value={keywords} onChange={(e) => setKeywords(e.target.value)} placeholder="renovation, repair, HVAC, day porter" />
       <div style={hintStyle}>
         Comma separated. Optional, but it sharpens how we rank your matches. It never shrinks your list, so more detail only helps.
       </div>
@@ -419,11 +407,12 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
 
   const setAsideEditor = (
     <>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
+      <div className="targeting-options targeting-eligibility">
         {SET_ASIDE_OPTIONS.map((o) => (
-          <label key={o.value} style={selChipStyle(setAsides.has(o.value))}>
+          <label key={o.value}>
             <input type="checkbox" checked={setAsides.has(o.value)} onChange={() => toggleSetAside(o.value)} />
-            {o.label}
+            <span className="targeting-checkbox-mark" aria-hidden="true"><CTCIcon name="check" /></span>
+            <span>{o.label}</span>
           </label>
         ))}
       </div>
@@ -433,116 +422,154 @@ export default function NicheForm({ token, initial = {}, ctaLabel = 'Save', afte
 
   const serviceAreaEditor = (
     <>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
-        <button type="button" onClick={() => setState('')} style={selChipStyle(!state)}>
+      <div className="targeting-service-options" role="group" aria-label="Service area">
+        <button data-liquid="" type="button" aria-pressed={!singleState} onClick={() => { setSingleState(false); setState(''); }}>
           Nationwide
         </button>
-        <button type="button" onClick={() => setState(state || 'VA')} style={selChipStyle(Boolean(state))}>
+        <button data-liquid="" type="button" aria-pressed={singleState} onClick={() => setSingleState(true)}>
           Single state
         </button>
       </div>
-      {state ? (
-        <input style={{ ...inputStyle, maxWidth: 120, marginTop: 10 }} value={state} onChange={(e) => setState(e.target.value.toUpperCase())} placeholder="VA" maxLength={2} />
-      ) : null}
-      <div style={hintStyle}>Leave blank for nationwide. Use a two-letter state only when your service area is truly state-limited.</div>
+      {singleState ? <div className="targeting-state-field">
+        <label className="targeting-field-label" htmlFor="targeting-state">Select your state</label>
+        <div className="targeting-combobox" onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setStateOpen(false); }}>
+          <div className="targeting-state-input">
+            <input id="targeting-state" ref={stateInput} value={state} onChange={(e) => { setState(e.target.value.toUpperCase()); setStateFilter(e.target.value); setStateOpen(true); setActiveState(-1); }}
+              role="combobox" aria-autocomplete="list" aria-expanded={stateOpen} aria-controls="targeting-state-options"
+              aria-activedescendant={stateOpen && stateOptions[activeState] ? `state-option-${activeState}` : undefined}
+              placeholder="State code, e.g. VA" maxLength={2} required pattern="[A-Za-z]{2}" aria-describedby="targeting-area-hint" autoComplete="off"
+              onFocus={() => { setStateFilter(''); setStateOpen(true); setActiveState(US_STATES.findIndex((item) => item.code === state)); }}
+              onKeyDown={(event) => {
+                if (event.key === 'Escape') { event.preventDefault(); setStateOpen(false); }
+                if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                  event.preventDefault(); setStateOpen(true);
+                  setActiveState((index) => Math.max(0, Math.min(stateOptions.length - 1, index + (event.key === 'ArrowDown' ? 1 : -1))));
+                }
+                if (event.key === 'Enter') {
+                  event.preventDefault();
+                  if (stateOpen && stateOptions[activeState]) { setState(stateOptions[activeState].code); setStateOpen(false); }
+                }
+              }} />
+            <span className="targeting-state-name" aria-hidden="true">{US_STATES.find((item) => item.code === state)?.name}</span>
+            <button data-liquid="" type="button" className="targeting-dropdown-toggle" aria-label={stateOpen ? 'Close state choices' : 'Show state choices'} aria-expanded={stateOpen} aria-controls="targeting-state-options"
+              onClick={() => { setStateFilter(''); setStateOpen(!stateOpen); setActiveState(-1); if (!stateOpen) stateInput.current?.focus(); }}><CTCIcon name="chevron" /></button>
+          </div>
+          {stateOpen ? <div className="targeting-dropdown">
+            <div className="targeting-dropdown-heading">Choose a state or territory</div>
+            <div id="targeting-state-options" role="listbox" aria-label="States and territories">
+              {stateOptions.map((item, index) => <div key={item.code} id={`state-option-${index}`} role="option" aria-selected={item.code === state}
+                className={`targeting-dropdown-option${index === activeState ? ' is-active' : ''}`}
+                onPointerDown={(event) => event.preventDefault()} onPointerMove={() => setActiveState(index)}
+                onClick={() => { setState(item.code); setStateOpen(false); }}>
+                <span>{item.name}<small>{item.code}</small></span>{item.code === state ? <CTCIcon name="check" /> : null}
+              </div>)}
+            </div>
+            {!stateOptions.length ? <p className="targeting-dropdown-empty">No match. Enter a two-letter state code.</p> : null}
+          </div> : null}
+        </div>
+      </div> : null}
+      <div id="targeting-area-hint" style={hintStyle}>{singleState ? 'Opportunities will stay within this state.' : 'Search opportunities across all states. No state filter is applied.'}</div>
     </>
   );
 
   const sizeEditor = (
-    <div style={{ display: 'flex', gap: 16 }}>
-      <div style={{ flex: 1 }}>
-        <label style={labelStyle}>Min contract size ($)</label>
-        <input style={inputStyle} value={sizeMin} onChange={(e) => setSizeMin(e.target.value)} placeholder="Optional" inputMode="numeric" />
+    <>
+    <div className="targeting-budget-summary" aria-live="polite"><span>Preferred range</span><strong>{contractSizeLabel(sizeMin, sizeMax)}</strong></div>
+    <div className={`targeting-budget-slider${rangeInvalid ? ' is-invalid' : ''}`} role="group" aria-label="Contract budget range"
+      style={{ '--budget-start': `${minPosition / 10}%`, '--budget-end': `${maxPosition / 10}%` }}>
+      <div className="targeting-budget-track" aria-hidden="true"><span /></div>
+      <input type="range" className="targeting-budget-thumb targeting-budget-thumb-min" aria-label="Minimum contract value slider" min="0" max="1000" step="1" value={minPosition} style={{ zIndex: minPosition >= 999 ? 3 : undefined }}
+        aria-describedby="targeting-budget-hint"
+        aria-valuetext={sizeMin === '' ? 'No minimum' : moneyLabel(sizeMin)}
+        onChange={(event) => { const amount = budgetAmount(event.target.value, stops); setSizeMin(String(sizeMax !== '' && Number.isFinite(Number(sizeMax)) ? Math.min(amount, Number(sizeMax)) : amount)); }} />
+      <input type="range" className="targeting-budget-thumb targeting-budget-thumb-max" aria-label="Maximum contract value slider" min="0" max="1000" step="1" value={maxPosition}
+        aria-describedby="targeting-budget-hint"
+        aria-valuetext={sizeMax === '' ? 'No maximum' : moneyLabel(sizeMax)}
+        onChange={(event) => setSizeMax(String(Math.max(budgetAmount(event.target.value, stops), Number(sizeMin) || 0)))} />
+    </div>
+    <div className="targeting-budget-scale" aria-hidden="true"><span>$0</span><span>{moneyLabel(stops[stops.length - 1])}</span></div>
+    <div className="targeting-range">
+      <div>
+        <label htmlFor="targeting-min" style={labelStyle}>Minimum</label>
+        <div className="targeting-currency"><span aria-hidden="true">$</span><input id="targeting-min" value={sizeMin} onChange={(e) => setSizeMin(e.target.value)} placeholder="No minimum" inputMode="decimal" aria-describedby="targeting-budget-hint" aria-invalid={rangeInvalid || undefined} /></div>
       </div>
-      <div style={{ flex: 1 }}>
-        <label style={labelStyle}>Max contract size ($)</label>
-        <input style={inputStyle} value={sizeMax} onChange={(e) => setSizeMax(e.target.value)} placeholder="Optional" inputMode="numeric" />
+      <div>
+        <label htmlFor="targeting-max" style={labelStyle}>Maximum</label>
+        <div className="targeting-currency"><span aria-hidden="true">$</span><input id="targeting-max" value={sizeMax} onChange={(e) => setSizeMax(e.target.value)} placeholder="No maximum" inputMode="decimal" aria-describedby="targeting-budget-hint" aria-invalid={rangeInvalid || undefined} /></div>
       </div>
     </div>
+    <div className="targeting-budget-footer"><small id="targeting-budget-hint">{rangeInvalid ? 'Check your amounts. Maximum must be at least the minimum; both must be zero or greater.' : 'Drag to explore, or type an exact amount. Blank means no limit.'}</small>
+      <button type="button" className="targeting-text-button" disabled={sizeMin === '' && sizeMax === ''} onClick={() => { setSizeMin(''); setSizeMax(''); }}>Clear range</button></div>
+    </>
   );
 
   return (
-    <form onSubmit={save}>
-      {reviewMode ? <style>{`.targeting-review-grid{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:12px;margin-top:14px}.targeting-section-keywords{grid-column:span 2}.targeting-summary-section{min-width:0;display:flex;flex-direction:column}.targeting-summary-section>div:first-child{flex:1 1 auto}.targeting-summary-hint{margin-top:10px!important}@media(max-width:900px){.targeting-review-grid{grid-template-columns:1fr}.targeting-section-keywords{grid-column:auto}}`}</style> : null}
+    <form className="targeting-form" onSubmit={save}>
+      <div className="targeting-form-heading">
+        <h2>Profile details</h2>
+        <div className="targeting-form-heading-actions">
+          {!readOnly ? <span className="targeting-form-heading-status">Changes apply after saving</span> : null}
+          {readOnly && editHref ? <Button href={editHref}><CTCIcon name="edit" />{editLabel}</Button> : null}
+        </div>
+      </div>
       {!reviewMode ? (
-        <>
-          <label style={labelStyle}>Your name or company</label>
-          <input style={inputStyle} value={name} onChange={(e) => setName(e.target.value)} placeholder="Acme Facility Services" />
-          {naicsEditor}
-          <label style={labelStyle}>Keywords / capabilities <span style={{ color: UI.muted, fontWeight: 600 }}>(optional)</span></label>
-          {keywordEditor}
-          <label style={labelStyle}>Set-asides you hold</label>
-          {setAsideEditor}
-          <label style={labelStyle}>State / service area</label>
-          <input style={{ ...inputStyle, maxWidth: 120 }} value={state} onChange={(e) => setState(e.target.value.toUpperCase())} placeholder="VA" maxLength={2} />
-          <div style={hintStyle}>
-            Two-letter state where you can perform work, or leave it blank for nationwide. The tighter you draw your area, the fewer contracts open up in it. Blank casts the widest net.
-          </div>
-          {sizeEditor}
-        </>
+        <div className="targeting-build-grid">
+          <SummarySection id="business" title="Your Business" editing editor={<>
+            <label htmlFor="targeting-name" style={labelStyle}>Your name or company</label>
+            <input id="targeting-name" style={inputStyle} value={name} onChange={(e) => setName(e.target.value)} placeholder="Acme Facility Services" autoComplete="organization" />
+          </>} />
+          <SummarySection id="industries" title="Industries / NAICS" editing editor={naicsEditor} />
+          <SummarySection id="keywords" title="Capabilities / Keywords" editing editor={keywordEditor} />
+          <SummarySection id="serviceArea" title="Service Area" editing editor={serviceAreaEditor} />
+          <SummarySection id="size" title="Contract Size" editing editor={sizeEditor} />
+          <SummarySection id="setAsides" title="Set-Asides" editing editor={setAsideEditor} />
+        </div>
       ) : (
         <div className="targeting-review-grid">
           <SummarySection id="industries" title="Industries / NAICS" editHint={discoveryReview ? 'Authoritative NAICS resolved from your selected Discovery niche.' : 'These are the industry codes we will search against.'} editor={naicsEditor} editing={editSections.industries} reviewMode={reviewMode} readOnly={readOnly} onEdit={editSection}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            <ul className="targeting-industry-list">
               {naicsList.map((n) => (
-                <span key={n.code} style={{ display: 'inline-block', fontSize: 13, fontWeight: 600, color: UI.ink, background: '#fff', border: `1px solid ${UI.line}`, borderRadius: 8, padding: '7px 10px' }}>
-                  NAICS {n.code}{n.title ? ` · ${n.title}` : ''}
-                </span>
+                <li key={n.code}><span className="targeting-industry-code">{n.code}</span><span>{n.title || 'NAICS industry'}</span></li>
               ))}
-            </div>
+            </ul>
           </SummarySection>
           <SummarySection id="keywords" title="Capabilities / Keywords" editHint={discoveryReview ? 'Pulled from your Discovery capabilities and positive interests.' : 'These sharpen matching without narrowing your eligible universe.'} editor={keywordEditor} editing={editSections.keywords} reviewMode={reviewMode} readOnly={readOnly} onEdit={editSection}>
             {keywordItems.length > 0 ? (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              <ul className="targeting-detail-list">
                 {keywordItems.map((item) => (
-                  <span key={item} style={{ display: 'inline-block', fontSize: 13, fontWeight: 600, color: UI.text, background: '#fff', border: `1px solid ${UI.line}`, borderRadius: 8, padding: '7px 10px' }}>{item}</span>
+                  <li key={item}>{item}</li>
                 ))}
-              </div>
+              </ul>
             ) : (
               <div style={{ fontSize: 14, color: UI.muted }}>No keywords set.</div>
             )}
           </SummarySection>
-          <SummarySection id="serviceArea" title="Service Area" editHint="Nationwide keeps stale state filters out of this search." editor={serviceAreaEditor} editing={editSections.serviceArea} reviewMode={reviewMode} readOnly={readOnly} onEdit={editSection}>
-            <div style={{ fontSize: 15, color: UI.ink, fontWeight: 600 }}>{serviceAreaLabel}</div>
+          <SummarySection id="serviceArea" title="Service Area" editHint="Nationwide searches broadly. A selected state stays specific." editor={serviceAreaEditor} editing={editSections.serviceArea} reviewMode={reviewMode} readOnly={readOnly} onEdit={editSection}>
+            <div className="targeting-summary-value">{serviceAreaLabel}</div>
           </SummarySection>
-          <SummarySection id="setAsides" title="Set-Asides" editHint="Only supported selected eligibility values are carried forward." editor={setAsideEditor} editing={editSections.setAsides} reviewMode={reviewMode} readOnly={readOnly} onEdit={editSection}>
+          <SummarySection id="size" title="Contract Size" editHint="Leave either end blank if you do not want a minimum or maximum." editor={sizeEditor} editing={editSections.size} reviewMode={reviewMode} readOnly={readOnly} onEdit={editSection}>
+            <div className="targeting-summary-value">{contractSizeLabel(sizeMin, sizeMax)}</div>
+          </SummarySection>
+          <SummarySection id="setAsides" title="Set-Asides" editHint="Your selected eligibility, alongside full-and-open opportunities." editor={setAsideEditor} editing={editSections.setAsides} reviewMode={reviewMode} readOnly={readOnly} onEdit={editSection}>
             {setAsideItems.length > 0 ? (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              <ul className="targeting-detail-list">
                 {setAsideItems.map((item) => (
-                  <span key={item} style={{ display: 'inline-block', fontSize: 13, fontWeight: 600, color: UI.text, background: '#fff', border: `1px solid ${UI.line}`, borderRadius: 8, padding: '7px 10px' }}>{setAsideLabel(item)}</span>
+                  <li key={item}>{setAsideLabel(item)}</li>
                 ))}
-              </div>
+              </ul>
             ) : (
               <div style={{ fontSize: 14, color: UI.muted }}>No set-asides selected.</div>
             )}
           </SummarySection>
-          <SummarySection id="size" title="Contract Size" editHint="Blank size answers clear stale minimum or maximum filters." editor={sizeEditor} editing={editSections.size} reviewMode={reviewMode} readOnly={readOnly} onEdit={editSection}>
-            <div style={{ fontSize: 15, color: UI.ink, fontWeight: 600 }}>{contractSizeLabel(sizeMin, sizeMax)}</div>
-          </SummarySection>
         </div>
       )}
 
-      <button
-        type="submit"
-        disabled={busy}
-        style={{
-          marginTop: 24,
-          width: '100%',
-          background: UI.ink,
-          color: '#fff',
-          border: 'none',
-          borderRadius: 9,
-          padding: '14px 24px',
-          fontSize: 16,
-          fontWeight: 600,
-          cursor: busy ? 'default' : 'pointer',
-          opacity: busy ? 0.75 : 1,
-        }}
-      >
-        {buttonLabel}
-      </button>
+      <div className="targeting-form-footer">
+        <p>{readOnly ? 'Your saved targeting profile.' : updateMode ? 'Applies to future batches only.' : 'Next: choose when to start your contracts.'}</p>
+        <Button type="submit" disabled={busy} loading={busy} loadingText="Saving…">{ctaLabel}</Button>
+      </div>
       {message ? (
-        <div style={{ marginTop: 12, fontSize: 14, color: status === 'error' ? UI.orangeDeep : UI.pinkDeep, fontWeight: 600 }}>{message}</div>
+        <div className="targeting-message" role={status === 'error' ? 'alert' : 'status'}>{message}</div>
       ) : null}
     </form>
   );

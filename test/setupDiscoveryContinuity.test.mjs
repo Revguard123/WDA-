@@ -45,9 +45,10 @@ test('setup page uses selected Discovery state and suppresses restart prompt for
   assert.ok(setupPage.includes('discoveryTargetingReviewState'));
   assert.ok(setupPage.includes('Review Your Targeting'));
   assert.ok(setupPage.includes('!discoveryReview && !state.hasTargeting'));
-  assert.ok(setupPage.includes('Not sure what to go after? Discover your niche'));
-  assert.ok(setupPage.includes('Back to Niche Discovery chat'));
-  assert.ok(setupPage.includes('maxWidth={discoveryReview || state.hasTargeting ? 1120 : 660}'));
+  assert.ok(setupPage.includes('Explore with the Niche Advisor'));
+  assert.ok(setupPage.includes('Return to Discovery'));
+  assert.ok(setupPage.includes('SetupWorkspace'));
+  assert.ok(setupPage.includes('hideHeader locked'));
   assert.ok(setupPage.includes('reviewMode={state.hasTargeting}'));
 });
 
@@ -61,8 +62,8 @@ test('targeting review form is a concise sectioned summary with edit reveals', (
   assert.ok(form.includes('Contract Size'));
   assert.ok(form.includes('editSections'));
   assert.ok(form.includes('targeting-review-grid'));
-  assert.ok(form.includes('grid-template-columns:1fr 1.25fr 1fr'));
-  assert.ok(form.includes('Nationwide keeps stale state filters out of this search.'));
+  assert.ok(form.includes('aria-controls={`targeting-editor-${id}`}'));
+  assert.ok(form.includes('Nationwide searches broadly. A selected state stays specific.'));
 });
 
 test('Review Targeting keeps editor component identity stable while controlled fields change', () => {
@@ -77,10 +78,10 @@ test('Review Targeting keeps editor component identity stable while controlled f
   // Every editable review value remains controlled by NicheForm state. Because
   // the section wrapper above is stable, these updates reconcile the existing
   // inputs instead of unmounting the focused input after each character.
-  assert.match(form, /value=\{query\}[\s\S]*?onChange=\{\(e\) => setQuery\(e\.target\.value\)\}/);
+  assert.match(form, /value=\{query\}[\s\S]*?onChange=\{\(e\) => \{ setQuery\(e\.target\.value\)/);
   assert.match(form, /value=\{manualCode\}[\s\S]*?onChange=\{\(e\) => setManualCode\(e\.target\.value\)\}/);
   assert.match(form, /value=\{keywords\}[\s\S]*?onChange=\{\(e\) => setKeywords\(e\.target\.value\)\}/);
-  assert.match(form, /value=\{state\}[\s\S]*?onChange=\{\(e\) => setState\(e\.target\.value\.toUpperCase\(\)\)\}/);
+  assert.match(form, /value=\{state\}[\s\S]*?onChange=\{\(e\) => \{ setState\(e\.target\.value\.toUpperCase\(\)\)/);
   assert.match(form, /value=\{sizeMin\}[\s\S]*?onChange=\{\(e\) => setSizeMin\(e\.target\.value\)\}/);
   assert.match(form, /value=\{sizeMax\}[\s\S]*?onChange=\{\(e\) => setSizeMax\(e\.target\.value\)\}/);
 });
@@ -107,7 +108,7 @@ test('Direct Targeting build path keeps the generic NAICS/manual builder control
   const form = readFileSync('app/_components/NicheForm.jsx', 'utf8');
   assert.ok(form.includes('!reviewMode ?'));
   assert.ok(form.includes('What kind of work do you do?'));
-  assert.ok(form.includes('Already know your NAICS code? Add it directly'));
+  assert.ok(form.includes('Enter a NAICS code'));
   assert.ok(form.includes('Two or three is the sweet spot.'));
 });
 
@@ -123,7 +124,7 @@ test('setup resumes partial Discovery sessions instead of returning to the path 
   const setupPage = readFileSync('app/setup/[token]/page.js', 'utf8');
   assert.ok(setupPage.includes('session.current_step > 1'));
   assert.ok(setupPage.includes("session.status !== 'in_progress'"));
-  assert.ok(setupPage.includes("const discoveryHref = `/discover/${token}${state.updateMode || buyer.status !== 'exploring' ? '?update=1' : ''}`"));
+  assert.ok(setupPage.includes("const discoveryHref = `${buyerPagePath('discover', token)}${state.updateMode || buyer.status !== 'exploring' ? '?update=1' : ''}`"));
   assert.ok(setupPage.includes('redirect(discoveryHref)'));
 });
 
@@ -143,17 +144,8 @@ test('setup update mode saves future targeting without entering activation', () 
   assert.ok(setupPage.includes("sp.update === '1'"));
   assert.ok(setupPage.includes('updateMode'));
   assert.ok(setupPage.includes('Save for Future Batches'));
-  assert.ok(setupPage.includes('state.reviewOnly || state.updateMode ? `/contracts/${token}` : `/start/${token}`'));
+  assert.ok(setupPage.includes("buyerPagePath(state.reviewOnly || state.updateMode ? 'contracts' : 'start', token)"));
   assert.ok(setupPage.includes('Saving here updates the targeting profile for future batches only'));
-});
-
-test('Discovery update mode returns selected niche to editable setup update flow', () => {
-  const discoverPage = readFileSync('app/discover/[token]/page.js', 'utf8');
-  const form = readFileSync('app/_components/DiscoveryForm.jsx', 'utf8');
-  assert.ok(discoverPage.includes("sp.update === '1'"));
-  assert.ok(discoverPage.includes('updateMode={state.updateMode}'));
-  assert.ok(form.includes("window.location.href = `/setup/${token}${updateMode ? '?update=1' : ''}`"));
-  assert.ok(form.includes("`/setup/${token}${updateMode ? '?update=1' : '?targeting=1'}`"));
 });
 
 test('start page is the explicit Ready to Start gate with compact targeting summary', () => {

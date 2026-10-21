@@ -78,7 +78,10 @@ dropdowns, and thin borderless scrollbars. Check both themes and touch/keyboard.
 
 Include DiscoveryForm, the discover legacy page, its illustrations, the
 conversation route's reset cleanup, discoveryPresentation/discoveryLoadingState
-tests, and remaining Discovery-dependent continuity tests. Review the existing
+tests, and remaining Discovery-dependent continuity tests. The standalone
+navigation-icon parity and Discovery-to-setup update-mode assertions are in
+`test/discoveryPresentation.test.mjs`; they were separated from the October 21
+workspace batch without dropping their coverage. Review the existing
 playbookRecommendation test against the new presentation without weakening its
 behavioral coverage. Include `test/buyerAccessPresentation.test.mjs` now that
 setup, targeting, and Discovery all use whitelisted client profile props.
@@ -186,3 +189,51 @@ Verification of the independently exported index:
 - 55 files staged on the existing revamp branch. Later page/component rewrites,
   unused assets, and cross-page integration tests remain unstaged. No commit,
   push, deployment, scheduled action, or backdated Git operation was performed.
+
+## October 21 batch: prepared October 22
+
+The user requested the October 21 workspace/targeting batch on October 22.
+The first two batches are already committed through `155e47c`. Preparation
+keeps `revamp/curated-targeted-contracts` and actual Git timestamps; it does not
+include committing or pushing.
+
+Manifest (15 files including this plan):
+
+- Workspace components: SetupWorkspace, WorkspaceNavigation, NicheForm,
+  GoButton, and the code-native NicheFocusIllustration.
+- `lib/targetingControls.js`; setup, start and targeting `[token]/page.js`
+  implementations (the clean-route adapters are already committed).
+- Tests: workspaceNavigation, setupPresentation, targetingControls, startUx,
+  and setupDiscoveryContinuity, plus this plan.
+
+Scope includes desktop/tablet sidebar collapse, mobile header account menu,
+profile/avatar, descriptive collapsed-rail tooltips, landscape sidebar branding,
+logout-last danger action, editable targeting controls and budget ranges,
+read-only/future-batch review, and the separate start/search gate. Existing
+shared CSS, buttons, modal, theme and brand assets are reused from October 20.
+Profile editing still uses the existing profile PUT; saving does not activate
+a buyer or pull contracts. Setup/targeting client props use the public profile
+whitelist. Existing Discovery and Contracts page rewrites remain unstaged.
+
+Verification of the independently exported index:
+
+- All 64 batch-relevant tests pass, including responsive navigation state,
+  keyboard shortcuts/tooltips, focus/inert behavior, safe storage failure,
+  targeting search cancellation/cache, input identity, profile persistence,
+  budget controls, state-aware redirects and setup/start continuity.
+- Full snapshot suite: 495 tests, 493 passed, one failed, one skipped. The only
+  failure is the preexisting compact playbook ranking output-limit assertion,
+  left for the Discovery batch; no new test failures were introduced.
+- Two Discovery-specific integration checks were moved intact to the unstaged
+  Discovery presentation tests; both pass against the full local redesign.
+- Isolated production build passes compilation, type/lint checks, static
+  generation and build tracing. No local environment files were copied.
+- Production HTTP checks without a session show signed-out recovery for
+  `/setup` (normal/direct/review/update modes), `/start`, and `/targeting`;
+  private/no-store and no-referrer headers remain intact, with no editable
+  profile shown. Tracked landscape/stacked logos and favicon return 200.
+  Authenticated UI is covered by synthetic component/handler tests, not live
+  member requests. Interactive browser/visual acceptance is not claimed.
+- Later Discovery/Contracts changes, cross-page integration tests, unused
+  generated images, design references and environment files stay unstaged.
+  No commit, push, deployment, scheduled action or backdating was performed.

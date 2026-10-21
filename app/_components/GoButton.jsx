@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { UI } from '../../lib/ui.js';
+import Button from './Button.jsx';
+import { buyerPagePath } from '../../lib/buyerUrls.js';
 
 export default function GoButton({ token }) {
   const [status, setStatus] = useState('idle'); // idle | working | no_matches | error
@@ -19,7 +20,7 @@ export default function GoButton({ token }) {
         setMessage('');
         return;
       }
-      window.location.href = `/contracts/${token}`;
+      window.location.href = buyerPagePath('contracts', token);
     } catch (err) {
       setStatus('error');
       setMessage(String(err.message || "We couldn't complete the search right now. Please try again."));
@@ -29,54 +30,43 @@ export default function GoButton({ token }) {
   const busy = status === 'working';
 
   return (
-    <div>
-      <button
+    <div className="ctc-activation">
+      <Button
+        variant="solid"
         onClick={go}
         disabled={busy}
-        style={{
-          background: UI.pink,
-          color: '#fff',
-          border: 'none',
-          borderRadius: 9,
-          padding: '14px 28px',
-          fontSize: 16,
-          fontWeight: 600,
-          cursor: busy ? 'default' : 'pointer',
-          opacity: busy ? 0.75 : 1,
-        }}
+        loading={busy}
+        loadingText="Finding contract opportunities…"
+        className="ctc-activation-primary"
       >
-        {busy ? 'Finding your strongest contract opportunities...' : 'Start My Contracts'}
-      </button>
+        Start My Contracts
+      </Button>
       {busy ? (
-        <div style={{ marginTop: 10, fontSize: 13.5, color: UI.muted }}>
+        <div className="ctc-activation-progress" role="status" aria-live="polite">
           We're reviewing current federal opportunities against your targeting profile.
         </div>
       ) : null}
       {status === 'no_matches' ? (
-        <div style={{ marginTop: 16, background: UI.paper, border: `1px solid ${UI.line}`, borderLeft: `3px solid ${UI.orange}`, borderRadius: '0 8px 8px 0', padding: '12px 14px', color: UI.text }}>
-          <div style={{ fontSize: 15, fontWeight: 600, color: UI.ink }}>No strong matches right now</div>
-          <div style={{ fontSize: 13.5, lineHeight: 1.55, marginTop: 5 }}>
+        <div className="ctc-activation-result" role="status">
+          <h3>No strong matches right now</h3>
+          <p>
             We reviewed the available opportunities against your current targeting, but none met the requirements we use for this cycle. Your targeting is saved and no batch has been used.
-          </div>
-          <div style={{ marginTop: 12, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-            <a href={`/setup/${token}`} style={{ display: 'inline-block', background: UI.ink, color: '#fff', textDecoration: 'none', fontWeight: 600, padding: '9px 14px', borderRadius: 7, fontSize: 14 }}>Review Targeting</a>
-            <button type="button" onClick={go} style={{ background: '#fff', color: UI.text, border: `1px solid ${UI.line}`, borderRadius: 7, padding: '9px 14px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
-              Try Again
-            </button>
+          </p>
+          <div className="ctc-activation-result-actions">
+            <Button variant="ghost" href={buyerPagePath('setup', token)} showArrow={false}>Review Targeting</Button>
+            <Button variant="outline" onClick={go}>Try Again</Button>
           </div>
         </div>
       ) : null}
       {message ? (
-        <div style={{ marginTop: 16, background: UI.paper, border: `1px solid ${UI.line}`, borderLeft: `3px solid ${UI.orange}`, borderRadius: '0 8px 8px 0', padding: '12px 14px', color: UI.text }}>
-          <div style={{ fontSize: 15, fontWeight: 600, color: UI.ink }}>We couldn't complete the search right now</div>
-          <div style={{ fontSize: 13.5, lineHeight: 1.55, marginTop: 5 }}>
+        <div className="ctc-activation-result" role="alert">
+          <h3>We couldn't complete the search right now</h3>
+          <p>
             Please try again. Your targeting is saved and no batch has been used.
-          </div>
-          <div style={{ marginTop: 12, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-            <button type="button" onClick={go} style={{ background: UI.ink, color: '#fff', border: 'none', borderRadius: 7, padding: '9px 14px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
-              Try Again
-            </button>
-            <a href={`/setup/${token}`} style={{ display: 'inline-block', color: UI.text, textDecoration: 'none', fontWeight: 600, padding: '9px 14px', border: `1px solid ${UI.line}`, borderRadius: 7, fontSize: 14 }}>Review Targeting</a>
+          </p>
+          <div className="ctc-activation-result-actions">
+            <Button variant="solid" onClick={go}>Try Again</Button>
+            <Button variant="ghost" href={buyerPagePath('setup', token)} showArrow={false}>Review Targeting</Button>
           </div>
         </div>
       ) : null}

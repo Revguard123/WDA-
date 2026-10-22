@@ -410,7 +410,7 @@ test('Direct Targeting suggestNaics remains functional with a mocked client', as
   assert.deepEqual(matches, [{ code: '561720', title: 'Janitorial Services' }]);
 });
 
-test('compact ranking request caps provider output at 8 and returns no NAICS', async () => {
+test('compact ranking requests at most eight candidates and bounds oversized provider output without accepting NAICS', async () => {
   const candidates = buildCandidateUniverse().slice(0, 10);
   let payload;
   const client = {
@@ -423,7 +423,7 @@ test('compact ranking request caps provider output at 8 and returns no NAICS', a
         content: [{
           type: 'text',
           text: JSON.stringify({
-            rankings: candidates.slice(0, 8).map((candidate) => ({
+            rankings: candidates.map((candidate) => ({
               subindustry_id: candidate.subindustry_id,
               overall_fit: 'strong',
               capability_fit: 'strong',
@@ -440,10 +440,15 @@ test('compact ranking request caps provider output at 8 and returns no NAICS', a
     },
   };
   const ranked = await rankPlaybookCandidates({ profile, candidates }, { client });
-  assert.equal(payload.output_config.format.schema.properties.rankings.maxItems, 8);
+  const schema = payload.output_config.format.schema;
+  assert.equal(payload.output_config.format.type, 'json_schema');
+  assert.equal(schema.properties.rankings.type, 'array');
+  assert.equal(schema.properties.rankings.items.additionalProperties, false);
+  assert.equal('naics' in schema.properties.rankings.items.properties, false);
   assert.match(payload.system, /at most 8 supplied candidates/i);
   assert.equal(ranked.recommendations.length, 8);
-  assert.equal('naics' in ranked.recommendations[0], false);
+  assert.deepEqual(ranked.recommendations.map((item) => item.subindustry_id), candidates.slice(0, 8).map((item) => item.subindustry_id));
+  assert.ok(ranked.recommendations.every((item) => !('naics' in item)));
 });
 
 test('ranking output-limit malformed JSON is rejected and retried once', async () => {

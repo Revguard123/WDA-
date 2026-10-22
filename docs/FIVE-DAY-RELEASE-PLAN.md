@@ -77,7 +77,8 @@ dropdowns, and thin borderless scrollbars. Check both themes and touch/keyboard.
 ## Day 4: Discovery and recommendations
 
 Include DiscoveryForm, the discover legacy page, its illustrations, the
-conversation route's reset cleanup, discoveryPresentation/discoveryLoadingState
+conversation route's reset cleanup, discoveryPresentation/discoveryLoadingState/
+discoveryReset
 tests, and remaining Discovery-dependent continuity tests. The standalone
 navigation-icon parity and Discovery-to-setup update-mode assertions are in
 `test/discoveryPresentation.test.mjs`; they were separated from the October 21
@@ -105,9 +106,9 @@ keep this file unstaged until the dependent page rewrites are included. Review
 Gate: matching pink/charcoal cards, equal-height CTAs, external-link icons,
 buyer-scoped/canonical detail routes, smooth reversible accordion transitions,
 reduced motion, responsive layout, and successful access-to-logout journeys.
-Run the complete test suite and an isolated production build. Resolve known
-stale Discovery/playbook/support source assertions before their owning batch
-ships; do not relabel failures as passes. Check final credential-free client
+Run the complete test suite and an isolated production build. Keep the updated
+Discovery/playbook/support regression checks passing; do not relabel failures
+as passes. Check final credential-free client
 props and clean browser navigation, not just server unit tests.
 
 ## Daily release procedure
@@ -237,3 +238,60 @@ Verification of the independently exported index:
 - Later Discovery/Contracts changes, cross-page integration tests, unused
   generated images, design references and environment files stay unstaged.
   No commit, push, deployment, scheduled action or backdating was performed.
+
+## October 22 batch: prepared October 22
+
+The first three batches are committed through `d4b3cc0`. This batch stays on
+`revamp/curated-targeted-contracts`. Only staging is requested; no commit or
+push is part of this preparation.
+
+Manifest (nine files including this plan):
+
+- `app/_components/DiscoveryForm.jsx`, `app/discover/[token]/page.js`, and
+  `app/api/discover/[token]/conversation/route.js`.
+- Tests: discoveryPresentation, discoveryLoadingState, discoveryReset,
+  buyerAccessPresentation, and playbookRecommendation, plus this plan.
+
+The batch includes shared workspace integration, conversational message
+actions, copy and opt-in TTS, hover/focus user controls with touch fallbacks,
+answer editing, local loading states, numbered recommendations and compact
+card spacing. Voice selection prefers natural English voices when available;
+it still depends on the browser's voice catalog. No audio provider is added.
+Discovery receives whitelisted profile/session props. No generated images are
+needed; the existing tracked logos are reused.
+
+Explicit new-chat reset now clears persisted recommendations and selection
+alongside the conversation. Ordinary resume leaves saved work intact. A route
+regression test runs the real reset handler and session normalization with
+synthetic persistence, then resumes it to check that old niches cannot return.
+It also checks that an absent buyer cannot read or reset a session.
+
+The old loading test expected removed remote Lottie frames and obsolete markup.
+Its replacement checks persisted chat reconciliation, native accessible loading,
+busy controls, keyboard entry and reduced-motion scrolling. The presentation
+tests exercise the rendered controls, message actions, loading and voice logic.
+The old ranking test expected a schema maxItems property that the current code
+does not send. It now returns ten mock rankings and verifies the existing server
+cap of eight, canonical IDs and removal of provider-supplied NAICS. The ranking
+implementation and provider schema were not changed.
+
+Verification of the independently exported index:
+
+- Full suite: 537 tests, 536 passed, zero failed, one skipped. The skipped test
+  is the existing opt-in live provider check; no real provider calls or member
+  records were used. The previously documented playbook failure is resolved
+  by the corrected behavioral test, not by skipping it or changing the cap.
+- Focused Discovery/profile/ranking suite: 143 tests, 142 passed, zero failed,
+  and the same one live-provider skip.
+- Isolated production build passes compilation, type/lint checks, static
+  generation and build tracing. No local environment files were copied.
+- Production HTTP checks show signed-out recovery for `/discover` and its
+  update mode, with private/no-store and no-referrer headers. An unauthenticated
+  new-chat reset returns 404 without changing a session cookie. Referenced
+  tracked brand images return 200.
+- Authenticated presentation, reset persistence and TTS behavior were checked
+  with synthetic fixtures and mocks. Interactive browser, real audio playback
+  and live provider acceptance were not tested.
+- Contracts/reader rewrites, their integration tests, final design/access docs,
+  design references and unused generated assets remain unstaged. No commit,
+  push, deployment, scheduled action or backdating was performed.

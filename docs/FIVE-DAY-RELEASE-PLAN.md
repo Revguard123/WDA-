@@ -295,3 +295,34 @@ Verification of the independently exported index:
 - Contracts/reader rewrites, their integration tests, final design/access docs,
   design references and unused generated assets remain unstaged. No commit,
   push, deployment, scheduled action or backdating was performed.
+
+## Final October 23 batch: staged October 24, testing deferred
+
+The user requested the final git add on October 24, with no testing yet.
+The first four batches are committed through `fb2de87`. The branch remains
+`revamp/curated-targeted-contracts`; no dates are backdated.
+
+Manifest (15 files including this plan):
+
+- AssetViewer, ContractArchiveIllustration and DecisionBrief components;
+  contracts and full-breakdown page implementations; contractsPresentation and
+  briefMotion helpers.
+- Tests: contractsPresentation, briefMotion, contractFlowPresentation,
+  contractsScreen, readerWorkspace and visualIntegration.
+- `docs/PRIVATE-BROWSER-ACCESS.md` and this release plan.
+
+Scope: the contract archive/card redesign, shared light/dark surfaces, consistent
+actions and external-link indicators, readable opportunity overview, animated
+decision-brief sections, canonical buyer-scoped breakdown links and asset-viewer
+theming. The final integration tests are included in Git but have not been run
+for this batch.
+
+Tests, builds, browser checks and HTTP smoke checks were deliberately not run
+during this preparation. Earlier batches' results do not certify this final
+snapshot. Final QA remains pending before publication. No commit, push,
+deployment or message to James was performed.
+
+Unused generated brand/avatar images, design-reference drafts and the older
+`docs/DESIGN.md` remain untouched and unstaged. That design draft describes
+different colors, routing and a slide-over reader that do not match the current
+implementation; it should not be presented as the current specification.

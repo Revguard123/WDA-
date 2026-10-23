@@ -14,7 +14,7 @@ export default function AssetViewer({ src, downloadName, eyebrow, title }) {
     fontFamily: BODY_FONT,
   };
   return (
-    <div style={{ minHeight: '100vh', background: '#0b0b0d', color: '#fff', fontFamily: BODY_FONT, padding: '0 0 64px' }}>
+    <div className="wda-asset-page" style={{ minHeight: '100vh', background: 'var(--theme-page)', color: 'var(--theme-ink)', fontFamily: BODY_FONT, padding: '0 0 64px' }}>
       <div style={{ height: 4, background: UI.pink }} />
       <div style={{ height: 3, background: UI.orange }} />
       <div style={{ maxWidth: 980, margin: '0 auto', padding: '24px 20px' }}>
@@ -25,7 +25,8 @@ export default function AssetViewer({ src, downloadName, eyebrow, title }) {
             width={160}
             style={{ width: 160, maxWidth: '52%', height: 'auto', display: 'block' }}
           />
-          <a href={src} download={downloadName} style={{ ...btn, fontSize: 14, padding: '11px 18px' }}>
+          <span data-theme-slot="" />
+          <a data-liquid="" href={src} download={downloadName} style={{ ...btn, fontSize: 14, padding: '11px 18px' }}>
             Download
           </a>
         </div>
@@ -43,7 +44,7 @@ export default function AssetViewer({ src, downloadName, eyebrow, title }) {
         />
 
         <div style={{ textAlign: 'center', marginTop: 26 }}>
-          <a href={src} download={downloadName} style={{ ...btn, fontSize: 15.5, padding: '14px 30px' }}>
+          <a data-liquid="" href={src} download={downloadName} style={{ ...btn, fontSize: 15.5, padding: '14px 30px' }}>
             Download the one-pager
           </a>
         </div>

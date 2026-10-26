@@ -60,7 +60,7 @@ test('active buyer retains targeting access but completed buyer does not imply a
 test('contract and deep-dive labels use the product-critical wording', () => {
   assert.equal(CONTRACT_CARD_WHY_LABEL, 'Why this is winnable for you');
   assert.equal(CONTRACT_CARD_BREAKDOWN_CTA, 'See Full Breakdown');
-  assert.equal(DEEP_DIVE_WHY_LABEL, 'Why we surfaced this one');
+  assert.equal(DEEP_DIVE_WHY_LABEL, 'Opportunity overview');
 });
 
 test('relevant page presentation removed the old why label and old dive CTA', () => {
@@ -77,10 +77,10 @@ test('relevant page presentation removed the old why label and old dive CTA', ()
   assert.ok(deepDivePage.includes('First move'));
 });
 
-test('contract cards link each delivery to its token-scoped deep dive', () => {
+test('contract cards link each delivery to its slug with buyer-scoped authorization', () => {
   const contractsPage = readFileSync('app/contracts/[token]/page.js', 'utf8');
   const deepDivePage = readFileSync('app/d/[token]/[notice_id]/page.js', 'utf8');
-  assert.ok(contractsPage.includes('href={`/d/${token}/${c.notice_id}`}'));
+  assert.ok(contractsPage.includes('href={contractPath(c.title, c.notice_id)}'));
   assert.ok(contractsPage.includes('CONTRACT_CARD_BREAKDOWN_CTA'));
   assert.ok(deepDivePage.includes('getDeliveryForBuyer(buyer.id, noticeId)'));
   assert.ok(deepDivePage.includes('Full breakdown'));
@@ -89,9 +89,9 @@ test('contract cards link each delivery to its token-scoped deep dive', () => {
 test('contracts archive links back to read-only targeting review', () => {
   const contractsPage = readFileSync('app/contracts/[token]/page.js', 'utf8');
   assert.ok(contractsPage.includes('Review targeting'));
-  assert.ok(contractsPage.includes('`/setup/${token}?review=1`'));
+  assert.ok(contractsPage.includes("`${buyerPagePath('setup', token)}?review=1`"));
   assert.ok(contractsPage.includes('Change niche for future batches'));
-  assert.ok(contractsPage.includes('`/discover/${token}?update=1`'));
+  assert.ok(contractsPage.includes("`${buyerPagePath('discover', token)}?update=1`"));
 });
 
 test('contract card presentation derives evidence chips and verify items from persisted analysis', () => {

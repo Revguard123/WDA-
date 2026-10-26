@@ -26,6 +26,9 @@ const env = {
 };
 
 test('Support CTA renders on required student pages with safe page contexts', () => {
+  const portalFrame = readFileSync('app/_components/PortalFrame.jsx', 'utf8');
+  assert.ok(portalFrame.includes('<SupportCTA sidebar pageContext={pageContext}'));
+  assert.ok(portalFrame.includes('className="wda-portal-help"'));
   const checks = [
     ['app/access/page.js', 'pageContext="portal"'],
     ['app/portal/page.js', 'pageContext="portal"'],
@@ -38,23 +41,28 @@ test('Support CTA renders on required student pages with safe page contexts', ()
   ];
   for (const [file, needle] of checks) {
     const source = readFileSync(file, 'utf8');
-    assert.ok(source.includes('SupportCTA'), file);
-    assert.ok(source.includes('supportBar={<SupportCTA sticky'), `${file} missing sticky support bar`);
+    assert.ok(source.includes('SupportCTA') || source.includes('SetupWorkspace') || source.includes('PortalFrame'), file);
+    const hasSupportEntry = source.includes('supportBar={<SupportCTA sticky') || source.includes('sidebarFooter={<SupportCTA sidebar') || (source.includes('SetupWorkspace') && source.includes('buyerEmail={buyer.email}')) || (source.includes('<PortalFrame') && source.includes('supportEmail={supportEmail}'));
+    assert.ok(hasSupportEntry, `${file} missing its support entry point`);
     assert.ok(source.includes(needle), `${file} missing ${needle}`);
   }
 });
 
 test('Support CTA opens modal support form and prevents double submit while sending', () => {
   const source = readFileSync('app/_components/SupportCTA.jsx', 'utf8');
-  assert.ok(source.includes('CTC is currently in beta.'));
-  assert.ok(source.includes("position: 'fixed'"));
+  const modal = readFileSync('app/_components/Modal.jsx', 'utf8');
+  const dialog = readFileSync('lib/dialog.js', 'utf8');
+  assert.ok(source.includes('This product is currently in beta.'));
+  assert.ok(source.includes("position: 'sticky'"));
   assert.ok(source.includes('collectTechnicalContext'));
   assert.ok(source.includes('Send feedback'));
   assert.ok(source.includes('Contact support'));
-  assert.ok(source.includes('role="dialog"'));
+  assert.ok(source.includes('<Modal open={open} onClose={close} busy={sending} form'));
+  assert.ok(modal.includes('role="dialog" aria-modal="true"'));
+  assert.ok(modal.includes('containDialog(panelRef.current'));
   assert.ok(source.includes('Send beta feedback'));
   assert.ok(source.includes('Send support request'));
-  assert.ok(source.includes("event.key === 'Escape'"));
+  assert.ok(dialog.includes("event.key === 'Escape'"));
   assert.ok(source.includes('disabled={sending}'));
   assert.ok(source.includes('maxLength={messageLimit}'));
   assert.ok(source.includes("company"));
@@ -229,23 +237,24 @@ test('valid beta feedback reaches the Slack-posting layer with redacted path', a
   assert.equal(sent.config.environment, 'preview');
   assert.equal(sent.message.text, 'New CTC Beta Feedback from student@example.com');
   assert.equal(sent.message.blocks[0].type, 'header');
-  assert.equal(sent.message.blocks[0].text.text, '\u{1F9EA} CTC Beta Feedback');
-  assert.deepEqual(sent.message.blocks.map((block) => block.type), ['header', 'section', 'divider', 'section', 'divider', 'section', 'section', 'divider', 'context']);
-  const fields = sent.message.blocks[1].fields.map((field) => field.text);
-  assert.ok(fields.includes('*Issue Type*\n\u{1F916} Niche Advisor issue'));
-  assert.ok(fields.includes('*Environment*\nPreview'));
-  assert.ok(fields.includes('*Student*\nstudent@example.com'));
-  assert.ok(fields.includes('*Page*\nNiche Discovery'));
-  assert.equal(sent.message.blocks[3].text.text, '*What happened*\nThe next question is not loading after I submit my answer.');
-  assert.equal(sent.message.blocks[5].text.text, '*Technical context*');
-  const technicalFields = sent.message.blocks[6].fields.map((field) => field.text);
-  assert.ok(technicalFields.includes('*Browser*\nChrome/Chromium'));
-  assert.ok(technicalFields.includes('*Device*\nDesktop'));
-  assert.ok(technicalFields.includes('*Operating system*\nWindows'));
-  assert.ok(technicalFields.includes('*Viewport*\n1440x900'));
-  assert.ok(technicalFields.includes('*Screen*\n1920x1080 @ 1x'));
-  assert.ok(technicalFields.includes('*Timezone*\nAmerica/New_York'));
-  assert.ok(technicalFields.includes('*Language*\nen-US'));
+  assert.equal(sent.message.blocks[0].text.text, 'CTC Beta Feedback');
+  assert.deepEqual(sent.message.blocks.map((block) => block.type), ['header', 'section', 'divider', 'section', 'divider', 'section', 'divider', 'context']);
+  const fields = sent.message.blocks[1].text.text.split('\n');
+  assert.equal(fields[0], '*REPORT DETAILS*');
+  assert.ok(fields.includes('*Issue type:* \u{1F916} Niche Advisor issue'));
+  assert.ok(fields.includes('*Environment:* Preview'));
+  assert.ok(fields.includes('*Student:* student@example.com'));
+  assert.ok(fields.includes('*Page:* Niche Discovery'));
+  assert.equal(sent.message.blocks[3].text.text, '*WHAT HAPPENED*\n\nThe next question is not loading after I submit my answer.');
+  const technicalFields = sent.message.blocks[5].text.text.split('\n');
+  assert.equal(technicalFields[0], '*TECHNICAL CONTEXT*');
+  assert.ok(technicalFields.includes('*Browser:* Chrome/Chromium'));
+  assert.ok(technicalFields.includes('*Device:* Desktop'));
+  assert.ok(technicalFields.includes('*Operating system:* Windows'));
+  assert.ok(technicalFields.includes('*Viewport:* 1440x900'));
+  assert.ok(technicalFields.includes('*Screen:* 1920x1080 @ 1x'));
+  assert.ok(technicalFields.includes('*Timezone:* America/New_York'));
+  assert.ok(technicalFields.includes('*Language:* en-US'));
   assert.ok(!JSON.stringify(sent.message).includes('not shown'));
   assert.ok(!JSON.stringify(sent.message).includes('123e4567-e89b-12d3-a456-426614174000'));
 });
@@ -304,15 +313,17 @@ test('Slack feedback message is compact and readable', () => {
     buyerId: '8b3f0000-1111-2222-3333-44444400021c',
   });
   assert.equal(message.text, 'New CTC Beta Feedback from student@example.com');
-  assert.equal(message.blocks[0].text.text, '\u{1F9EA} CTC Beta Feedback');
-  assert.deepEqual(message.blocks.map((block) => block.type), ['header', 'section', 'divider', 'section', 'divider', 'section', 'section', 'divider', 'context']);
-  const fields = message.blocks[1].fields.map((field) => field.text);
-  assert.ok(fields.includes('*Issue Type*\n\u{1F3AF} Contract issue'));
-  assert.ok(fields.includes('*Page*\nCurated Contracts'));
-  assert.ok(fields.includes('*Environment*\nProduction'));
-  assert.equal(message.blocks[3].text.text, '*What happened*\nThis contract card looks wrong.');
-  assert.ok(message.blocks[6].fields.map((field) => field.text).includes('*Browser*\nSafari &lt;Private&gt;'));
-  assert.equal(message.blocks[8].elements[0].text, 'Submitted Sep 4, 2026 \u00B7 7:42 PM ET \u2022 Buyer `8b3f...21c`');
+  assert.equal(message.blocks[0].text.text, 'CTC Beta Feedback');
+  assert.deepEqual(message.blocks.map((block) => block.type), ['header', 'section', 'divider', 'section', 'divider', 'section', 'divider', 'context']);
+  const fields = message.blocks[1].text.text.split('\n');
+  assert.equal(fields[0], '*REPORT DETAILS*');
+  assert.ok(fields.includes('*Issue type:* \u{1F3AF} Contract issue'));
+  assert.ok(fields.includes('*Page:* Curated Contracts'));
+  assert.ok(fields.includes('*Environment:* Production'));
+  assert.ok(fields.includes('*Buyer:* `8b3f...21c`'));
+  assert.equal(message.blocks[3].text.text, '*WHAT HAPPENED*\n\nThis contract card looks wrong.');
+  assert.ok(message.blocks[5].text.text.split('\n').includes('*Browser:* Safari &lt;Private&gt;'));
+  assert.equal(message.blocks[7].elements[0].text, 'Submitted Sep 4, 2026 \u00B7 7:42 PM ET');
   assert.ok(!JSON.stringify(message).includes('123e4567-e89b-12d3-a456-426614174000'));
 });
 
@@ -346,7 +357,7 @@ test('existing student journeys remain unaffected by Support CTA wiring', () => 
   const setupSource = readFileSync('app/setup/[token]/page.js', 'utf8');
   const discoverSource = readFileSync('app/discover/[token]/page.js', 'utf8');
   const startSource = readFileSync('app/start/[token]/page.js', 'utf8');
-  assert.ok(setupSource.includes('Help me discover my niche'));
+  assert.ok(setupSource.includes('NicheForm'));
   assert.ok(discoverSource.includes('DiscoveryForm'));
   assert.ok(startSource.includes('GoButton'));
   assert.ok(!readFileSync('app/_components/SupportCTA.jsx', 'utf8').includes('/api/activate'));

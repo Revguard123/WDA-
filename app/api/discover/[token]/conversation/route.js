@@ -194,6 +194,7 @@ async function handleConversationPost(req, { params }) {
     answers,
     currentStep: Math.min(ADVISOR_MAX_TURNS, Math.max(1, proposedAdvisorState.turn_count + 1)),
     status: 'in_progress',
+    ...(forceReset ? { recommendations: [], selectedRecommendation: null } : {}),
   });
 
   // Return the same canonical state that the NEXT request will recover from storage.

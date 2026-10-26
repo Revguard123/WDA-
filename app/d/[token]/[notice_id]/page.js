@@ -1,9 +1,15 @@
 import Shell, { NotFound } from '../../../_components/Shell.jsx';
 import SupportCTA from '../../../_components/SupportCTA.jsx';
+import SetupWorkspace from '../../../_components/SetupWorkspace.jsx';
+import Button from '../../../_components/Button.jsx';
+import CTCIcon from '../../../_components/CTCIcon.jsx';
+import DecisionBrief from '../../../_components/DecisionBrief.jsx';
+import BetaNotice from '../../../_components/BetaNotice.jsx';
 import { getBuyerByToken } from '../../../../lib/buyers.js';
 import { getDeliveryForBuyer } from '../../../../lib/deliveries.js';
-import { UI } from '../../../../lib/ui.js';
 import { DEEP_DIVE_WHY_LABEL } from '../../../../lib/contractsPresentation.js';
+import { redirect } from 'next/navigation';
+import { buyerPagePath, contractPath, contractSlug } from '../../../../lib/buyerUrls.js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -44,7 +50,27 @@ function briefSections(text) {
   return sections;
 }
 
-export default async function DiveDeeperPage({ params }) {
+// Give long saved summaries natural paragraph breaks without rewriting claims,
+// extracting inferred facts, truncating content or making another AI request.
+function overviewParagraphs(value) {
+  const text = String(value || '').trim();
+  if (!text) return [];
+  if (text.includes('\n')) return text.split(/\n\s*\n/).filter(Boolean);
+  const sentences = [...new Intl.Segmenter('en', { granularity: 'sentence' }).segment(text)];
+  const paragraphs = [];
+  let paragraph = '';
+  for (const { segment } of sentences) {
+    if (paragraph && (paragraph + segment).trim().split(/\s+/).length > 60) {
+      paragraphs.push(paragraph.trim());
+      paragraph = '';
+    }
+    paragraph += segment;
+  }
+  if (paragraph.trim()) paragraphs.push(paragraph.trim());
+  return paragraphs;
+}
+
+export default async function DiveDeeperPage({ params, canonicalSlug }) {
   const { token, notice_id: noticeId } = params;
   const buyer = await getBuyerByToken(token);
   if (!buyer) return <NotFound what="link" />;
@@ -52,59 +78,76 @@ export default async function DiveDeeperPage({ params }) {
   const record = await getDeliveryForBuyer(buyer.id, noticeId);
   if (!record) return <NotFound what="contract" />;
   const opp = record.opportunity || {};
+  if (canonicalSlug && canonicalSlug !== contractSlug(opp.title, noticeId)) redirect(contractPath(opp.title, noticeId));
   const sections = briefSections(record.deep_dive_text);
+  const overviewIndex = sections.findIndex((section) => section.title.toLowerCase() === 'why we surfaced this one');
+  const initiallyOpenIndex = overviewIndex >= 0 ? overviewIndex : 0;
   const supportEmail = process.env.SUPPORT_TO_EMAIL || '';
 
-  const chip = (label, value) => (
-    <span style={{ display: 'inline-block', background: UI.paper, border: `1px solid ${UI.line}`, borderRadius: 4, padding: '3px 8px', margin: '0 6px 6px 0', fontSize: 12, color: UI.muted }}>
-      {label}: <strong style={{ color: UI.text, fontWeight: 600 }}>{value}</strong>
-    </span>
-  );
-
   return (
-    <Shell supportBar={<SupportCTA sticky pageContext="deep_dive" initialEmail={buyer.email} supportEmail={supportEmail} />}>
-      <div style={{ marginBottom: 12 }}>
-        <a href={`/contracts/${token}`} style={{ color: UI.muted, fontSize: 14, textDecoration: 'none' }}>&larr; Back to your contracts</a>
-      </div>
-      <div style={{ background: UI.card, border: `1px solid ${UI.line}`, borderRadius: 10, padding: 28 }}>
-        <h1 style={{ margin: '0 0 4px', fontSize: 22, color: UI.ink, lineHeight: 1.3 }}>{opp.title || 'Solicitation'}</h1>
-        <div style={{ fontSize: 13, color: UI.muted, marginBottom: 14 }}>{opp.agency || 'Agency not stated'}</div>
-        <div>
-          {chip('NAICS', opp.naics || 'n/a')}
-          {chip('Set-aside', opp.set_aside_type || 'Full and open')}
-          {chip('Place', opp.place_of_perf || 'n/a')}
-          {chip('Due', fmtDeadline(opp.response_deadline))}
+    <Shell maxWidth="100%" hideHeader locked>
+      <SetupWorkspace token={token} buyerName={buyer.name} buyerEmail={buyer.email} reader activePage="contracts" discoveryHref={`${buyerPagePath('discover', token)}${buyer.status === 'exploring' ? '' : '?update=1'}`} contentClassName="ctc-breakdown-page" mainLabel="Contract full breakdown"
+        sidebarFooter={<SupportCTA sidebar liquid pageContext="deep_dive" initialEmail={buyer.email} supportEmail={supportEmail} />}
+        contextBar={
+        <div className="ctc-reader-context">
+          <nav className="ctc-reader-breadcrumb" aria-label="Breadcrumb"><ol>
+            <li><a id="reader-contracts-link" href={buyerPagePath('contracts', token)}>Contracts</a></li>
+            <li aria-hidden="true" className="ctc-reader-breadcrumb-divider">/</li>
+            <li><span aria-current="page">Full breakdown</span></li>
+          </ol></nav>
+          <BetaNotice focusAfterDismissId="reader-contracts-link" />
         </div>
-
-        {record.why_line ? (
-          <div style={{ background: UI.paper, borderLeft: `3px solid ${UI.green}`, padding: '10px 12px', borderRadius: '0 4px 4px 0', fontSize: 14, color: UI.text, margin: '10px 0 6px', lineHeight: 1.5 }}>
-            <strong style={{ color: UI.green, fontWeight: 600 }}>{DEEP_DIVE_WHY_LABEL}.</strong> {record.why_line}
-          </div>
+      }>
+      <div className="ctc-breakdown-layout">
+      <aside className="ctc-opportunity-card ctc-flow-panel" aria-labelledby="breakdown-title">
+      <header className="ctc-breakdown-hero">
+        <p className="wda-setup-eyebrow">Contract opportunity</p>
+        <h1 id="breakdown-title">{opp.title || 'Solicitation'}</h1>
+        <p className="ctc-breakdown-agency">{opp.agency || 'Agency not stated'}</p>
+      </header>
+      <div className="ctc-opportunity-card-body" tabIndex={0} role="region" aria-label="Contract summary and details">
+          <dl className="ctc-breakdown-metadata" aria-label="Opportunity details">
+            <div><dt>NAICS</dt><dd>{opp.naics || 'Not supplied'}</dd></div>
+            <div><dt>Set-aside</dt><dd>{opp.set_aside_type || 'Full and open'}</dd></div>
+            <div><dt>Location</dt><dd>{opp.place_of_perf || 'Not supplied'}</dd></div>
+            <div><dt>Due</dt><dd>{fmtDeadline(opp.response_deadline)}</dd></div>
+          </dl>
+        {String(record.why_line || '').trim() ? (
+          <section className="ctc-opportunity-overview" aria-labelledby="breakdown-overview-title">
+            <h2 id="breakdown-overview-title">{DEEP_DIVE_WHY_LABEL}</h2>
+            <div className="ctc-overview-copy">{overviewParagraphs(record.why_line).map((paragraph, index) => <p key={index}>{paragraph}</p>)}</div>
+          </section>
         ) : null}
-
-        <h2 style={{ fontSize: 18, color: UI.ink, margin: '24px 0 8px' }}>War Dogs decision brief</h2>
-        <p style={{ color: UI.muted, fontSize: 14, lineHeight: 1.55, margin: '0 0 14px' }}>
-          A plain-English bid/no-bid read: why this was surfaced, what gives you an edge, what to verify, and what to do first.
-        </p>
+      </div>
+      <footer className="ctc-opportunity-card-footer">
+        {opp.sam_url ? <Button href={opp.sam_url} target="_blank" rel="noopener noreferrer" ariaLabel="View the full solicitation on SAM.gov (opens in a new tab)">View on SAM.gov</Button> : null}
+        <p>Confirm the latest deadlines and amendments on SAM.gov.</p>
+      </footer>
+      </aside>
+      <article className="ctc-breakdown-document" aria-labelledby="decision-brief-title">
+      <DecisionBrief>
+        <header className="ctc-decision-intro"><h2 id="decision-brief-title">War Dogs decision brief</h2>
+          {sections.length > 1 ? <p>Open a section to read the details.</p> : null}
+        </header>
         {sections.length ? (
-          sections.map((section) => (
-            <section key={section.title} style={{ borderTop: `1px solid ${UI.line}`, paddingTop: 14, marginTop: 14 }}>
-              <h3 style={{ margin: '0 0 7px', fontSize: 15, color: UI.ink }}>{section.title}</h3>
+          sections.map((section, index) => (
+            <details key={index} id={`brief-section-${index}`} className="ctc-brief-section" open={index === initiallyOpenIndex}>
+              <summary className="ctc-brief-section-heading"><span className="ctc-brief-index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span><h3 id={`brief-title-${index}`}>{section.title}</h3><CTCIcon name="chevron" /></summary>
+              <div className="ctc-brief-section-content"><div className="ctc-brief-section-body">
               {section.body.split(/\n+/).map((p, i) => (
-                <p key={i} style={{ fontSize: 15, color: UI.text, lineHeight: 1.65, margin: '0 0 9px' }}>{p.replace(/^[-*]\s*/, '')}</p>
+                <p key={i}>{p.replace(/^[-*]\s*/, '')}</p>
               ))}
-            </section>
+              </div></div>
+            </details>
           ))
         ) : (
-          <p style={{ color: UI.muted, fontSize: 15 }}>The detailed breakdown for this contract is being prepared.</p>
+          <p className="ctc-brief-empty" role="status">The detailed breakdown for this contract is being prepared.</p>
         )}
-
-        {opp.sam_url ? (
-          <a href={opp.sam_url} style={{ display: 'inline-block', marginTop: 8, background: UI.ink, color: '#fff', textDecoration: 'none', fontWeight: 600, padding: '11px 18px', borderRadius: 8, fontSize: 15 }}>
-            View the full solicitation on SAM.gov
-          </a>
-        ) : null}
+      </DecisionBrief>
+      <footer className="ctc-breakdown-footer">Confirm the latest deadlines, amendments, and mandatory requirements in the full solicitation before bidding.</footer>
+      </article>
       </div>
+      </SetupWorkspace>
     </Shell>
   );
 }

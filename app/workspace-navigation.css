@@ -1,0 +1,117 @@
+/* Responsive chrome only: one account/support tree, never a second mobile
+   footer or a duplicated logout form. The conversation owns its scroll area. */
+.wda-logout-label { display: none; }
+.is-workspace { position: relative; }
+.is-workspace .wda-workspace-support > .wda-account-logout-form { margin-top: 4px; }
+.is-workspace .wda-workspace-support .wda-account-logout {
+  display: flex; align-items: center; justify-content: flex-start;
+  width: 100%; gap: 9px; padding: 10px 14px; font-size: 10.5px; font-weight: 500;
+  color: var(--theme-danger); background: transparent;
+}
+.is-workspace .wda-workspace-support .wda-logout-label { display: inline; }
+.is-workspace .wda-member-account:focus-visible { outline: 2px solid var(--theme-pink); outline-offset: 2px; }
+.is-workspace .wda-rail-heading { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 16px; padding-left: 8px; }
+.is-workspace .wda-rail-heading .wda-reader-brand { flex: 1 1 auto; min-width: 0; width: 144px; max-width: 144px; margin: 0; }
+.is-workspace .wda-reader-brand .wda-rail-brand-mark { display: none; }
+.wda-sidebar-toggle, .wda-mobile-account-toggle {
+  display: grid; place-items: center; flex: 0 0 44px; width: 44px; min-height: 44px;
+  padding: 0; border: 0; border-radius: 12px; background: transparent;
+  color: var(--theme-muted); cursor: pointer;
+}
+.wda-sidebar-toggle .ctc-icon { width: 19px; height: 19px; }
+.wda-mobile-account-toggle { display: none; }
+.wda-mobile-account-toggle { transition: background .18s ease; }
+.wda-mobile-account-toggle[aria-expanded="true"] { background: var(--theme-blush); }
+.wda-sidebar-toggle:focus-visible, .wda-mobile-account-toggle:focus-visible { outline: 2px solid var(--theme-pink); outline-offset: 2px; }
+/* Portalled beyond the rail's scroll/blur clipping; no layout footprint. */
+.wda-sidebar-hint {
+  position: fixed; z-index: 1100; display: flex; align-items: center; gap: 9px;
+  max-width: calc(100vw - 24px); box-sizing: border-box; padding: 8px 11px;
+  border: 0; border-radius: 12px; background: #29262D; color: #FFF7FC;
+  box-shadow: 0 6px 22px rgba(31,16,26,.2); font-family: var(--font-inter), Inter, sans-serif;
+  font-size: 12px; font-weight: 600; line-height: 1.5;
+  opacity: 0; visibility: hidden; pointer-events: none; transform: translate(-4px,-50%);
+  transition: opacity .14s ease,transform .18s ease,visibility 0s linear .18s;
+}
+.wda-sidebar-hint[data-open="true"] { opacity: 1; visibility: visible; pointer-events: auto; transform: translate(0,-50%); transition-delay: 0s; }
+.wda-sidebar-hint-copy { min-width: 0; max-width: 258px; }
+.wda-sidebar-hint-copy > span { display: block; }
+.wda-sidebar-hint-copy small { display: block; margin-top: 3px; color: #DDD1DC; font-size: 11px; font-weight: 400; overflow-wrap: anywhere; }
+.wda-sidebar-hint[data-tone="danger"] .wda-sidebar-hint-copy > span { color: #FF8995; }
+.wda-sidebar-hint kbd { padding: 2px 6px; border: 0; border-radius: 6px; background: rgba(255,255,255,.14); color: inherit; font: inherit; font-size: 11px; }
+@media (hover: hover) and (pointer: fine) {
+  .wda-sidebar-toggle:hover, .wda-mobile-account-toggle:hover { color: var(--theme-pink); background: var(--theme-blush); }
+  .is-workspace .wda-workspace-support .wda-account-logout:hover { color: var(--theme-danger-hover); background: var(--theme-danger-soft); }
+}
+@media (min-width: 601px) {
+  .is-workspace .wda-setup-layout { transition: grid-template-columns .36s cubic-bezier(.22,1,.36,1); }
+  .is-workspace .wda-setup-rail { min-width: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; transition: padding .36s cubic-bezier(.22,1,.36,1); }
+  .is-workspace .wda-rail-heading { flex-shrink: 0; }
+  .is-workspace .wda-setup-rail nav > * { overflow: hidden; transition: padding .36s cubic-bezier(.22,1,.36,1),gap .36s cubic-bezier(.22,1,.36,1),background .18s ease,color .18s ease; }
+  .is-workspace .wda-nav-label { display: block; min-width: 0; max-width: 140px; overflow: hidden; white-space: nowrap; opacity: 1; transform: translateX(0); transition: max-width .36s cubic-bezier(.22,1,.36,1),opacity .16s ease,transform .36s cubic-bezier(.22,1,.36,1); }
+  .is-workspace[data-sidebar-collapsed="true"] .wda-setup-layout { grid-template-columns: 80px minmax(0,1fr); }
+  :root .is-workspace[data-sidebar-collapsed="true"] .wda-setup-rail { padding: 16px 8px 10px; overflow-y: auto; }
+  .is-workspace[data-sidebar-collapsed="true"] .wda-rail-heading { flex-direction: column; padding: 0; gap: 4px; margin-bottom: 12px; }
+  .is-workspace[data-sidebar-collapsed="true"] .wda-reader-brand { flex: 0 0 auto; width: 32px; max-width: 32px; }
+  .is-workspace[data-sidebar-collapsed="true"] .wda-reader-brand .wda-rail-wordmark { display: none; }
+  .is-workspace[data-sidebar-collapsed="true"] .wda-reader-brand .wda-rail-brand-mark { display: block; }
+  .is-workspace[data-sidebar-collapsed="true"] :is(.wda-workspace-label,.wda-sidebar-support-label,.wda-member-copy,.wda-workspace-appearance > span:first-child) { display: none; }
+  .is-workspace[data-sidebar-collapsed="true"] .wda-setup-rail nav { flex-shrink: 0; margin: 0; padding: 0; align-items: center; overflow: visible; }
+  .is-workspace[data-sidebar-collapsed="true"] .wda-setup-rail nav > * { width: 44px; justify-content: center; padding: 0; gap: 0; }
+  .is-workspace[data-sidebar-collapsed="true"] .wda-nav-label { max-width: 0; opacity: 0; transform: translateX(-4px); }
+  .is-workspace[data-sidebar-collapsed="true"] .wda-member-account { flex-direction: column; padding: 4px 0; gap: 2px; }
+  .is-workspace[data-sidebar-collapsed="true"] .wda-workspace-support > .wda-account-logout-form { width: 44px; margin: 4px auto 0; }
+  .is-workspace[data-sidebar-collapsed="true"] .wda-workspace-support .wda-account-logout { justify-content: center; padding: 0; gap: 0; }
+  .is-workspace[data-sidebar-collapsed="true"] .wda-workspace-support .wda-logout-label { display: none; }
+  .is-workspace[data-sidebar-collapsed="true"] .wda-workspace-appearance { justify-content: center; padding: 0; }
+  .is-workspace[data-sidebar-collapsed="true"] .wda-workspace-appearance [data-theme-slot] { min-width: 48px; width: 48px; }
+  .is-workspace[data-sidebar-collapsed="true"] .wda-workspace-appearance .wda-theme-switch { width: 48px; flex-basis: 48px; }
+  .is-workspace[data-sidebar-collapsed="true"] .wda-sidebar-support-actions { align-items: center; padding-top: 8px; }
+  .is-workspace[data-sidebar-collapsed="true"] .wda-sidebar-support-actions > :is(button,a),
+  .is-workspace[data-sidebar-collapsed="true"] .wda-workspace-products { display: flex; justify-content: center; width: 44px; min-height: 44px; margin: 0 auto; padding: 0; gap: 0; font-size: 0; }
+}
+@media (max-width: 600px) {
+  .is-workspace .wda-setup-layout { grid-template-rows: minmax(0,1fr); }
+  .is-workspace .wda-setup-mobile { position: relative; z-index: 30; }
+  .is-workspace .wda-setup-mobile > img { flex-shrink: 1; min-width: 0; }
+  .is-workspace .wda-setup-mobile nav { flex-shrink: 0; }
+  .is-workspace .wda-mobile-account-toggle { display: grid; }
+  /* The existing account/support footer becomes an anchored disclosure. */
+  :root .wda-setup-app.is-workspace .wda-setup-rail { display: flex; position: absolute; z-index: 40; top: 76px; right: 12px; width: min(320px,calc(100% - 24px)); max-height: calc(100dvh - 92px); padding: 12px; overflow: auto; border: 0; border-radius: 20px; background: rgba(255,250,253,.96); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); box-shadow: 0 12px 36px rgba(49,31,42,.14); opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-8px) scale(.975); transform-origin: top right; transition: opacity .18s ease,transform .22s cubic-bezier(.4,0,1,1),visibility 0s linear .22s; }
+  :root[data-theme="dark"] .wda-setup-app.is-workspace .wda-setup-rail { background: rgba(41,38,45,.96); box-shadow: 0 12px 36px rgba(0,0,0,.24); }
+  :root .wda-setup-app.is-workspace[data-account-open="true"] .wda-setup-rail { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0) scale(1); transition: opacity .2s ease,transform .3s cubic-bezier(.22,1,.36,1),visibility 0s; }
+  .is-workspace .wda-setup-rail > :is(.wda-rail-heading,.wda-workspace-label,nav) { display: none; }
+  .is-workspace .wda-workspace-support { display: block; margin: 0; padding: 0; }
+  .is-workspace .wda-member-account { display: grid; grid-template-columns: 34px minmax(0,1fr); gap: 8px 10px; margin: 0 0 4px; padding: 8px 4px 0; background: transparent; }
+  .is-workspace .wda-member-copy strong { font-size: 13px; }
+  .is-workspace .wda-member-copy > span { font-size: 11px; }
+  .is-workspace .wda-workspace-support .wda-account-logout { padding: 10px 12px; font-size: 12px; }
+  .is-workspace .wda-sidebar-support-actions { display: flex; flex-direction: column; flex-wrap: nowrap; gap: 2px; padding: 0; }
+  .is-workspace .wda-sidebar-support-label { display: none; }
+  .is-workspace .wda-sidebar-support-actions > :is(button,a),
+  .is-workspace .wda-workspace-products { width: 100%; min-height: 44px; padding: 10px 12px; margin: 0; gap: 9px; font-size: 12px; }
+}
+@media (max-width: 400px) {
+  .is-workspace .wda-setup-mobile { gap: 2px; padding-left: 8px; padding-right: 8px; }
+  .is-workspace .wda-setup-mobile > img { width: 60px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .is-workspace .wda-setup-layout,
+  .is-workspace .wda-setup-rail,
+  .is-workspace .wda-setup-rail nav > *,
+  .is-workspace .wda-nav-label,
+  .wda-mobile-account-toggle,
+  .wda-sidebar-hint { transition: none; }
+  :root .wda-setup-app.is-workspace .wda-setup-rail,
+  :root .wda-setup-app.is-workspace[data-account-open="true"] .wda-setup-rail { transition: none; transform: none; }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  :root .wda-setup-app.is-workspace[data-account-open="true"] .wda-setup-rail { background: var(--theme-soft-surface) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+}
+@media (forced-colors: active) {
+  .wda-sidebar-hint { background: Canvas; color: CanvasText; outline: 1px solid CanvasText; box-shadow: none; }
+  .wda-sidebar-hint kbd { background: ButtonFace; color: ButtonText; }
+  .wda-sidebar-toggle, .wda-mobile-account-toggle { color: ButtonText; }
+  .wda-sidebar-toggle:focus-visible, .wda-mobile-account-toggle:focus-visible { outline-color: Highlight; }
+  :root .wda-setup-app.is-workspace[data-account-open="true"] .wda-setup-rail { background: ButtonFace !important; color: ButtonText; box-shadow: none; }
+}

@@ -1,13 +1,16 @@
 import { redirect } from 'next/navigation';
 import Shell, { NotFound } from '../../_components/Shell.jsx';
 import GoButton from '../../_components/GoButton.jsx';
-import SupportCTA from '../../_components/SupportCTA.jsx';
+import SetupWorkspace from '../../_components/SetupWorkspace.jsx';
+import Button from '../../_components/Button.jsx';
+import NicheFocusIllustration from '../../_components/NicheFocusIllustration.jsx';
 import { getBuyerByToken } from '../../../lib/buyers.js';
 import { getDiscoverySessionForBuyer } from '../../../lib/discoverySessions.js';
 import { discoveryTargetingReviewState } from '../../../lib/setupDiscoveryState.js';
 import { getOfficialNaicsTitle } from '../../../lib/playbook/naicsReference.js';
-import { UI, SET_ASIDE_OPTIONS } from '../../../lib/ui.js';
+import { SET_ASIDE_OPTIONS } from '../../../lib/ui.js';
 import { startStateForBuyer } from '../../../lib/journey.js';
+import { buyerPagePath } from '../../../lib/buyerUrls.js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -23,7 +26,7 @@ function moneyLabel(value) {
   if (value === '' || value == null) return '';
   const numeric = Number(value);
   if (!Number.isFinite(numeric)) return String(value);
-  return `$${numeric.toLocaleString()}`;
+  return `$${numeric.toLocaleString('en-US')}`;
 }
 
 function contractSizeLabel(min, max) {
@@ -39,12 +42,12 @@ function setAsideLabel(value) {
   return SET_ASIDE_OPTIONS.find((option) => option.value === value)?.label || value;
 }
 
-function SummaryRow({ label, children }) {
+function SummaryRow({ label, children, wide = false }) {
   return (
-    <div style={{ padding: '12px 0', borderTop: `1px solid ${UI.line}` }}>
-      <div style={{ fontSize: 12, color: UI.muted, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.6 }}>{label}</div>
-      <div style={{ marginTop: 6, color: UI.ink, fontSize: 14.5, fontWeight: 600, lineHeight: 1.45 }}>{children}</div>
-    </div>
+    <section className={`ctc-start-field${wide ? ' is-wide' : ''}`}>
+      <h3>{label}</h3>
+      <div className="ctc-start-value">{children}</div>
+    </section>
   );
 }
 
@@ -53,7 +56,7 @@ export default async function StartPage({ params }) {
   const buyer = await getBuyerByToken(token);
   if (!buyer) return <NotFound what="start link" />;
 
-  const state = startStateForBuyer(buyer);
+  const state = startStateForBuyer({ ...buyer, access_token: token });
   if (state.redirect) redirect(state.redirect);
   const session = await getDiscoverySessionForBuyer(buyer.id);
   const discoveryReview = discoveryTargetingReviewState({ session, buyer });
@@ -63,49 +66,55 @@ export default async function StartPage({ params }) {
   const supportEmail = process.env.SUPPORT_TO_EMAIL || '';
 
   return (
-    <Shell supportBar={<SupportCTA sticky pageContext="start" initialEmail={buyer.email} supportEmail={supportEmail} />}>
-      <div style={{ background: UI.card, border: `1px solid ${UI.line}`, borderRadius: 10, padding: 32 }}>
-        <h1 style={{ margin: '0 0 12px', fontSize: 26, color: UI.ink }}>Ready to Start</h1>
-        <p style={{ color: UI.text, fontSize: 16, lineHeight: 1.6, marginTop: 0 }}>
+    <Shell maxWidth="100%" hideHeader locked>
+      <SetupWorkspace token={token} buyerName={buyer.name} buyerEmail={buyer.email} supportEmail={supportEmail} pageContext="start" discoveryHref={buyerPagePath('discover', token)} setupStep={2} contentClassName="ctc-start-page" mainLabel="Start your contract search">
+      <header className="ctc-flow-intro">
+        <p className="wda-setup-eyebrow">Curated Target Contracts</p>
+        <h1>Ready to Start</h1>
+        <p>
           When you start, War Dogs Academy will evaluate current federal opportunities against your targeting profile
           and pull the strongest contract opportunities for this cycle.
         </p>
-
-        <div style={{ background: UI.paper, border: `1px solid ${UI.line}`, borderRadius: 10, padding: '4px 18px 8px', marginTop: 22 }}>
+      </header>
+      <div className="ctc-start-columns">
+        <section className="ctc-start-summary ctc-flow-panel" aria-labelledby="start-profile-title">
+          <header className="ctc-start-summary-heading"><h2 id="start-profile-title">Your targeting at a glance</h2><span>Saved profile</span></header>
+          <div className="ctc-start-fields">
           {discoveryReview ? (
-            <SummaryRow label="Selected War Dogs niche">
-              {discoveryReview.subindustryName || 'Selected niche'}
-              {discoveryReview.industryName ? <span style={{ color: UI.muted, fontWeight: 600 }}> · {discoveryReview.industryName}</span> : null}
+            <SummaryRow label="Selected War Dogs niche" wide>
+              <p className="ctc-start-niche">{discoveryReview.subindustryName || 'Selected niche'}</p>
+              {discoveryReview.industryName ? <p className="ctc-start-industry">{discoveryReview.industryName}</p> : null}
             </SummaryRow>
           ) : null}
-          <SummaryRow label="Industries / NAICS">
-            {naics.map((n) => `NAICS ${n.code}${n.title ? ` · ${n.title}` : ''}`).join(', ')}
+          <SummaryRow label="Industries / NAICS" wide>
+            <ul className="ctc-start-naics">{naics.map((n) => <li key={n.code}><span>NAICS {n.code}</span>{n.title ? <span>{n.title}</span> : null}</li>)}</ul>
           </SummaryRow>
-          <SummaryRow label="Capabilities / Keywords">
-            {keywords.length ? keywords.join(', ') : 'No keywords set'}
+          <SummaryRow label="Capabilities / Keywords" wide>
+            {keywords.length ? <ul className="ctc-start-keywords">{keywords.map((keyword, index) => <li key={index}>{keyword}</li>)}</ul> : 'No keywords set'}
           </SummaryRow>
           <SummaryRow label="Service Area">
             {buyer.state ? buyer.state : 'Nationwide'}
           </SummaryRow>
-          <SummaryRow label="Set-Asides">
-            {setAsides.length ? setAsides.map(setAsideLabel).join(', ') : 'No set-asides selected'}
-          </SummaryRow>
           <SummaryRow label="Contract Size">
             {contractSizeLabel(buyer.size_min, buyer.size_max)}
           </SummaryRow>
-        </div>
-
-        <div style={{ marginTop: 24, display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
+          <SummaryRow label="Set-Asides" wide>
+            {setAsides.length ? setAsides.map(setAsideLabel).join(', ') : 'No set-asides selected'}
+          </SummaryRow>
+          </div>
+          <footer className="ctc-start-summary-footer"><p>Need to fine-tune anything?</p><Button href={buyerPagePath('setup', token)} variant="ghost" showArrow={false}>Review targeting again</Button></footer>
+        </section>
+        <aside className="ctc-start-action ctc-flow-panel" aria-labelledby="start-search-title">
+          <NicheFocusIllustration />
+          <p className="ctc-flow-kicker">Your next step</p>
+          <h2 id="start-search-title">Put your targeting to work.</h2>
+          <p className="ctc-flow-muted">We’ll look for opportunities that fit your business—not just fill a list.</p>
+          <ol className="ctc-start-expectations"><li>Review current federal opportunities</li><li>Apply your targeting and eligibility</li><li>Surface the strongest available matches</li></ol>
           <GoButton token={token} />
-          <a href={`/setup/${token}`} style={{ color: UI.muted, fontSize: 15, textDecoration: 'none', fontWeight: 600 }}>
-            Review targeting again
-          </a>
-        </div>
-
-        <p style={{ marginTop: 24, fontSize: 13, color: UI.muted, borderTop: `1px solid ${UI.line}`, paddingTop: 16 }}>
-          After activation, targeting edits still apply to future cycles. This cycle stays locked once contracts are pulled.
-        </p>
+          <p className="ctc-start-cycle-note">After activation, targeting edits still apply to future cycles. This cycle stays locked once contracts are pulled.</p>
+        </aside>
       </div>
+      </SetupWorkspace>
     </Shell>
   );
 }

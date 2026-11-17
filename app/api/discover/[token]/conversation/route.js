@@ -63,16 +63,30 @@ async function handleConversationPost(req, { params }) {
   const pending = state.pending_question;
 
   if (body.draft_suggestion) {
-    const currentQuestion = pending || body.current_question || {};
-    if (!currentQuestion.prompt) {
+    const requested = body.current_question || {};
+    const adaptive = session?.recommendations?.status === 'needs_clarification' ? session.recommendations.questions?.[0] : null;
+    const wantsAdaptive = Boolean(requested.adaptive_key || requested.category === 'naics_clarification');
+    const currentQuestion = wantsAdaptive && adaptive
+      ? { ...adaptive, category: 'naics_clarification' }
+      : pending;
+    if ((requested.adaptive_key && requested.adaptive_key !== adaptive?.key)
+        || (requested.id && currentQuestion?.id && requested.id !== currentQuestion.id)) {
+      return Response.json({ error: 'That question is no longer current. Please use the latest question.' }, { status: 409 });
+    }
+    if (!currentQuestion?.prompt || (wantsAdaptive && !adaptive)) {
       return Response.json({ error: 'There is no current question to draft for.' }, { status: 409 });
     }
+    const option = (currentQuestion.options || []).find((option) => body.suggestion_value
+      ? option.value === body.suggestion_value
+      : (option.label || option.value) === String(body.suggestion || '').trim());
+    if (!option) return Response.json({ error: 'That suggestion is no longer available. Please use the current options.' }, { status: 409 });
     try {
       const draft = await draftDiscoverySuggestion({
         category: currentQuestion.category,
         question: currentQuestion.prompt,
         helper: currentQuestion.helper,
-        suggestion: String(body.suggestion || '').trim().slice(0, 120),
+        suggestion: String(option.label || option.value).slice(0, 120),
+        selected_option: option.value,
         chat_context: chatContext(state.messages),
       });
       return Response.json({ ok: true, draft });
@@ -102,7 +116,11 @@ async function handleConversationPost(req, { params }) {
     if (!question) return Response.json({ error: 'We could not find the question for that answer.' }, { status: 409 });
 
     const nextMessages = answer
-      ? messages.map((item, itemIndex) => (itemIndex === index ? { ...item, content: answer, edited_at: new Date().toISOString() } : item))
+      ? messages.map((item, itemIndex) => {
+          if (itemIndex !== index) return item;
+          const { selected_option: previousSelection, ...editable } = item;
+          return { ...editable, content: answer, edited_at: new Date().toISOString() };
+        })
       : messages;
     const rebuilt = answersFromAdvisorMessages(nextMessages);
     const advisorState = answer
@@ -152,6 +170,8 @@ async function handleConversationPost(req, { params }) {
   }
 
   const existingAnswers = forceReset ? {} : session?.answers || {};
+  const selectedOption = (pending?.options || []).some((option) => option.value === body.selected_option)
+    ? body.selected_option : undefined;
   const turn = body.start
     ? fallbackAdvisorTurn({ answers: existingAnswers, resolved_dimensions: state.resolved_dimensions, turn_count: state.turn_count })
     : await advanceAdvisorConversation({
@@ -159,6 +179,7 @@ async function handleConversationPost(req, { params }) {
         resolved_dimensions: state.resolved_dimensions,
         latest_answer: answer,
         answered_category: pending.category,
+        selected_option: selectedOption,
         turn_count: state.turn_count,
         logger: console,
       });
@@ -170,6 +191,7 @@ async function handleConversationPost(req, { params }) {
       content: answer,
       question_id: pending.id,
       question_category: pending.category,
+      ...(selectedOption ? { selected_option: selectedOption } : {}),
       at: new Date().toISOString(),
     });
   }

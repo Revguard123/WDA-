@@ -35,6 +35,79 @@ const DiscoveryForm = await loadComponent('app/_components/DiscoveryForm.jsx', {
 const AnswerStarters = await loadComponent('app/_components/DiscoveryForm.jsx', {
   './Button.jsx': { __esModule: true, default: Button },
 }, 'AnswerStarters');
+const initialAdvisorState = await loadComponent('app/_components/DiscoveryForm.jsx', { './Button.jsx': { __esModule: true, default: Button } }, 'initialAdvisorState');
+const adaptiveAnswerForDraft = await loadComponent('app/_components/DiscoveryForm.jsx', { './Button.jsx': { __esModule: true, default: Button } }, 'adaptiveAnswerForDraft');
+const selectedStarterValue = await loadComponent('app/_components/DiscoveryForm.jsx', { './Button.jsx': { __esModule: true, default: Button } }, 'selectedStarterValue');
+const getAdvisorMessageText = await loadComponent('app/_components/DiscoveryForm.jsx', { './Button.jsx': { __esModule: true, default: Button } }, 'getAdvisorMessageText');
+
+test('the latest clarification prompt is visible instead of the previous question', () => {
+  const message = { content: 'Your answers are saved.', question: { prompt: 'Which set-asides do you hold?' } };
+  const pending = { prompt: 'Which background should we evaluate first?' };
+  const text = getAdvisorMessageText(message, pending, true);
+  assert.match(text, /Which background should we evaluate first/);
+  assert.doesNotMatch(text, /Which set-asides/);
+  assert.match(getAdvisorMessageText(message, pending, false), /Which set-asides/);
+});
+
+test('adaptive questions are not stitched onto stale state-focus coaching, including after completion', () => {
+  const stale = { content: "Got it. You can take on monthly rental contracts. Let's lock down your state focus.", question: null };
+  const pending = { adaptive_key: 'work_direction', prompt: 'Which work would you like to explore instead?' };
+  assert.equal(getAdvisorMessageText(stale, pending, true), pending.prompt);
+  assert.doesNotMatch(getAdvisorMessageText(stale, pending, true), /state focus|monthly rental contracts/);
+  assert.equal(getAdvisorMessageText(stale, null, true), 'Your answers are saved.');
+  const current = { content: 'Let us check your delivery area.', question: { id: 'geography', prompt: 'Where can you deliver?' } };
+  assert.match(getAdvisorMessageText(current, current.question, true), /check your delivery area.*Where can you deliver/);
+});
+
+test('classification starter clicks retain the option code alongside the visible label', () => {
+  const calls = [];
+  const starters = AnswerStarters({ options: [{ label: 'Broad facility support', value: 'facility_support' }], onDraft: (...args) => calls.push(args) });
+  const button = starters.props.children[1].props.children[0];
+  button.props.onClick();
+  assert.deepEqual(calls, [['Broad facility support', 'facility_support']]);
+});
+
+test('editing a classification draft or moving to another question invalidates the old selected value', () => {
+  const pending = { adaptive_key: 'facility_support_vs_equipment_repair' };
+  const starter = { key: pending.adaptive_key, draft: 'Broad facility support', value: 'facility_support' };
+  assert.equal(adaptiveAnswerForDraft(pending, starter, 'Broad facility support'), 'facility_support');
+  assert.equal(adaptiveAnswerForDraft(pending, starter, 'Equipment repair'), 'Equipment repair');
+  assert.equal(adaptiveAnswerForDraft({ adaptive_key: 'another_question' }, starter, 'Broad facility support'), 'Broad facility support');
+  assert.equal(adaptiveAnswerForDraft(pending, null, 'Equipment repair'), 'Equipment repair');
+});
+
+test('full generated drafts keep their separate canonical choice until edited, for both clarification flows', () => {
+  const generated = "I'd like to start with nursing, while keeping our handyman and agricultural experience saved for later.";
+  for (const pending of [{ adaptive_key: 'capability_priority' }, { id: 'advisor-capability-priority-clarification-v1-0' }]) {
+    const starter = { key: pending.adaptive_key || pending.id, value: 'healthcare', draft: generated };
+    assert.equal(selectedStarterValue(pending, starter, generated), 'healthcare');
+    assert.equal(adaptiveAnswerForDraft(pending, starter, generated), 'healthcare');
+    assert.equal(selectedStarterValue(pending, starter, 'Actually, compare all areas.'), undefined);
+    assert.equal(adaptiveAnswerForDraft(pending, starter, 'Actually, compare all areas.'), 'Actually, compare all areas.');
+  }
+  assert.equal(selectedStarterValue({}, { value: 'healthcare', draft: generated }, generated), undefined);
+});
+
+test('all suggestion types use the Claude draft request rather than copying the label into the composer', () => {
+  const source = readFileSync('app/_components/DiscoveryForm.jsx', 'utf8');
+  const handler = source.slice(source.indexOf('  async function draftSuggestion('), source.indexOf('  async function useThis('));
+  assert.match(handler, /draft_suggestion: true/);
+  assert.match(handler, /suggestion_value: value/);
+  assert.match(handler, /setDraft\(generatedDraft\)/);
+  assert.match(handler, /draft: generatedDraft/);
+  assert.doesNotMatch(handler, /setDraft\(label\)/);
+});
+
+test('refresh resumes a saved classification question including scope notes and free-text input', () => {
+  const session = { answers: { advisor_state: { complete: true, messages: [{ role: 'student', content: 'Saved answers' }] } }, recommendations: { status: 'needs_clarification', questions: [{ key: 'agriculture_work', prompt: 'What agricultural work have you done?', helper: 'There is no dedicated agriculture lane.', options: [] }] } };
+  const state = initialAdvisorState(session);
+  assert.equal(state.complete, false);
+  assert.equal(state.pending_question.adaptive_key, 'agriculture_work');
+  assert.equal(state.pending_question.input_type, 'text');
+  assert.match(state.pending_question.helper, /no dedicated agriculture lane/);
+  assert.deepEqual(state.messages, session.answers.advisor_state.messages);
+  assert.equal(session.answers.advisor_state.complete, true);
+});
 const RecommendationLoading = await loadComponent('app/_components/DiscoveryForm.jsx', {
   './Button.jsx': { __esModule: true, default: Button },
 }, 'RecommendationLoading');

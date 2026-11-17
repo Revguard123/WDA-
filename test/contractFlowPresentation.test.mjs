@@ -35,7 +35,7 @@ const GoButton = (await load('app/_components/GoButton.jsx', { './Button.jsx': a
 const RecoveryScreen = (await load('app/_components/RecoveryScreen.jsx', { './Button.jsx': asDefault(Button), './SupportCTA.jsx': asDefault(() => null) })).default;
 const shell = await load('app/_components/Shell.jsx', { './RecoveryScreen.jsx': asDefault(RecoveryScreen) });
 const Support = asDefault(() => React.createElement('div', { 'data-support-bar': true }, 'Send feedback'));
-const navigation = await load('app/_components/WorkspaceNavigation.jsx', { './CTCIcon.jsx': asDefault(Icon) });
+const navigation = await load('app/_components/WorkspaceNavigation.jsx', { './CTCIcon.jsx': asDefault(Icon), './Modal.jsx': asDefault(() => null), './Button.jsx': asDefault(Button) });
 const workspace = await load('app/_components/SetupWorkspace.jsx', { './WorkspaceNavigation.jsx': navigation, './CTCIcon.jsx': asDefault(Icon), './BetaNotice.jsx': asDefault(BetaNotice), './SupportCTA.jsx': Support });
 const token = 'local-flow-fixture';
 const buyer = { id: 'local-flow-buyer', access_token: token, status: 'exploring', naics: ['236220'], keywords: ['General contracting', 'Project management'], state: 'GA', set_asides: ['sb'], size_min: 25000, size_max: 150000 };
@@ -60,6 +60,8 @@ async function startPage({ account = buyer, session = null, routeKey = token } =
     '../../../lib/playbook/naicsReference.js': naicsReference,
     '../../../lib/ui.js': ui,
     '../../../lib/journey.js': journey,
+    '../../../lib/deliveries.js': { listDeliveriesForBuyer: async () => [] },
+    '../../../lib/contractsPresentation.js': presentation,
   });
   return renderToStaticMarkup(await page.default({ params: { token: routeKey } }));
 }

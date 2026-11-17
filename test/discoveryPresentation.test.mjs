@@ -669,7 +669,7 @@ test('outbound website buttons consistently use an external-link icon rather tha
 
 test('shared button variants have one minimum height, explicit line height and directional motion with a reduced-motion fallback', () => {
   const style = React.Children.toArray(Button({ children: 'Continue' }).props.children).find((child) => child.type === 'style');
-  const css = require('postcss').parse(style.props.children);
+  const css = require('postcss').parse(style.props.dangerouslySetInnerHTML.__html);
   let base = {}, externalMotion, reduced = false;
   css.walkRules((rule) => {
     if (rule.selector === '.wda-btn') base = Object.fromEntries(rule.nodes.filter((node) => node.type === 'decl').map((node) => [node.prop, node.value]));

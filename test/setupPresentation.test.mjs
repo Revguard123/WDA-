@@ -9,6 +9,7 @@ import * as buyerUrls from '../lib/buyerUrls.js';
 import * as journey from '../lib/journey.js';
 import * as discoveryState from '../lib/setupDiscoveryState.js';
 import * as controls from '../lib/targetingControls.js';
+import * as contractsPresentation from '../lib/contractsPresentation.js';
 
 // Compile real JSX in memory, with explicit boundaries for database/network work.
 const require = createRequire(import.meta.url);
@@ -31,7 +32,7 @@ const NicheFocusIllustration = (await load('app/_components/NicheFocusIllustrati
 const formImports = { './Button.jsx': asDefault(Button), './CTCIcon.jsx': asDefault(CTCIcon), '../../lib/targetingControls.js': controls };
 const NicheForm = (await load('app/_components/NicheForm.jsx', formImports)).default;
 const BetaNotice = (await load('app/_components/BetaNotice.jsx')).default;
-const navigation = await load('app/_components/WorkspaceNavigation.jsx', { './CTCIcon.jsx': asDefault(CTCIcon) });
+const navigation = await load('app/_components/WorkspaceNavigation.jsx', { './CTCIcon.jsx': asDefault(CTCIcon), './Modal.jsx': asDefault(() => null), './Button.jsx': asDefault(Button) });
 const workspace = await load('app/_components/SetupWorkspace.jsx', { './WorkspaceNavigation.jsx': navigation, './CTCIcon.jsx': asDefault(CTCIcon), './BetaNotice.jsx': asDefault(BetaNotice), './SupportCTA.jsx': asDefault(() => null) });
 const RecoveryScreen = (await load('app/_components/RecoveryScreen.jsx', { './Button.jsx': asDefault(Button), './SupportCTA.jsx': asDefault(() => null) })).default;
 const shell = await load('app/_components/Shell.jsx', { './RecoveryScreen.jsx': asDefault(RecoveryScreen) });
@@ -53,6 +54,8 @@ async function page({ buyer = savedBuyer, session = null, searchParams = {} } = 
     '../../../lib/discoverySessions.js': { getDiscoverySessionForBuyer: async () => session },
     '../../../lib/setupDiscoveryState.js': discoveryState,
     '../../../lib/journey.js': journey,
+    '../../../lib/deliveries.js': { listDeliveriesForBuyer: async () => [] },
+    '../../../lib/contractsPresentation.js': contractsPresentation,
   });
   return renderToStaticMarkup(await module.default({ params: { token }, searchParams }));
 }
@@ -224,6 +227,30 @@ test('an empty future-batch profile can choose direct targeting without returnin
   assert.match(direct, /class="targeting-form"/);
   assert.match(direct, /Save for Future Batches/);
   assert.doesNotMatch(direct, /class="wda-setup-path"/);
+});
+
+test('an empty Targeting review opens its popup over Discovery without changing saved progress', async () => {
+  const session = { current_step: 3, status: 'in_progress', answers: { advisor_state: { messages: [{ role: 'student', content: 'Saved answer' }] } } };
+  const snapshot = structuredClone(session);
+  const account = { ...savedBuyer, naics: [] };
+  await assert.rejects(page({ buyer: account, session, searchParams: { review: '1' } }), { destination: `/discover/${token}?locked=targeting` });
+  assert.deepEqual(session, snapshot);
+  assert.deepEqual(account.naics, []);
+
+  const manual = await page({ buyer: account, session, searchParams: { targeting: '1' } });
+  assert.match(manual, /id="targeting-naics-query"/);
+  assert.match(manual, /Save Targeting/);
+  assert.deepEqual(session, snapshot);
+});
+
+test('empty first-time review uses the popup while future-batch entry retains its editable paths', async () => {
+  const empty = { ...savedBuyer, naics: [] };
+  await assert.rejects(page({ buyer: empty, searchParams: { review: '1' } }), { destination: `/discover/${token}?locked=targeting` });
+  for (const status of ['active', 'completed']) {
+    const html = await page({ buyer: { ...empty, status }, session: { current_step: 3, status: 'in_progress' }, searchParams: { review: '1' } });
+    assert.match(html, /href="\/setup\/local-setup-fixture\?targeting=1&amp;update=1"/);
+    assert.match(html, /href="\/discover\/local-setup-fixture\?update=1"/);
+  }
 });
 
 test('state-aware redirects and Discovery resume survive the visual redesign', async () => {

@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import Shell, { NotFound } from '../../_components/Shell.jsx';
 import SetupWorkspace from '../../_components/SetupWorkspace.jsx';
 import Button from '../../_components/Button.jsx';
@@ -5,7 +6,7 @@ import ContractArchiveIllustration from '../../_components/ContractArchiveIllust
 import { getBuyerByToken } from '../../../lib/buyers.js';
 import { listDeliveriesForBuyer } from '../../../lib/deliveries.js';
 import { buyerPagePath, contractPath } from '../../../lib/buyerUrls.js';
-import { CONTRACT_CARD_BREAKDOWN_CTA, CONTRACT_CARD_WHY_LABEL, contractEvidenceChips, contractVerifyItems, contractsPresentationForBuyer } from '../../../lib/contractsPresentation.js';
+import { CONTRACT_CARD_BREAKDOWN_CTA, CONTRACT_CARD_WHY_LABEL, contractEvidenceChips, contractVerifyItems, contractsGateForBuyer, contractsPresentationForBuyer } from '../../../lib/contractsPresentation.js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -28,6 +29,9 @@ export default async function ContractsPage({ params }) {
   const presentation = contractsPresentationForBuyer(buyer, { deliveryCount: deliveries.length });
   const supportEmail = process.env.SUPPORT_TO_EMAIL || '';
   const discoveryHref = buyerPagePath('discover', token) + (buyer.status === 'exploring' ? '' : '?update=1');
+  const gate = contractsGateForBuyer({ ...buyer, access_token: token }, { deliveryCount: deliveries.length });
+
+  if (gate) redirect(`${discoveryHref}?locked=contracts`);
 
   return (
     <Shell maxWidth="100%" hideHeader locked>

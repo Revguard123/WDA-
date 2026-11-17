@@ -74,7 +74,7 @@ export default function Button({
 
   return (
     <>
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .wda-btn {
           position: relative;
           display: inline-flex;
@@ -194,7 +194,7 @@ export default function Button({
             animation-duration: 1.5s;
           }
         }
-      `}</style>
+      ` }} />
       {href ? (
         <a
           href={href}

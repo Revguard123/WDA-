@@ -1028,7 +1028,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
   const Conversation = embedded ? 'section' : 'main';
   return (
     <div ref={discoveryRef} className={`wda-discovery-app${embedded ? ' is-embedded' : ''}`} data-thinking={thinking || undefined}>
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .wda-discovery-app, .wda-discovery-app * { box-sizing: border-box; }
         .wda-discovery-app {
           --wda-paper:#FDFBF9; --wda-cream:#F6F1EB; --wda-white:#FFFFFF;
@@ -1580,7 +1580,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
           .wda-discovery-app .wda-composer::before { display: none; }
           .wda-discovery-app .wda-composer.is-drafting { box-shadow: none; outline: 2px solid Highlight; outline-offset: 2px; }
         }
-      `}</style>
+      ` }} />
 
       {supportCta ? <div className="wda-support-strip">{supportCta}</div> : null}
 

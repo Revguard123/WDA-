@@ -9,7 +9,9 @@ import { UI } from '../../lib/ui.js';
 export function ModalArtwork({ kind = 'restart' }) {
   return (
     <svg className="wda-popup-art" viewBox="0 0 64 64" fill="none" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
-      {kind === 'success' ? (
+      {kind === 'lock' ? (
+        <><rect x="15" y="27" width="34" height="29" rx="6" stroke={UI.pink} /><path d="M23 27V17a9 9 0 0 1 18 0v10" stroke={UI.orange} /><path d="M32 39v6" stroke={UI.pink} /></>
+      ) : kind === 'success' ? (
         <><circle cx="32" cy="32" r="23" stroke={UI.orange} /><path d="m21 32 8 8 15-17" stroke={UI.pink} /></>
       ) : kind === 'feedback' ? (
         <><path d="M17 11h30a7 7 0 0 1 7 7v23a7 7 0 0 1-7 7H29L16 57v-9a7 7 0 0 1-7-7V18a7 7 0 0 1 8-7Z" stroke={UI.pink} /><path d="M21 24h22M21 35h14" stroke={UI.orange} /></>

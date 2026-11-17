@@ -27,7 +27,7 @@ const Icon = (await load('app/_components/CTCIcon.jsx')).default;
 const Select = (await load('app/_components/Select.jsx')).default;
 const Modal = ({ open, title, children }) => open ? React.createElement('section', { role: 'dialog' }, React.createElement('h2', null, title), children) : null;
 const BetaNotice = (await load('app/_components/BetaNotice.jsx')).default;
-const navigation = await load('app/_components/WorkspaceNavigation.jsx', { './CTCIcon.jsx': asDefault(Icon) });
+const navigation = await load('app/_components/WorkspaceNavigation.jsx', { './CTCIcon.jsx': asDefault(Icon), './Modal.jsx': asDefault(Modal), './Button.jsx': asDefault(Button) });
 const Workspace = (await load('app/_components/SetupWorkspace.jsx', {
   './WorkspaceNavigation.jsx': navigation,
   './CTCIcon.jsx': asDefault(Icon), './BetaNotice.jsx': asDefault(BetaNotice),

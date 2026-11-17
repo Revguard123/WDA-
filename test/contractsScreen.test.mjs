@@ -24,7 +24,7 @@ const Button = (await load('app/_components/Button.jsx')).default;
 const Icon = (await load('app/_components/CTCIcon.jsx')).default;
 const ArchiveIllustration = (await load('app/_components/ContractArchiveIllustration.jsx')).default;
 const BetaNotice = (await load('app/_components/BetaNotice.jsx')).default;
-const navigation = await load('app/_components/WorkspaceNavigation.jsx', { './CTCIcon.jsx': asDefault(Icon) });
+const navigation = await load('app/_components/WorkspaceNavigation.jsx', { './CTCIcon.jsx': asDefault(Icon), './Modal.jsx': asDefault(() => null), './Button.jsx': asDefault(Button) });
 const workspace = await load('app/_components/SetupWorkspace.jsx', { './WorkspaceNavigation.jsx': navigation, './CTCIcon.jsx': asDefault(Icon), './BetaNotice.jsx': asDefault(BetaNotice), './SupportCTA.jsx': asDefault(() => null) });
 const RecoveryScreen = (await load('app/_components/RecoveryScreen.jsx', { './Button.jsx': asDefault(Button), './SupportCTA.jsx': asDefault(() => null) })).default;
 const shell = await load('app/_components/Shell.jsx', { './RecoveryScreen.jsx': asDefault(RecoveryScreen) });
@@ -38,6 +38,7 @@ const contract = {
 async function page({ account = buyer, deliveries = [contract], routeKey = token } = {}) {
   let deliveryReads = 0;
   const module = await load('app/contracts/[token]/page.js', {
+    'next/navigation': { redirect: (destination) => { throw Object.assign(new Error('Redirect'), { destination }); } },
     '../../_components/Shell.jsx': shell,
     '../../_components/SetupWorkspace.jsx': workspace,
     '../../_components/SupportCTA.jsx': asDefault(() => React.createElement('div', { 'data-support-bar': true }, 'Send feedback')),
@@ -155,12 +156,24 @@ test('empty completed, exploring and invalid-link states do not promise an unowe
   const completed = await page({ deliveries: [] });
   assert.match(completed.html, /No archived opportunities available/);
   assert.doesNotMatch(completed.html, /Your next batch will appear|Your next five/);
-  const exploring = await page({ account: { ...buyer, status: 'exploring' }, deliveries: [] });
-  assert.match(exploring.html, /Set up your niche/);
-  assert.match(exploring.html, /<dd>Not started<\/dd>/);
+  await assert.rejects(page({ account: { ...buyer, status: 'exploring' }, deliveries: [] }), { destination: `/discover/${token}?locked=contracts` });
   const invalid = await page({ account: null });
   assert.equal(invalid.deliveryReads, 0);
   assert.match(invalid.html, /This link is not valid/);
+});
+
+test('direct unstarted contracts visits open the popup over Discovery rather than a full lock page', async () => {
+  const empty = { ...buyer, status: 'exploring', naics: [], batches_sent: 0 };
+  await assert.rejects(page({ account: empty, deliveries: [], routeKey: 'me' }), { destination: '/discover?locked=contracts' });
+});
+
+test('a saved profile points to the explicit start gate, while existing deliveries bypass the lock', async () => {
+  const account = { ...buyer, status: 'exploring', naics: ['541519'] };
+  await assert.rejects(page({ account, deliveries: [], routeKey: 'me' }), { destination: '/discover?locked=contracts' });
+  const archive = await page({ account: { ...account, naics: [] }, deliveries: [contract], routeKey: 'me' });
+  assert.match(archive.html, /Electrical maintenance/);
+  assert.match(archive.html, /href="\/d\/electrical-maintenance--delivered-notice"/);
+  assert.doesNotMatch(archive.html, /contracts-locked-title|Contracts are locked/);
 });
 
 test('only the buttons get liquid hover, and mobile contract actions have a single-column layout', async () => {

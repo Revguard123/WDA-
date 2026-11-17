@@ -64,7 +64,7 @@ test('portal translates the visual reference into one light branded access scree
   assert.match(html, /class="wda-portal-underline"/);
   assert.equal((html.match(/class="wda-portal-access-card"/g) || []).length, 1);
   for (const text of ['Discover your niche', 'Refine your targeting', 'Review your contracts', 'Access your portal', 'Open my portal']) assert.ok(html.includes(text));
-  assert.match(html, /href="\/access">Get a link by email/);
+  assert.match(html, /href="\/access">Request Access Link/);
   assert.match(html, /data-sidebar-support="true"/);
   assert.doesNotMatch(html, /shell-brand-header|wda-setup-rail|Trustpilot|Excellent|90 Days|\$300M|David Packouz|<video|<iframe/);
 });

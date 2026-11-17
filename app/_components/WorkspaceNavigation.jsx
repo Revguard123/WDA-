@@ -3,16 +3,20 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import CTCIcon from './CTCIcon.jsx';
+import Modal from './Modal.jsx';
+import Button from './Button.jsx';
 
 export const SIDEBAR_STORAGE_KEY = 'wda:sidebar-collapsed';
 const NavigationContext = createContext(null);
 
 // Only chrome state is client-side; page content and authenticated identity
 // remain server-rendered children. Preferences contain no account credentials.
-export default function WorkspaceNavigation({ className, children }) {
+export default function WorkspaceNavigation({ className, lockedPages = {}, initialLockedPage = null, children }) {
   const [collapsed, setCollapsed] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [sidebarHint, setSidebarHint] = useState(null);
+  const [lockedPage, setLockedPage] = useState(initialLockedPage);
+  const accessPrompt = lockedPages[lockedPage];
   const rootRef = useRef(null);
   const accountTriggerRef = useRef(null);
   const hintDelay = useRef(null);
@@ -188,7 +192,15 @@ export default function WorkspaceNavigation({ className, children }) {
 
   return <NavigationContext.Provider value={{ collapsed, toggleSidebar, accountOpen, setAccountOpen, accountTriggerRef, showSidebarHint, hideSidebarHint, sidebarHintOpen: !!sidebarHint?.visible && sidebarHint.kind === 'toggle' }}>
     <div ref={rootRef} className={className} data-sidebar-collapsed={collapsed || undefined} data-account-open={accountOpen || undefined}
-      onClick={(event) => { if (accountOpen && event.target.closest?.('a[href]')) setAccountOpen(false); }}>
+      onClick={(event) => {
+        const locked = event.target.closest?.('[data-workspace-locked]')?.getAttribute?.('data-workspace-locked');
+        if (locked && lockedPages[locked]) {
+          event.preventDefault();
+          hideSidebarHint(true);
+          setLockedPage(locked);
+        }
+        if (accountOpen && event.target.closest?.('a[href]')) setAccountOpen(false);
+      }}>
       {children}
       {sidebarHint ? createPortal(<div id="workspace-sidebar-hint" role="tooltip" className="wda-sidebar-hint"
         data-open={sidebarHint.visible || undefined} data-tone={sidebarHint.tone || undefined} aria-hidden={!sidebarHint.visible}
@@ -198,6 +210,15 @@ export default function WorkspaceNavigation({ className, children }) {
         <div className="wda-sidebar-hint-copy"><span>{sidebarHint.label}</span>{sidebarHint.detail ? <small>{sidebarHint.detail}</small> : null}</div>
         {sidebarHint.shortcut ? <kbd>{sidebarHint.shortcut}</kbd> : null}
       </div>, document.body) : null}
+      <Modal open={!!accessPrompt} onClose={() => setLockedPage(null)} kind="lock"
+        title={accessPrompt?.title} description={accessPrompt?.description}>
+        <div className="wda-popup-actions">
+          {accessPrompt?.actions.map((action) => <Button key={action.label} href={action.href}
+            variant={action.secondary ? 'ghost' : 'solid'} showArrow={!action.secondary}
+            onClick={() => setLockedPage(null)}>{action.label}</Button>)}
+        </div>
+        <p className="wda-access-note">Your Discovery progress stays saved. No search starts until you confirm.</p>
+      </Modal>
     </div>
   </NavigationContext.Provider>;
 }

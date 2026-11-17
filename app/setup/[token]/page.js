@@ -6,6 +6,8 @@ import CTCIcon from '../../_components/CTCIcon.jsx';
 import NicheFocusIllustration from '../../_components/NicheFocusIllustration.jsx';
 import { getBuyerByToken } from '../../../lib/buyers.js';
 import { getDiscoverySessionForBuyer } from '../../../lib/discoverySessions.js';
+import { listDeliveriesForBuyer } from '../../../lib/deliveries.js';
+import { contractsGateForBuyer } from '../../../lib/contractsPresentation.js';
 import { discoveryTargetingReviewState } from '../../../lib/setupDiscoveryState.js';
 import { setupStateForBuyer } from '../../../lib/journey.js';
 import { buyerPagePath, publicBuyerProfile } from '../../../lib/buyerUrls.js';
@@ -27,16 +29,21 @@ export default async function SetupPage({ params, searchParams }) {
   if (state.redirect) redirect(state.redirect);
   const session = await getDiscoverySessionForBuyer(buyer.id);
   const discoveryHref = `${buyerPagePath('discover', token)}${state.updateMode || buyer.status !== 'exploring' ? '?update=1' : ''}`;
-  if (state.showChoice && !directTargeting && session && (session.current_step > 1 || session.status !== 'in_progress')) {
+  if (state.showChoice && state.reviewOnly && buyer.status === 'exploring' && !directTargeting) {
+    redirect(`${discoveryHref}?locked=targeting`);
+  }
+  if (state.showChoice && !state.reviewOnly && !state.updateMode && !directTargeting && session && (session.current_step > 1 || session.status !== 'in_progress')) {
     redirect(discoveryHref);
   }
   const discoveryReview = discoveryTargetingReviewState({ session, buyer });
+  const deliveries = buyer.status === 'exploring' ? await listDeliveriesForBuyer(buyer.id) : [];
+  const contractsLocked = !!contractsGateForBuyer(buyer, { deliveryCount: deliveries.length });
 
   if (state.showChoice) {
     return (
       <Shell maxWidth="100%" hideHeader locked>
-        <SetupWorkspace token={token} buyerName={buyer.name} buyerEmail={buyer.email} supportEmail={supportEmail} pageContext="targeting_setup" discoveryHref={discoveryHref} updateMode={state.updateMode} readOnly={state.reviewOnly} choice>
-          <SetupChoice discoveryHref={discoveryHref} directHref={`${buyerPagePath('setup', token)}?targeting=1${state.updateMode ? '&update=1' : ''}`} />
+        <SetupWorkspace token={token} buyerName={buyer.name} buyerEmail={buyer.email} supportEmail={supportEmail} pageContext="targeting_setup" discoveryHref={discoveryHref} updateMode={state.updateMode} readOnly={state.reviewOnly} choice={!state.reviewOnly && !state.updateMode}>
+          <SetupChoice targetingEntry={state.reviewOnly || state.updateMode} resumeDiscovery={Boolean(session)} discoveryHref={discoveryHref} directHref={`${buyerPagePath('setup', token)}?targeting=1${state.updateMode || buyer.status !== 'exploring' ? '&update=1' : ''}`} />
         </SetupWorkspace>
       </Shell>
     );
@@ -44,7 +51,7 @@ export default async function SetupPage({ params, searchParams }) {
 
   return (
     <Shell maxWidth="100%" hideHeader locked>
-      <SetupWorkspace token={token} buyerName={buyer.name} buyerEmail={buyer.email} supportEmail={supportEmail} pageContext={state.hasTargeting ? 'targeting_review' : 'targeting_setup'} discoveryHref={discoveryHref} updateMode={state.updateMode} readOnly={state.reviewOnly}>
+      <SetupWorkspace token={token} buyerName={buyer.name} buyerEmail={buyer.email} supportEmail={supportEmail} pageContext={state.hasTargeting ? 'targeting_review' : 'targeting_setup'} discoveryHref={discoveryHref} updateMode={state.updateMode} readOnly={state.reviewOnly} targetingLocked={buyer.status === 'exploring' && !state.hasTargeting} contractsLocked={contractsLocked}>
         <header className="wda-setup-intro is-split">
           <div>
           <p className="wda-setup-eyebrow">Curated Target Contracts</p>

@@ -9,9 +9,24 @@ import {
   contractEvidenceChips,
   contractVerifyItems,
   contractsPresentationForBuyer,
+  contractsGateForBuyer,
 } from '../lib/contractsPresentation.js';
 
 const NOW = new Date('2026-08-11T00:00:00.000Z');
+
+test('unstarted contracts give an explicit next step without locking manual targeting behind Discovery', () => {
+  const buyer = { status: 'exploring', access_token: 'me', naics: [] };
+  assert.deepEqual(contractsGateForBuyer(buyer), { hasTargeting: false, nextHref: '/setup?review=1', nextLabel: 'Set up targeting' });
+  assert.deepEqual(contractsGateForBuyer({ ...buyer, naics: ['541519'] }), { hasTargeting: true, nextHref: '/start', nextLabel: 'Review and start search' });
+  assert.equal(contractsGateForBuyer({ ...buyer, naics: [' ', ''] }).hasTargeting, false);
+});
+
+test('contract archives stay accessible regardless of current targeting or lifecycle status', () => {
+  for (const status of ['exploring', 'active', 'completed']) {
+    assert.equal(contractsGateForBuyer({ status, naics: [] }, { deliveryCount: 1 }), null);
+  }
+  for (const status of ['active', 'completed']) assert.equal(contractsGateForBuyer({ status }, { deliveryCount: 0 }), null);
+});
 
 test('active buyer with batches remaining gets a between-batch state', () => {
   const state = contractsPresentationForBuyer(

@@ -37,7 +37,7 @@ function MemberAccount({ name, email }) {
 }
 
 // Shared CTC chrome for targeting and the delivered-contract archive.
-export default function SetupWorkspace({ token, discoveryHref, updateMode = false, readOnly = false, choice = false, activePage = 'targeting', header = null, setupStep = 1, contentClassName = '', mainLabel, reader = false, contextBar = null, sidebarFooter = null, buyerName = '', buyerEmail = '', supportEmail = '', pageContext, children }) {
+export default function SetupWorkspace({ token, discoveryHref, updateMode = false, readOnly = false, choice = false, activePage = 'targeting', header = null, setupStep = 1, contentClassName = '', mainLabel, reader = false, contextBar = null, sidebarFooter = null, buyerName = '', buyerEmail = '', supportEmail = '', pageContext, contractsLocked = false, targetingLocked = false, initialLockedPage = null, children }) {
   // Choosing a path is a focused entry screen, not the editing workspace.
   // Omit navigation from the DOM on both desktop and mobile.
   if (choice) return (
@@ -54,20 +54,35 @@ export default function SetupWorkspace({ token, discoveryHref, updateMode = fals
   );
   const pages = [
     { id: 'discovery', label: 'Discovery', icon: 'discovery', href: discoveryHref },
-    { id: 'targeting', label: 'Targeting', icon: 'target', href: `${buyerPagePath('setup', token)}?review=1` },
-    { id: 'contracts', label: 'Contracts', icon: 'briefcase', href: buyerPagePath('contracts', token) },
+    { id: 'targeting', label: 'Targeting', icon: 'target', locked: targetingLocked, href: `${buyerPagePath('setup', token)}?review=1` },
+    { id: 'contracts', label: 'Contracts', icon: 'briefcase', locked: contractsLocked, href: buyerPagePath('contracts', token) },
   ];
+  const continueDiscovery = { label: 'Continue Discovery', ...(activePage === 'discovery' ? {} : { href: discoveryHref }) };
+  const manualTargeting = { label: 'Build targeting manually', href: `${buyerPagePath('setup', token)}?targeting=1` };
+  const lockedPages = {
+    ...(targetingLocked ? { targeting: {
+      title: 'Set up your targeting',
+      description: 'Finish Discovery to choose a niche, or build your targeting profile manually.',
+      actions: [continueDiscovery, { ...manualTargeting, secondary: true }],
+    } } : {}),
+    ...(contractsLocked ? { contracts: {
+      title: 'Contracts are locked',
+      description: targetingLocked ? 'Save your targeting profile, then review and start your search to unlock contracts.' : 'Your targeting is saved. Review it and start your search to unlock contracts.',
+      actions: targetingLocked ? [continueDiscovery, { ...manualTargeting, secondary: true }]
+        : [{ label: 'Review and start search', href: buyerPagePath('start', token) }, { label: 'Review targeting', href: `${buyerPagePath('setup', token)}?review=1`, secondary: true }],
+    } } : {}),
+  };
   const crumbs = setupStep === 2 && activePage === 'targeting'
     ? [{ label: 'Targeting', href: buyerPagePath('setup', token) }, { label: 'Start contracts' }]
     : [];
   const hasBreadcrumb = crumbs.length > 1;
   const context = pageContext || (setupStep === 2 ? 'start' : activePage === 'discovery' ? 'discovery' : activePage === 'contracts' ? 'contracts' : readOnly ? 'targeting_review' : 'targeting_setup');
   return (
-    <WorkspaceNavigation className={`wda-setup-app is-workspace${reader ? ' is-reader' : ''}`}>
+    <WorkspaceNavigation className={`wda-setup-app is-workspace${reader ? ' is-reader' : ''}`} lockedPages={lockedPages} initialLockedPage={initialLockedPage}>
       <div className="wda-setup-mobile">
         <img src="/brand/wda-logo.png" alt="War Dogs Academy" width="110" />
         <nav aria-label="Mobile navigation">
-          {pages.map((page) => page.id === activePage
+          {pages.map((page) => page.locked ? <button data-liquid="" key={page.id} type="button" className="wda-nav-locked" data-workspace-locked={page.id} aria-haspopup="dialog" aria-label={`${page.label} (locked)`} title={`${page.label} (locked)`}><CTCIcon name={page.icon} /><span className="wda-nav-lock" aria-hidden="true"><CTCIcon name="lock" /></span></button> : page.id === activePage
             ? reader ? <a key={page.id} href={page.href} aria-current="location" title={page.label} aria-label={page.label}><CTCIcon name={page.icon} /></a>
               : <span key={page.id} aria-current="page" title={page.label}><CTCIcon name={page.icon} /><span className="sr-only">{page.label}</span></span>
             : <a data-liquid="" key={page.id} href={page.href} title={page.label} aria-label={page.label}><CTCIcon name={page.icon} /></a>)}
@@ -84,7 +99,7 @@ export default function SetupWorkspace({ token, discoveryHref, updateMode = fals
           </div>
           <p className="wda-workspace-label"><span aria-hidden="true" />Contract workspace</p>
           <nav>
-            {pages.map((page) => page.id === activePage
+            {pages.map((page) => page.locked ? <button data-liquid="" key={page.id} type="button" className="wda-nav-locked" data-workspace-locked={page.id} aria-haspopup="dialog" aria-label={`${page.label} (locked)`} data-sidebar-hint={`${page.label} (locked)`}><CTCIcon name={page.icon} /><span className="wda-nav-label">{page.label}</span><span className="wda-nav-lock" aria-hidden="true"><CTCIcon name="lock" /></span></button> : page.id === activePage
               ? reader ? <a key={page.id} href={page.href} data-sidebar-hint={page.label} aria-current="location"><CTCIcon name={page.icon} /><span className="wda-nav-label">{page.label}</span></a>
                 : <span key={page.id} data-sidebar-hint={page.label} aria-current="page"><CTCIcon name={page.icon} /><span className="wda-nav-label">{page.label}</span></span>
               : <a data-liquid="" key={page.id} href={page.href} data-sidebar-hint={page.label}><CTCIcon name={page.icon} /><span className="wda-nav-label">{page.label}</span></a>)}
@@ -166,31 +181,31 @@ function SetupPathVisual({ direct = false }) {
   );
 }
 
-export function SetupChoice({ discoveryHref, directHref }) {
+export function SetupChoice({ discoveryHref, directHref, targetingEntry = false, resumeDiscovery = false }) {
   return (
     <>
       <header className="wda-setup-intro wda-choice-intro">
         <p className="wda-setup-eyebrow">Curated Target Contracts</p>
-        <h1>Start with a clear target.</h1>
-        <p>Choose how you’d like to build your targeting profile.</p>
+        <h1>{targetingEntry ? 'Set up your targeting' : 'Start with a clear target.'}</h1>
+        <p>{targetingEntry ? 'You have not saved a targeting profile yet. Choose how to continue.' : 'Choose how you’d like to build your targeting profile.'}</p>
       </header>
       <div className="wda-setup-paths">
         <a href={discoveryHref} className="wda-setup-path" aria-labelledby="setup-path-discovery-title" aria-describedby="setup-path-discovery-description">
           <SetupPathVisual />
           <span className="wda-setup-path-label">Explore your options</span>
-          <h2 id="setup-path-discovery-title">Help me discover my niche</h2>
-          <p id="setup-path-discovery-description">Work through your capabilities with the Niche Advisor and find a starting lane that fits.</p>
-          <span className="wda-setup-path-action">Start with Discovery<CTCIcon name="arrow" /></span>
+          <h2 id="setup-path-discovery-title">{resumeDiscovery ? 'Continue Discovery' : 'Help me discover my niche'}</h2>
+          <p id="setup-path-discovery-description">{resumeDiscovery ? 'Pick up your saved conversation with the Niche Advisor. Your previous answers are still there.' : 'Work through your capabilities with the Niche Advisor and find a starting lane that fits.'}</p>
+          <span className="wda-setup-path-action">{resumeDiscovery ? 'Continue Discovery' : 'Start with Discovery'}<CTCIcon name="arrow" /></span>
         </a>
         <a href={directHref} className="wda-setup-path is-direct" aria-labelledby="setup-path-direct-title" aria-describedby="setup-path-direct-description">
           <SetupPathVisual direct />
           <span className="wda-setup-path-label">Set your own direction</span>
-          <h2 id="setup-path-direct-title">I already know my niche</h2>
+          <h2 id="setup-path-direct-title">{targetingEntry ? 'Build targeting manually' : 'I already know my niche'}</h2>
           <p id="setup-path-direct-description">Build your profile directly with industry codes, capabilities, service area, and contract preferences.</p>
           <span className="wda-setup-path-action">Build your targeting<CTCIcon name="arrow" /></span>
         </a>
       </div>
-      <p className="wda-setup-choice-note">Two paths. One targeting profile. You’ll review it before choosing when to start your contracts.</p>
+      <p className="wda-setup-choice-note">{resumeDiscovery ? 'Your Discovery progress stays saved, whichever path you choose.' : 'Two paths. One targeting profile. You’ll review it before choosing when to start your contracts.'}</p>
     </>
   );
 }

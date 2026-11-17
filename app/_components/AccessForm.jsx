@@ -60,7 +60,7 @@ export default function AccessForm() {
   }
 
   return (
-    <form className="wda-portal-form" onSubmit={submit} aria-label="Email my access link" aria-busy={status === 'sending' || undefined}>
+    <form className="wda-portal-form" onSubmit={submit} aria-label="Request Access Link" aria-busy={status === 'sending' || undefined}>
       <label htmlFor="access-email">
         Your email
       </label>
@@ -91,7 +91,7 @@ export default function AccessForm() {
         loading={status === 'sending'}
         loadingText="Sending your link…"
       >
-        Email me my link
+        Request Access Link
       </Button>
     </form>
   );

@@ -25,7 +25,8 @@ export default function Shell({
       maxWidth: '100%',
       minWidth: 0,
     }}>
-      <style>{`
+      {/* Trusted CSS must stay raw: style text does not decode HTML entities. */}
+      <style dangerouslySetInnerHTML={{ __html: `
         .shell-brand-header{background:${UI.card};border-bottom:1px solid ${UI.line};padding:26px 24px 22px}
         .shell-brand-logo{display:block;width:210px;max-width:70%;height:auto;margin:0 auto}
         .shell-brand-rule{height:3px;width:60px;background:${UI.pink};margin:16px auto 0}
@@ -38,7 +39,7 @@ export default function Shell({
           .shell-brand-eyebrow{font-size:10px;letter-spacing:2.2px;margin-top:10px}
           .shell-brand-subtitle{font-size:12px;margin-top:5px}
         }
-      `}</style>
+      ` }} />
       {!hideHeader && <div style={{height:4,background:UI.pink}} />}
       {!hideHeader && <div style={{height:3,background:UI.orange}} />}
       {supportBar}

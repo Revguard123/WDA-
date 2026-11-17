@@ -25,6 +25,7 @@ const env = {
   SUPPORT_FROM_NAME: 'War Dogs Academy Support',
 };
 
+
 test('Support CTA renders on required student pages with safe page contexts', () => {
   const portalFrame = readFileSync('app/_components/PortalFrame.jsx', 'utf8');
   assert.ok(portalFrame.includes('<SupportCTA sidebar pageContext={pageContext}'));
@@ -116,8 +117,9 @@ test('support destination comes from env config and Reply-To uses submitted stud
   assert.ok(email.text.includes('Student email:\nstudent@example.com'));
   assert.ok(email.text.includes('Page:\nNiche Discovery'));
   assert.ok(email.html.includes('War Dogs Academy'));
-  assert.ok(email.html.includes('#f52ea9'));
-  assert.ok(email.html.includes('#ff9f58'));
+  assert.ok(email.html.includes('#d81782'));
+  assert.ok(email.html.includes('class="email-card"'));
+  assert.ok(!email.html.includes('#ff9f58'));
   assert.ok(email.html.includes('Support Request'));
   assert.ok(email.html.includes('Page context'));
 });
@@ -286,7 +288,7 @@ test('Slack feedback errors return a controlled safe error', async () => {
 test('missing Slack feedback config is handled safely', () => {
   const config = getFeedbackConfig({});
   assert.equal(config.ok, false);
-  assert.deepEqual(config.missing, ['SLACK_CTC_FEEDBACK_WEBHOOK_URL']);
+  assert.deepEqual(config.missing, ['SLACK_CTC_FEEDBACK_WEBHOOK_URL', 'FEEDBACK_TO_EMAIL']);
 });
 
 test('Slack feedback message is compact and readable', () => {

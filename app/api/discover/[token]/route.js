@@ -6,6 +6,10 @@ import {
 } from '../../../../lib/discoverySessions.js';
 import { recommendPlaybookNiches } from '../../../../lib/playbook/recommendationEngine.js';
 import { normalizeDiscoveryAnswers } from '../../../../lib/playbook/index.js';
+import { adaptiveProgressForSubmission } from '../../../../lib/playbook/adaptiveProgress.js';
+import { normalizeAdaptiveAnswer } from '../../../../lib/playbook/adaptiveResolvers.js';
+import { normalizeCapabilityPriority } from '../../../../lib/playbook/capabilityContext.js';
+import { explicitBackgroundUpdates } from '../../../../lib/playbook/backgroundEvidence.js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -32,6 +36,7 @@ export async function POST(req, { params }) {
   let stage = 'session_lookup';
   try {
     const existing = await getDiscoverySessionForBuyer(buyer.id);
+    const progress = adaptiveProgressForSubmission(existing || {}, body);
     stage = 'profile_normalization';
     const answers = normalizeDiscoveryAnswers({
       ...(existing?.answers || {}),
@@ -41,15 +46,24 @@ export async function POST(req, { params }) {
         ...(body.answers?.adaptive_answers || {}),
         ...(body.adaptive_answers || {}),
       },
+      adaptive_attempts: progress.attempts,
+      adaptive_answer_notes: { ...existing?.answers?.adaptive_answer_notes, ...body.answers?.adaptive_answer_notes },
     });
-    const clarificationRound = Math.max(
-      Number(body.clarification_round || 0),
-      Object.keys(answers.adaptive_answers || {}).length,
-    );
+    Object.assign(answers, explicitBackgroundUpdates(answers));
+    for (const [key, value] of Object.entries(answers.adaptive_answers)) {
+      const canonical = key === 'capability_priority'
+        ? normalizeCapabilityPriority(value, answers) || ((progress.attempts[key] || 0) >= 2 ? 'compare_all' : '')
+        : normalizeAdaptiveAnswer(key, value);
+      if (canonical) {
+        if (!answers.adaptive_answer_notes[key]) answers.adaptive_answer_notes[key] = String(value).slice(0, 900);
+        answers.adaptive_answers[key] = canonical;
+      }
+    }
     stage = 'recommendation_engine';
     const result = await recommendPlaybookNiches(answers, {
       adaptiveAnswers: answers.adaptive_answers,
-      clarificationRound,
+      clarificationRound: progress.clarificationRound,
+      adaptiveAttempts: progress.attempts,
       logger: console,
     });
 

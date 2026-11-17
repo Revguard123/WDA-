@@ -1,8 +1,9 @@
 import { readFileSync } from 'node:fs';
-import test from 'node:test';
+import test, { beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { POST as supportPost } from '../app/api/support/route.js';
+import { resetAcknowledgementStateForTests, setAcknowledgementTransportForTests } from '../lib/supportAcknowledgement.js';
 import {
   buildFeedbackSlackMessage,
   buildSupportEmail,
@@ -25,6 +26,11 @@ const env = {
   SUPPORT_FROM_NAME: 'War Dogs Academy Support',
 };
 
+beforeEach(() => {
+  resetAcknowledgementStateForTests();
+  setAcknowledgementTransportForTests(async () => ({ accepted: true }));
+});
+afterEach(() => resetAcknowledgementStateForTests());
 
 test('Support CTA renders on required student pages with safe page contexts', () => {
   const portalFrame = readFileSync('app/_components/PortalFrame.jsx', 'utf8');

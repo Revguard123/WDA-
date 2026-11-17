@@ -7,6 +7,7 @@ import { listActiveBuyersDue, setNextBatchAt } from '../../../../lib/buyers.js';
 import { runBatchForBuyer } from '../../../../lib/pipeline.js';
 import { resolveBaseUrl } from '../../../../lib/baseUrl.js';
 import { sendOpsAlert } from '../../../../lib/alerts.js';
+import { runScheduledTopUps } from '../../../../lib/scheduledTopUps.js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -34,6 +35,7 @@ export async function GET(req) {
   const now = new Date();
   try {
     const base = resolveBaseUrl({ req });
+    const topUps = await runScheduledTopUps({ now, baseUrl: base });
     const due = await listActiveBuyersDue(now);
 
     const results = [];
@@ -65,6 +67,14 @@ export async function GET(req) {
     // A buyer needs attention if their batch errored, delivered nothing, or the
     // email did not go out. Alert on any of these so a silent miss never stands.
     const problems = results.filter((r) => r.error || r.delivered === 0 || r.sent === false);
+    const topUpProblems = topUps.filter((result) => result.error || result.shortfall > 0);
+    if (topUpProblems.length) {
+      await sendOpsAlert({
+        subject: 'Scheduled contract top-up needs attention',
+        summary: 'A scheduled top-up failed or could not find enough qualifying contracts. No additional monthly batch was consumed.',
+        rows: topUpProblems.map((result) => `buyer ${result.buyer_id}: ${result.error || `delivered ${result.delivered}, still missing ${result.shortfall}`}`),
+      });
+    }
     if (problems.length) {
       await sendOpsAlert({
         subject: `Monthly cron: ${problems.length} of ${results.length} buyer(s) need attention`,
@@ -79,7 +89,7 @@ export async function GET(req) {
       });
     }
 
-    return Response.json({ ok: true, ranAt: now.toISOString(), dueCount: due.length, results });
+    return Response.json({ ok: true, ranAt: now.toISOString(), dueCount: due.length, results, topUps });
   } catch (err) {
     // Total run failure (e.g. the buyer query itself threw). Alert, then surface.
     const message = String(err?.message || err);

@@ -43,7 +43,7 @@ export default async function PortalPage({ searchParams }) {
         {sessionExpired ? <p className="wda-portal-session-note" role="status">Your previous session is no longer available. Enter your enrollment email to reopen your workspace.</p> : null}
         {signedOut ? <p className="wda-portal-session-note" role="status">You are logged out on this device. Your saved profile and contracts are still here when you return.</p> : null}
         <PortalEmailForm />
-        <div className="wda-portal-alternative"><span>Prefer an email link?</span><a href="/access">Get a link by email</a></div>
+        <div className="wda-portal-alternative"><span>Prefer an email link?</span><a href="/access">Request Access Link</a></div>
       </PortalFrame>
     );
   }

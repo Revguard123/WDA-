@@ -1,0 +1,2 @@
+# Keep the byte-verified CRM email snapshot consistent on Windows checkouts.
+test/fixtures/support-email-crm.html text eol=lf

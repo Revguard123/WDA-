@@ -146,10 +146,10 @@ test('adaptive clarification can ask up to three unresolved context questions', 
   assert.equal(third.questions[0].key, 'carrier_vs_freight_arrangement');
 });
 
-test('maximum three clarification rounds falls back to a canonical starting lane', async () => {
+test('maximum three clarification rounds stops safely rather than substituting an unrelated lane', async () => {
   const result = await recommendPlaybookNiches(profile, { ranker: rankerFor('Network Infrastructure'), clarificationRound: 3 });
-  assert.equal(result.status, 'recommended');
-  assert.ok(result.recommendations[0].naics.length > 0);
+  assert.equal(result.status, 'no_recommendation');
+  assert.match(result.message, /will not keep asking the same question/i);
 });
 
 test('final recommendations max 3 and none have empty NAICS or candidate-only codes', async () => {

@@ -129,13 +129,16 @@ test('suggestion chips ask Claude for an editable student draft', async () => {
     payload = request;
     return { content: [{ type: 'text', text: JSON.stringify({ draft: 'I can support work nationwide if the scope can be handled remotely or through vendors.' }) }] };
   } } };
-  const draft = await draftDiscoverySuggestion({ category: 'geography', question: 'Where can you deliver the work?', helper: 'Use a state code or describe your service area.', suggestion: 'Nationwide', chat_context: [{ role: 'student', content: 'I run a cleaning company in Georgia.' }] }, { client });
+  const draft = await draftDiscoverySuggestion({ category: 'geography', question: 'Where can you deliver the work?', helper: 'Use a state code or describe your service area.', suggestion: 'Nationwide', selected_option: 'nationwide', chat_context: [{ role: 'student', content: 'I run a cleaning company in Georgia.' }] }, { client });
   assert.match(payload.system, /editable answer/);
   assert.match(payload.system, /prior chat context/);
   assert.match(payload.system, /Do not invent company details/);
   assert.match(payload.system, /industries, subindustries, or services/);
   const body = JSON.parse(payload.messages[0].content);
   assert.equal(body.suggestion, 'Nationwide');
+  assert.equal(body.selected_option, 'nationwide');
+  assert.match(payload.system, /complete editable sentence/);
+  assert.match(payload.system, /Preserve its meaning exactly/);
   assert.deepEqual(body.chat_context, [{ role: 'student', content: 'I run a cleaning company in Georgia.' }]);
   assert.equal(draft, 'I can support work nationwide if the scope can be handled remotely or through vendors.');
 });

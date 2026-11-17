@@ -200,11 +200,11 @@ export default function SupportCTA({ pageContext, compact = false, sticky = fals
         </div>
       ) : <>
       {sticky ? (
-        <style>{`
+        <style dangerouslySetInnerHTML={{ __html: `
           .ctc-beta-support-bar-inner{max-width:1120px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;line-height:1.35}
           .ctc-beta-support-actions{display:flex;align-items:center;gap:9px;white-space:nowrap}
           @media(max-width:640px){.ctc-beta-support-bar-inner{align-items:flex-start;flex-direction:column;gap:6px}.ctc-beta-support-actions{white-space:normal;flex-wrap:wrap}}
-        `}</style>
+        ` }} />
       ) : null}
       <div className={sticky ? 'ctc-beta-support-bar-inner' : undefined}>
         <span>

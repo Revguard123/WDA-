@@ -31,3 +31,6 @@ yarn-error.log*
 .idea/
 .vscode/
 .env*
+
+# local email drafts and Outlook copy previews
+/docs/email-drafts/

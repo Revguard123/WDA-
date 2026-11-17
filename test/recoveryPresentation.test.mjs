@@ -41,7 +41,7 @@ test('invalid-link screens share compact platform chrome, branded buttons and ac
     assert.equal((html.match(/<h1\b/g) || []).length, 1);
     assert.match(html, /Skip to message/);
     assert.match(html, /href="\/access" class="wda-btn wda-btn-solid"/);
-    assert.match(html, /Get a fresh access link/);
+    assert.match(html, /Request Access Link/);
     assert.match(html, /href="\/portal" class="wda-btn wda-btn-ghost"/);
     assert.match(html, /Send feedback \/ Email support/);
     assert.doesNotMatch(html, /shell-brand-header|CTC navigation|<iframe|<lottie-player|access_token/);
@@ -54,7 +54,7 @@ test('missing contracts offer archive/access recovery without revealing any cont
   assert.match(html, /This contract is not valid/);
   assert.match(html, /href="\/contracts"/);
   assert.match(html, /Back to my contracts/);
-  assert.match(html, /Restore access/);
+  assert.match(html, /Request Access Link/);
   assert.match(html, /only to the account they were delivered to/);
   assert.doesNotMatch(html, /notice_id|buyer_id|access_token|SAM.gov|contract-title/);
 });
@@ -65,7 +65,7 @@ test('account errors isolate the entered address and offer clearly worded retry 
   assert.match(html, /Let’s check your email/);
   assert.match(html, /<dt>Email entered<\/dt><dd>member\+retry@example.test<\/dd>/);
   assert.match(html, /Try another email/);
-  assert.match(html, /Email my access link/);
+  assert.match(html, /Request Access Link/);
   assert.match(html, /Check for a typo/);
   assert.match(html, /data-email="member\+retry@example.test"/);
   assert.doesNotMatch(html, /expired|We sent|Email sent|Signed in/);
@@ -81,7 +81,7 @@ test('custom global 404 uses the same design without confusing a missing page wi
   assert.match(html, /404 \/ Page not found/);
   assert.match(html, /This page isn’t here/);
   assert.match(html, /Open my portal/);
-  assert.match(html, /Get my access link/);
+  assert.match(html, /Request Access Link/);
   assert.match(html, /may have moved/);
   assert.doesNotMatch(html, /This link is not valid|Account not found|history\.back|javascript:/);
 });

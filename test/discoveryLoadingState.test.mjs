@@ -40,9 +40,11 @@ test('composer retains keyboard entry, safe busy controls and reduced-motion-awa
   assert.doesNotMatch(source, /Give me the short version|<aside className="discovery-sidebar">/);
 });
 
-test('Discovery route counts answered adaptive questions as clarification rounds', () => {
+test('Discovery route uses persisted attempt counters rather than trusting requested rounds', () => {
   const source = readFileSync('app/api/discover/[token]/route.js', 'utf8');
-  assert.ok(source.includes('Object.keys(answers.adaptive_answers || {}).length'));
+  assert.ok(source.includes('adaptiveProgressForSubmission(existing || {}, body)'));
+  assert.ok(source.includes('clarificationRound: progress.clarificationRound'));
+  assert.doesNotMatch(source, /Number\(body.clarification_round/);
 });
 
 test('Discovery conversation submit handles empty or non-JSON error responses safely', () => {

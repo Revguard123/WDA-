@@ -38,8 +38,10 @@ test('email-link recovery uses the exact shared portal frame, atmosphere, typogr
   assert.equal((html.match(/class="wda-portal-access-card"/g) || []).length, 1);
   assert.match(html, /class="wda-portal-atmosphere" aria-hidden="true"/);
   assert.match(html, /data-theme-slot=""/);
-  assert.match(html, /Email my access link/);
-  assert.match(html, /Email me my link/);
+  assert.match(html, /<h2 id="portal-access-title">Request Access Link<\/h2>/);
+  assert.match(html, /aria-label="Request Access Link"/);
+  assert.match(html, /<span class="wda-btn-text">Request Access Link<\/span>/);
+  assert.equal(page.metadata.title, 'Request Access Link | War Dogs Academy');
   assert.match(html, /href="\/portal">Open my portal/);
   assert.match(html, /<label for="access-email">Your email<\/label>/);
   assert.match(html, /autoComplete="email"/);
@@ -114,9 +116,17 @@ test('send failures stay in the shared form with a retryable error instead of cl
     form.type('member@example.test');
     await form.submit();
     assert.match(form.html(), /role="alert"/);
-    assert.match(form.html(), /Email me my link/);
+    assert.match(form.html(), /Request Access Link/);
     assert.doesNotMatch(form.html(), /aria-busy="true"|Check your inbox|aria-invalid="true"/);
     await form.submit();
     assert.equal(form.requests.length, 2);
+  }
+});
+
+test('all CTC recovery entry points use Request Access Link without password-reset wording', () => {
+  for (const file of ['app/access/page.js', 'app/_components/AccessForm.jsx', 'app/portal/page.js', 'app/_components/RecoveryScreen.jsx']) {
+    const source = readFileSync(new URL(`../${file}`, import.meta.url), 'utf8');
+    assert.match(source, /Request Access Link/, file);
+    assert.doesNotMatch(source, /forgot[\s_-]*password|reset[\s_-]*password|password[\s_-]*reset|email my access link|email me my link|get a (?:link by email|fresh access link)|get my access link/i, file);
   }
 });

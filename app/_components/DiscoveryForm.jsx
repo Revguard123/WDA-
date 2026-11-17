@@ -45,7 +45,26 @@ const iconPaths = {
   x: <path d="M18 6 6 18M6 6l12 12" />
 };
 
-function initialAdvisorState(session) { return session?.answers?.advisor_state || emptyState; }
+export function initialAdvisorState(session) {
+  const state = session?.answers?.advisor_state || emptyState;
+  const question = session?.recommendations?.status === 'needs_clarification' ? session.recommendations.questions?.[0] : null;
+  return question ? { ...state, complete: false, pending_question: adaptivePendingQuestion(question) } : state;
+}
+
+function adaptivePendingQuestion(question) {
+  return { category: 'naics_clarification', prompt: question.prompt, helper: question.helper || '', input_type: question.options?.length ? 'single_choice' : 'text', options: question.options || [], adaptive_key: question.key };
+}
+
+export function adaptiveAnswerForDraft(pending, starter, draft) {
+  const answer = String(draft || '').trim();
+  return selectedStarterValue(pending, starter, answer) || answer;
+}
+
+export function selectedStarterValue(pending, starter, draft) {
+  const key = pending?.adaptive_key || pending?.id;
+  return key && starter?.key === key && starter?.draft === String(draft || '').trim()
+    && typeof starter?.value === 'string' && starter.value ? starter.value : undefined;
+}
 
 // Voice quality has no standard Web Speech metadata. Prefer provider quality
 // labels, then familiar English voices, without assuming any are installed.
@@ -190,10 +209,14 @@ export function MessageActions({ index, text, actions, onEdit, editDisabled = fa
 }
 function isGenericAdvisorRow(message) { return message?.role === 'advisor' && String(message.content || '').includes('keep this practical and narrow the next useful point'); }
 
-function getAdvisorMessageText(message, pendingQuestion, isLatest) {
+export function getAdvisorMessageText(message, pendingQuestion, isLatest) {
   const content = String(message?.content || '').trim();
-  const q = message?.question || (isLatest ? pendingQuestion : null);
+  if (isLatest && pendingQuestion && (pendingQuestion.adaptive_key || pendingQuestion.prompt !== message?.question?.prompt)) {
+    return String(pendingQuestion.prompt || '').trim();
+  }
+  const q = isLatest && pendingQuestion ? pendingQuestion : message?.question;
   const prompt = String(q?.prompt || '').trim();
+  if (isLatest && !q && /\blet['\u2019]?s\b[^.!?]*\b(?:state focus|next question|talk about|lock down)\b/i.test(content)) return 'Your answers are saved.';
   if (!prompt) return content;
   if (!content) return prompt;
 
@@ -269,7 +292,7 @@ export function AnswerStarters({ options = [], onDraft, disabled = false, drafti
             <button data-liquid="" className={`wda-suggestion${isDrafting ? ' is-drafting' : ''}`} type="button"
               key={option.value || option.label || index} disabled={disabled || draftingLabel != null}
               aria-busy={isDrafting} style={{ '--starter-order': Math.min(index, 5) }}
-              onClick={() => onDraft(label)}>
+              onClick={() => onDraft(label, option.value)}>
               <span className="wda-starter-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
               <span className="wda-starter-label">{label}</span>
               <span className="wda-starter-action" aria-hidden="true">
@@ -407,6 +430,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
   const [skipTyping, setSkipTyping] = useState(false);
   const [isAdvisorTyping, setIsAdvisorTyping] = useState(false);
   const [draftingSuggestion, setDraftingSuggestion] = useState(null);
+  const [selectedStarter, setSelectedStarter] = useState(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const animatedMessagesRef = useRef(new Set());
   const initialHistoryCountRef = useRef(initialAdvisorState(initialSession).messages?.length || 0);
@@ -651,13 +675,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
           setState({
             ...data.advisor_state,
             complete: false,
-            pending_question: {
-              category: 'naics_clarification',
-              prompt: question.prompt,
-              input_type: 'single_choice',
-              options: question.options || [],
-              adaptive_key: question.key,
-            },
+            pending_question: adaptivePendingQuestion(question),
           });
           return;
         }
@@ -712,12 +730,14 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
 
     try {
       if (pending?.adaptive_key) {
+        const selectedValue = adaptiveAnswerForDraft(pending, selectedStarter, answer);
         const nextAnswers = {
           ...answers,
           adaptive_answers: {
             ...(answers.adaptive_answers || {}),
-            [pending.adaptive_key]: answer,
+            [pending.adaptive_key]: selectedValue,
           },
+          adaptive_answer_notes: { ...(answers.adaptive_answer_notes || {}), [pending.adaptive_key]: answer },
         };
         recommendationStarted = true;
         setRecommendationStatus('building');
@@ -729,7 +749,8 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
         });
         const result = await readJsonResponse(response, 'Could not prepare recommendations.');
         if (!response.ok) throw new Error(result.error || 'Could not prepare recommendations.');
-        setAnswers(nextAnswers);
+        setAnswers(result.session?.answers || nextAnswers);
+        setSelectedStarter(null);
 
         if (result.status === 'needs_clarification' && result.questions?.[0]) {
           const question = result.questions[0];
@@ -738,13 +759,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
           setState((current) => ({
             ...current,
             complete: false,
-            pending_question: {
-              category: 'naics_clarification',
-              prompt: question.prompt,
-              input_type: 'single_choice',
-              options: question.options || [],
-              adaptive_key: question.key,
-            },
+            pending_question: adaptivePendingQuestion(question),
           }));
           succeeded = true;
           return;
@@ -776,6 +791,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
         answer,
         question_id: pending?.id,
         question_category: pending?.category,
+        selected_option: selectedStarterValue(pending, selectedStarter, answer),
       });
 
       if (!data.complete) {
@@ -800,13 +816,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
         setState({
           ...data.advisor_state,
           complete: false,
-          pending_question: {
-            category: 'naics_clarification',
-            prompt: question.prompt,
-            input_type: 'single_choice',
-            options: question.options || [],
-            adaptive_key: question.key,
-          },
+          pending_question: adaptivePendingQuestion(question),
         });
         succeeded = true;
         return;
@@ -875,13 +885,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
         setState((current) => ({
           ...current,
           complete: false,
-          pending_question: {
-            category: 'naics_clarification',
-            prompt: question.prompt,
-            input_type: 'single_choice',
-            options: question.options || [],
-            adaptive_key: question.key,
-          },
+          pending_question: adaptivePendingQuestion(question),
         }));
         return;
       }
@@ -947,8 +951,9 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
     }
   }
 
-  async function draftSuggestion(label) {
+  async function draftSuggestion(label, value) {
     if (!pending || locked) return;
+    setSelectedStarter(null);
     setDraftingSuggestion(label);
     setStatus('drafting');
     setError('');
@@ -959,12 +964,18 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
         body: JSON.stringify({
           draft_suggestion: true,
           suggestion: label,
-          current_question: { category: pending.category, prompt: pending.prompt, helper: pending.helper }
+          suggestion_value: value,
+          current_question: { id: pending.id, category: pending.category, prompt: pending.prompt, helper: pending.helper, adaptive_key: pending.adaptive_key }
         })
       });
       const data = await readJsonResponse(response, 'Could not draft that suggestion.');
       if (!response.ok) throw new Error(data.error || 'Could not draft that suggestion.');
-      setDraft(data.draft || '');
+      const generatedDraft = String(data.draft || '').trim();
+      if (!generatedDraft) throw new Error('Could not draft that suggestion.');
+      setDraft(generatedDraft);
+      // Keep the option separate from Claude's prose. Editing the draft clears
+      // this association, so an old choice cannot override the student's edit.
+      setSelectedStarter({ key: pending.adaptive_key || pending.id, value, draft: generatedDraft });
       requestAnimationFrame(() => {
         const el = textareaRef.current;
         if (!el) return;
@@ -1006,6 +1017,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
   function resizeComposer(event) {
     const el = event.currentTarget;
     setDraft(el.value);
+    setSelectedStarter(null);
     el.style.height = 'auto';
     el.style.height = `${Math.min(el.scrollHeight, 128)}px`;
   }
@@ -1028,7 +1040,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
   const Conversation = embedded ? 'section' : 'main';
   return (
     <div ref={discoveryRef} className={`wda-discovery-app${embedded ? ' is-embedded' : ''}`} data-thinking={thinking || undefined}>
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .wda-discovery-app, .wda-discovery-app * { box-sizing: border-box; }
         .wda-discovery-app {
           --wda-paper:#FDFBF9; --wda-cream:#F6F1EB; --wda-white:#FFFFFF;
@@ -1580,7 +1592,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
           .wda-discovery-app .wda-composer::before { display: none; }
           .wda-discovery-app .wda-composer.is-drafting { box-shadow: none; outline: 2px solid Highlight; outline-offset: 2px; }
         }
-      `}</style>
+      ` }} />
 
       {supportCta ? <div className="wda-support-strip">{supportCta}</div> : null}
 
@@ -1683,7 +1695,7 @@ export default function DiscoveryForm({ token, initialSession = null, supportCta
                         }}
                       />
                       {visualIndex === visibleMessages.length - 1 && !isAdvisorTyping && (message.question?.helper || pending?.helper) ? (
-                        <p className="wda-advisor-helper">{message.question?.helper || pending?.helper}</p>
+                        <p className="wda-advisor-helper">{pending?.helper || message.question?.helper}</p>
                       ) : null}
                       {!(visualIndex === visibleMessages.length - 1 && isAdvisorTyping) ? <MessageActions index={sourceIndex} text={messageText} actions={messageActions} /> : null}
                     </div>

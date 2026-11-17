@@ -6,6 +6,8 @@ import Button from '../../_components/Button.jsx';
 import NicheFocusIllustration from '../../_components/NicheFocusIllustration.jsx';
 import { getBuyerByToken } from '../../../lib/buyers.js';
 import { getDiscoverySessionForBuyer } from '../../../lib/discoverySessions.js';
+import { listDeliveriesForBuyer } from '../../../lib/deliveries.js';
+import { contractsGateForBuyer } from '../../../lib/contractsPresentation.js';
 import { discoveryTargetingReviewState } from '../../../lib/setupDiscoveryState.js';
 import { getOfficialNaicsTitle } from '../../../lib/playbook/naicsReference.js';
 import { SET_ASIDE_OPTIONS } from '../../../lib/ui.js';
@@ -59,6 +61,8 @@ export default async function StartPage({ params }) {
   const state = startStateForBuyer({ ...buyer, access_token: token });
   if (state.redirect) redirect(state.redirect);
   const session = await getDiscoverySessionForBuyer(buyer.id);
+  const deliveries = buyer.status === 'exploring' ? await listDeliveriesForBuyer(buyer.id) : [];
+  const contractsLocked = !!contractsGateForBuyer(buyer, { deliveryCount: deliveries.length });
   const discoveryReview = discoveryTargetingReviewState({ session, buyer });
   const naics = discoveryReview?.naics?.length ? discoveryReview.naics : normalizeNaics(buyer.naics);
   const keywords = Array.isArray(buyer.keywords) ? buyer.keywords.filter(Boolean) : [];
@@ -67,7 +71,7 @@ export default async function StartPage({ params }) {
 
   return (
     <Shell maxWidth="100%" hideHeader locked>
-      <SetupWorkspace token={token} buyerName={buyer.name} buyerEmail={buyer.email} supportEmail={supportEmail} pageContext="start" discoveryHref={buyerPagePath('discover', token)} setupStep={2} contentClassName="ctc-start-page" mainLabel="Start your contract search">
+      <SetupWorkspace token={token} buyerName={buyer.name} buyerEmail={buyer.email} supportEmail={supportEmail} pageContext="start" discoveryHref={buyerPagePath('discover', token)} setupStep={2} contentClassName="ctc-start-page" mainLabel="Start your contract search" contractsLocked={contractsLocked}>
       <header className="ctc-flow-intro">
         <p className="wda-setup-eyebrow">Curated Target Contracts</p>
         <h1>Ready to Start</h1>

@@ -117,7 +117,11 @@ The current student-facing Discovery form is conversational, rather than the his
 
 The server owns the pending question and resolved dimensions. It checks question identity, rejects stale submissions, reconstructs accepted state from saved answers/transcript, and decides when enough dimensions are resolved. Claude cannot end the questionnaire merely by declaring it complete while server-required information remains unresolved.
 
-Suggestion controls help draft an answer; the student must submit it. Editing a previous answer rebuilds downstream state and clears obsolete recommendations. New chat resets the current Discovery session rather than creating a new buyer or changing activation.
+All suggestion controls, including adaptive and capability-priority clarifications, ask Claude for a full editable first-person draft; the student must submit it. Drafting uses the current saved question and option, not client-supplied prompt text or an older conversation question. The selected option is kept separately from generated prose so classification does not depend on exact sentence wording. Editing the draft or a saved answer clears its old selection metadata. Editing a previous answer rebuilds downstream state and clears obsolete recommendations. New chat resets the current Discovery session rather than creating a new buyer or changing activation.
+
+Work exclusions are enforced before candidate ranking and again when a recommendation is selected. Multi-model classification questions offer a "Neither / explore another area" option. Rejecting maintenance does not imply consulting, and rentals are not mapped to fleet maintenance. Rental preferences receive an explicit scope check: the existing Playbook supports truck/trailer rental code 532120, but passenger-car and other equipment rental categories need verified coverage rather than invented mappings. An unsupported category produces a clear recovery message, not filler. Saved blocked sessions re-evaluate the next clarification on read, without resetting history or writing customer records. New clarification prompts are not appended to stale coaching text.
+
+Concrete monthly amounts are preserved even when the student also expresses uncertainty. Monthly payment ranges are not applied as total targeting values. A separate confirmation can explicitly select a 12-month total, collect a different whole-contract amount, or leave the range open. Unclear responses have bounded retries and do not silently widen targeting. Specialized set-asides mentioned conditionally, as pending applications, or as possible future eligibility are not recorded as currently held; current evidence is rebuilt from the student's own answers, not the advisor's summaries.
 
 #### Persistence and recovery
 
@@ -265,12 +269,15 @@ The shared `Shell` and existing `SupportCTA` place a compact, fixed top beta/sup
 
 The same `/api/support` endpoint handles two modes:
 
-- Beta feedback: categorized reports sent to Slack with Block Kit report details, issue text, technical context, and submitted time.
-- Support requests: branded email sent through Gmail SMTP with the student's address as Reply-To. A configured email link offers a manual alternative; Slack failures do not automatically resend through SMTP.
+- Beta feedback: categorized reports sent to the configured Slack webhook and/or `FEEDBACK_TO_EMAIL` mailboxes. Both configured channels are attempted independently; acceptance by either channel is enough for the form to succeed.
+- Support requests: branded email sent through the configured SMTP server with the student's address as Reply-To. Office 365 uses `smtp.office365.com:587` with STARTTLS; the legacy defaults remain Gmail on implicit-TLS port 465. A configured email link offers a manual alternative.
+- Automatic receipts: after a form submission reaches at least one staff channel, a separate CRM-styled acknowledgement is sent to the reporter using the support SMTP sender. Replies go to that support mailbox. Receipts use the Technical & Development Team signature, confirm receipt without a fix/response-time promise, and do not quote free-text reports, private links, or device diagnostics. Existing reports are not backfilled.
+
+Receipt delivery is awaited, not left to an untracked background task. A failed receipt does not turn an already-accepted report into a form error. A one-minute, process-local recipient cooldown reserves the destination before SMTP starts, suppressing concurrent/rapid repeated receipts; it is best-effort, not durable cross-instance deduplication or a ticket queue. The sender's own mailbox and common automated-response mailboxes are excluded. Automatic-message/response-suppression headers are included. Set `SUPPORT_ACKNOWLEDGEMENT_ENABLED=false` to disable receipts without disabling staff notifications.
 
 Feedback automatically collects inferred browser, device, operating system, viewport, screen/pixel ratio, timezone, and language. These client-supplied diagnostics are useful clues, not authoritative device fingerprints. Slack environment labeling comes from runtime environment configuration. The message builder supports a shortened buyer reference, but the current API route does not supply a buyer ID.
 
-Validation enforces email format, supported page context, message/body limits, and a honeypot. Rate limiting is five requests per minute per IP in a process-local map, not a distributed cross-instance limiter. Redaction removes URLs and UUIDs from message text, recognized notice identifiers, and tokenized paths; technical fields are allowlisted and bounded. It is pattern-based redaction, not a guarantee that all free-text personal information is removed.
+Validation enforces email format, supported page context, message/body limits, and a honeypot. Explicit cross-origin browser submissions are rejected. Rate limiting is five requests per minute per IP in a process-local map, not a distributed cross-instance limiter. Redaction removes URLs and UUIDs from message text, recognized notice identifiers, and tokenized paths; technical fields are allowlisted and bounded. It is pattern-based redaction, not a guarantee that all free-text personal information is removed.
 
 Server diagnostics report Discovery stages, validation failures, provider usage, sourcing/filter counts, duplicate handling, persistence results, and sync budget/quota outcomes. Best-effort Resend alerts cover scheduled-job problems. These are logs/alerts, not a separate monitoring dashboard.
 
@@ -328,8 +335,9 @@ Only variable names are listed here. Secret values belong in the environment, ne
 | Provisioning | `KAJABI_WEBHOOK_SECRET` |
 | Student email | `RESEND_API_KEY`, `EMAIL_FROM` |
 | Operational alerts | `ALERT_EMAIL`, `ALERT_FROM` |
-| Support email | `SUPPORT_SMTP_USER`, `SUPPORT_SMTP_APP_PASSWORD`, `SUPPORT_TO_EMAIL`, `SUPPORT_FROM_NAME` |
-| Slack feedback | `SLACK_CTC_FEEDBACK_WEBHOOK_URL` |
+| Support email | `SUPPORT_SMTP_HOST`, `SUPPORT_SMTP_PORT`, `SUPPORT_SMTP_USER`, `SUPPORT_SMTP_APP_PASSWORD`, `SUPPORT_TO_EMAIL`, `SUPPORT_FROM_NAME` |
+| Feedback destinations | `SLACK_CTC_FEEDBACK_WEBHOOK_URL`, `FEEDBACK_TO_EMAIL` (comma-separated mailboxes) |
+| Automatic form receipts | `SUPPORT_ACKNOWLEDGEMENT_ENABLED` (enabled unless explicitly `false`); uses support SMTP credentials |
 | Runtime environment labeling | `VERCEL_ENV`, `NODE_ENV` |
 | Product-library return link | `KAJABI_LIBRARY_URL` |
 
@@ -375,3 +383,12 @@ Public link construction prefers an explicit caller override, then the configure
 6. NAICS codes/titles are checked against the committed official reference, while subindustry mappings remain classified as machine-proposed. Direct manual NAICS entry has different validation from bounded Discovery resolution.
 7. Portal email identification is not email-ownership verification or Kajabi SSO. Tokenized links and operator-managed service credentials remain security-sensitive. Feedback throttling is process-local and technical-context detection/redaction is best-effort.
 8. The Kajabi access grant -> Zapier -> CTC buyer provisioning flow is operator-confirmed. Exact external workflow settings, production environment values, applied database migrations, domain configuration, provider-key validity, and live deployment health were not independently verified by this source-code documentation audit.
+
+### 22. November account-specific top-up
+
+- The server-owned November top-up targets batch 1 for the approved buyer only, with a ceiling of 10 unique deliveries. It requests only the missing slots, does not consume another purchased month, and does not change the next monthly date.
+- Release eligibility begins November 16, 2026 at 19:00 Asia/Karachi. This is now a catch-up job: deploying it after that date makes it eligible on the next authorized cron invocation, not retroactively delivered on November 16.
+- The top-up uses the customer's November 16 targeting snapshot: nationwide; $50,000-$275,000; NAICS `561210`, `236118`, `236220`, `332992`, `332993`, `332994`, `423990`, `485991`, `485999`, `531110`, `561720`, `561730`, `623210`. Stale moving/relocation keywords are not carried into this one-off search. Existing set-aside eligibility is preserved, not invented.
+- That snapshot is resolved from the server-owned job for sourcing, curation, and decision briefs. It does not update the saved buyer profile or override future ordinary batches; the customer's ongoing targeting still needs a separate profile update before the next regular monthly run.
+- Duplicate and eligibility/quality screening remain enabled. A shortage stays visible and retryable rather than being filled with unrelated contracts. The top-up is portal-only and does not send a customer email.
+- Staging these files does not run the job, update production data, or deliver contracts. Verify the live batch count and qualifying supply when the staged changes are released.

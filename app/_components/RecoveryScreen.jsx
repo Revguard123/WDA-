@@ -5,7 +5,7 @@ const screens = {
   link: {
     eyebrow: 'Access unavailable',
     description: 'This link may be outdated, or your browser may no longer have access. Request a private access link to get back to your workspace.',
-    primary: { href: '/access', label: 'Get a fresh access link' },
+    primary: { href: '/access', label: 'Request Access Link' },
     secondary: { href: '/portal', label: 'Open my portal' },
     note: 'Use the same email you enrolled with at War Dogs Academy.',
   },
@@ -13,7 +13,7 @@ const screens = {
     eyebrow: 'Opportunity unavailable',
     description: 'We could not open this contract for your account. Choose an opportunity from your archive, or restore access using your private email link.',
     primary: { href: '/contracts', label: 'Back to my contracts' },
-    secondary: { href: '/access', label: 'Restore access' },
+    secondary: { href: '/access', label: 'Request Access Link' },
     note: 'Contract breakdowns are available only to the account they were delivered to.',
   },
   account: {
@@ -21,7 +21,7 @@ const screens = {
     title: 'Let’s check your email.',
     description: 'We could not find an account for the email below. Check for a typo, or try the address you used to enroll at War Dogs Academy.',
     primary: { href: '/portal', label: 'Try another email' },
-    secondary: { href: '/access', label: 'Email my access link' },
+    secondary: { href: '/access', label: 'Request Access Link' },
     note: 'Still having trouble? Contact support using the email on your enrollment.',
   },
   page: {
@@ -29,7 +29,7 @@ const screens = {
     title: 'This page isn’t here.',
     description: 'The page may have moved, or the address may be incorrect. Open your portal to continue, or request your private access link.',
     primary: { href: '/portal', label: 'Open my portal' },
-    secondary: { href: '/access', label: 'Get my access link' },
+    secondary: { href: '/access', label: 'Request Access Link' },
     note: 'Your portal is the starting point for Discovery, targeting, and your contracts.',
   },
 };

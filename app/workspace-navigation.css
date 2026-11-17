@@ -2,6 +2,12 @@
    footer or a duplicated logout form. The conversation owns its scroll area. */
 .wda-logout-label { display: none; }
 .is-workspace { position: relative; }
+.is-workspace .wda-nav-locked { position: relative; border: 0; background: transparent; font-family: inherit; cursor: pointer; text-align: left; opacity: .72; }
+.is-workspace .wda-nav-lock { display: grid; place-items: center; flex: 0 0 14px; margin-inline-start: auto; color: var(--theme-pink); }
+.is-workspace .wda-setup-rail nav .wda-nav-lock .ctc-icon { width: 13px; height: 13px; }
+.is-workspace .wda-nav-locked:focus-visible { outline: 2px solid var(--theme-pink); outline-offset: 2px; }
+.is-workspace .wda-nav-locked:hover { color: var(--theme-pink); background: var(--theme-blush); }
+.wda-access-note { margin: 18px 0 0; color: var(--theme-muted); font-size: 12px; line-height: 1.6; text-align: center; }
 .is-workspace .wda-workspace-support > .wda-account-logout-form { margin-top: 4px; }
 .is-workspace .wda-workspace-support .wda-account-logout {
   display: flex; align-items: center; justify-content: flex-start;
@@ -59,6 +65,8 @@
   .is-workspace[data-sidebar-collapsed="true"] .wda-setup-rail nav { flex-shrink: 0; margin: 0; padding: 0; align-items: center; overflow: visible; }
   .is-workspace[data-sidebar-collapsed="true"] .wda-setup-rail nav > * { width: 44px; justify-content: center; padding: 0; gap: 0; }
   .is-workspace[data-sidebar-collapsed="true"] .wda-nav-label { max-width: 0; opacity: 0; transform: translateX(-4px); }
+  .is-workspace[data-sidebar-collapsed="true"] .wda-nav-lock { position: absolute; right: 3px; top: 6px; margin: 0; }
+  .is-workspace[data-sidebar-collapsed="true"] .wda-setup-rail nav .wda-nav-lock .ctc-icon { width: 10px; height: 10px; }
   .is-workspace[data-sidebar-collapsed="true"] .wda-member-account { flex-direction: column; padding: 4px 0; gap: 2px; }
   .is-workspace[data-sidebar-collapsed="true"] .wda-workspace-support > .wda-account-logout-form { width: 44px; margin: 4px auto 0; }
   .is-workspace[data-sidebar-collapsed="true"] .wda-workspace-support .wda-account-logout { justify-content: center; padding: 0; gap: 0; }
@@ -75,6 +83,8 @@
   .is-workspace .wda-setup-mobile { position: relative; z-index: 30; }
   .is-workspace .wda-setup-mobile > img { flex-shrink: 1; min-width: 0; }
   .is-workspace .wda-setup-mobile nav { flex-shrink: 0; }
+  .is-workspace .wda-setup-mobile .wda-nav-lock { position: absolute; right: 0; top: 1px; margin: 0; }
+  .is-workspace .wda-setup-mobile .wda-nav-lock .ctc-icon { width: 10px; height: 10px; }
   .is-workspace .wda-mobile-account-toggle { display: grid; }
   /* The existing account/support footer becomes an anchored disclosure. */
   :root .wda-setup-app.is-workspace .wda-setup-rail { display: flex; position: absolute; z-index: 40; top: 76px; right: 12px; width: min(320px,calc(100% - 24px)); max-height: calc(100dvh - 92px); padding: 12px; overflow: auto; border: 0; border-radius: 20px; background: rgba(255,250,253,.96); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); box-shadow: 0 12px 36px rgba(49,31,42,.14); opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-8px) scale(.975); transform-origin: top right; transition: opacity .18s ease,transform .22s cubic-bezier(.4,0,1,1),visibility 0s linear .22s; }

@@ -5,6 +5,10 @@ import { createRequire } from 'node:module';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import * as buyerUrls from '../lib/buyerUrls.js';
+import * as ui from '../lib/ui.js';
+import * as dialog from '../lib/dialog.js';
+import * as journey from '../lib/journey.js';
+import * as contractsPresentation from '../lib/contractsPresentation.js';
 
 const require = createRequire(import.meta.url);
 const swc = await require('next/dist/build/swc').loadBindings();
@@ -14,13 +18,16 @@ async function load(file, imports = {}, globals = {}) {
   });
   const module = { exports: {} };
   new Function('require', 'module', 'exports', 'window', 'document', code)(
-    (id) => imports[id] || (id.endsWith('/buyerUrls.js') ? buyerUrls : require(id)), module, module.exports, globals.window, globals.document,
+    (id) => imports[id] || (id.endsWith('/buyerUrls.js') ? buyerUrls : id.endsWith('/ui.js') ? ui : id.endsWith('/dialog.js') ? dialog : require(id)), module, module.exports, globals.window, globals.document,
   );
   return module.exports;
 }
 const asDefault = (defaultExport) => ({ __esModule: true, default: defaultExport });
 const Icon = (await load('app/_components/CTCIcon.jsx')).default;
-const navigation = await load('app/_components/WorkspaceNavigation.jsx', { './CTCIcon.jsx': asDefault(Icon) });
+const Modal = (await load('app/_components/Modal.jsx')).default;
+const Button = (await load('app/_components/Button.jsx')).default;
+const navigationImports = { './CTCIcon.jsx': asDefault(Icon), './Modal.jsx': asDefault(Modal), './Button.jsx': asDefault(Button) };
+const navigation = await load('app/_components/WorkspaceNavigation.jsx', navigationImports);
 const Workspace = (await load('app/_components/SetupWorkspace.jsx', {
   './WorkspaceNavigation.jsx': navigation, './CTCIcon.jsx': asDefault(Icon), './BetaNotice.jsx': asDefault(() => null),
   './SupportCTA.jsx': asDefault(() => React.createElement('div', { 'data-support-fixture': true }, 'Send feedback')),
@@ -51,6 +58,65 @@ test('mobile header has an icon-only account disclosure linked to one shared acc
   assert.match(html, /<main id="workspace-content"/);
 });
 
+test('locked Targeting and Contracts are popup buttons on mobile and desktop, not navigable links', () => {
+  const props = { token: 'me', discoveryHref: '/discover', activePage: 'discovery', targetingLocked: true, contractsLocked: true };
+  const html = renderToStaticMarkup(React.createElement(Workspace, props));
+  for (const tab of ['targeting', 'contracts']) {
+    const buttons = [...html.matchAll(new RegExp(`<button[^>]*data-workspace-locked="${tab}"[^>]*>`, 'g'))];
+    assert.equal(buttons.length, 2, 'Both navigation surfaces explain the lock');
+    for (const [button] of buttons) {
+      assert.match(button, /aria-haspopup="dialog"/);
+      assert.doesNotMatch(button, /href=|disabled=/);
+    }
+  }
+  const tree = Workspace(props);
+  assert.deepEqual(tree.props.lockedPages.targeting.actions, [
+    { label: 'Continue Discovery' },
+    { label: 'Build targeting manually', href: '/setup?targeting=1', secondary: true },
+  ]);
+  assert.match(tree.props.lockedPages.contracts.description, /Save your targeting profile/);
+  assert.doesNotMatch(html, /Contracts are locked|Set up your targeting/, 'No full-page lock UI is rendered');
+  const saved = Workspace({ ...props, targetingLocked: false });
+  assert.equal(saved.props.lockedPages.targeting, undefined);
+  assert.equal(saved.props.lockedPages.contracts.actions[0].href, '/start');
+  const unlocked = renderToStaticMarkup(React.createElement(Workspace, { ...props, contractsLocked: false, targetingLocked: false }));
+  assert.doesNotMatch(unlocked, /data-workspace-locked/);
+  assert.match(unlocked, /href="\/setup\?review=1"/);
+  assert.match(unlocked, /href="\/contracts"/);
+});
+
+test('Discovery derives locks from persisted state, respects existing deliveries, and accepts only applicable popup hints', async () => {
+  const buyer = { id: 'fixture-buyer', access_token: 'me', status: 'exploring', naics: [] };
+  const session = { status: 'in_progress', current_step: 3 };
+  const snapshot = structuredClone({ buyer, session });
+  let deliveries = [];
+  const reads = [];
+  const page = await load('app/discover/[token]/page.js', {
+    'next/navigation': { redirect() { throw new Error('Unexpected redirect'); } },
+    '../../_components/Shell.jsx': { ...asDefault(() => null), NotFound: () => null },
+    '../../_components/SetupWorkspace.jsx': asDefault(Workspace),
+    '../../_components/DiscoveryForm.jsx': asDefault(() => null),
+    '../../../lib/buyers.js': { getBuyerByToken: async () => buyer },
+    '../../../lib/discoverySessions.js': { getDiscoverySessionForBuyer: async () => session, publicDiscoverySession: (value) => value },
+    '../../../lib/journey.js': journey,
+    '../../../lib/contractsPresentation.js': contractsPresentation,
+    '../../../lib/deliveries.js': { listDeliveriesForBuyer: async (id) => { reads.push(id); return deliveries; } },
+  });
+  const render = async (locked) => (await page.default({ params: { token: 'me' }, searchParams: { locked } })).props.children.props;
+  let props = await render('contracts');
+  assert.equal(props.targetingLocked, true);
+  assert.equal(props.contractsLocked, true);
+  assert.equal(props.initialLockedPage, 'contracts');
+  assert.equal((await render('targeting')).initialLockedPage, 'targeting');
+  assert.equal((await render('not-a-tab')).initialLockedPage, null);
+  deliveries = [{ notice_id: 'existing-delivery' }];
+  props = await render('contracts');
+  assert.equal(props.contractsLocked, false, 'Existing archives remain accessible, even with stale lifecycle state');
+  assert.equal(props.initialLockedPage, null);
+  assert.ok(reads.every((id) => id === buyer.id));
+  assert.deepEqual({ buyer, session }, snapshot, 'Visiting or opening a popup never changes progress');
+});
+
 const css = require('postcss').parse(readFileSync(new URL('../app/workspace-navigation.css', import.meta.url), 'utf8'));
 
 test('Discovery and Targeting use the supplied outline silhouettes in both desktop and mobile navigation', () => {
@@ -66,6 +132,23 @@ test('Discovery and Targeting use the supplied outline silhouettes in both deskt
   assert.equal((discovery.match(/<circle/g) || []).length, 3, 'Chat bubble has three ellipsis dots');
   const feedback = renderToStaticMarkup(React.createElement(Icon, { name: 'message' }));
   assert.notEqual(discovery, feedback, 'Feedback retains its existing separate icon');
+});
+
+test('locked items retain their original icons with a separate pink padlock on the right and subtle whole-item fading', () => {
+  const html = renderToStaticMarkup(React.createElement(Workspace, { token: 'me', discoveryHref: '/discover', activePage: 'discovery', targetingLocked: true, contractsLocked: true }));
+  for (const [tab, icon] of [['targeting', 'target'], ['contracts', 'briefcase']]) {
+    const buttons = [...html.matchAll(new RegExp(`<button[^>]*data-workspace-locked="${tab}"[^>]*>([\\s\\S]*?)<\\/button>`, 'g'))];
+    assert.equal(buttons.length, 2);
+    for (const [, content] of buttons) {
+      assert.ok(content.startsWith(renderToStaticMarkup(React.createElement(Icon, { name: icon }))));
+      assert.ok(content.endsWith(`<span class="wda-nav-lock" aria-hidden="true">${renderToStaticMarkup(React.createElement(Icon, { name: 'lock' }))}</span>`));
+    }
+  }
+  assert.equal(properties('.is-workspace .wda-nav-locked').opacity, '.72');
+  assert.equal(properties('.is-workspace .wda-nav-lock').color, 'var(--theme-pink)');
+  assert.equal(properties('.is-workspace .wda-nav-lock')['margin-inline-start'], 'auto');
+  assert.equal(properties('.is-workspace[data-sidebar-collapsed="true"] .wda-nav-lock', '(min-width: 601px)').position, 'absolute');
+  assert.equal(properties('.is-workspace .wda-setup-mobile .wda-nav-lock', '(max-width: 600px)').position, 'absolute');
 });
 
 test('expanded sidebar uses the landscape logo with flexible sizing while collapsed navigation retains its compact mark', () => {
@@ -183,7 +266,7 @@ function events() {
   };
 }
 
-async function harness({ saved = null, blocked = false } = {}) {
+async function harness({ saved = null, blocked = false, lockedPages = {}, initialLockedPage = null } = {}) {
   const window = events();
   const document = events();
   const timers = new Map();
@@ -223,10 +306,10 @@ async function harness({ saved = null, blocked = false } = {}) {
       }
     },
   };
-  const module = await load('app/_components/WorkspaceNavigation.jsx', { react: hooks, 'react-dom': { createPortal: (children) => children }, './CTCIcon.jsx': asDefault(Icon) }, { window, document });
+  const module = await load('app/_components/WorkspaceNavigation.jsx', { ...navigationImports, react: hooks, 'react-dom': { createPortal: (children) => children } }, { window, document });
   const render = () => {
     cursor = 0; effects = [];
-    const tree = module.default({ className: 'wda-setup-app is-workspace', children: 'Content' });
+    const tree = module.default({ className: 'wda-setup-app is-workspace', lockedPages, initialLockedPage, children: 'Content' });
     context = tree.props.value;
     tree.props.children.ref.current = root;
     const account = module.MobileAccountToggle({ children: 'Avatar' });
@@ -241,6 +324,35 @@ async function harness({ saved = null, blocked = false } = {}) {
     close() { for (const cleanup of cleanups) cleanup(); cleanups.clear(); },
   };
 }
+
+test('a locked tab opens its modal without replacing content, and Continue Discovery only dismisses it', async () => {
+  const lockedPages = { targeting: { title: 'Set up your targeting', description: 'Choose how to continue.', actions: [{ label: 'Continue Discovery' }, { label: 'Build targeting manually', href: '/setup?targeting=1', secondary: true }] } };
+  const h = await harness({ lockedPages });
+  try {
+    let view = h.render();
+    assert.equal(view.root.props.children[2].props.open, false);
+    let prevented = false;
+    view.root.props.onClick({ preventDefault() { prevented = true; }, target: { closest: (selector) => selector === '[data-workspace-locked]' ? { getAttribute: () => 'targeting' } : null } });
+    view = h.render();
+    let popup = view.root.props.children[2];
+    assert.equal(prevented, true);
+    assert.equal(popup.props.open, true);
+    assert.equal(popup.props.kind, 'lock');
+    assert.equal(popup.props.title, 'Set up your targeting');
+    assert.equal(view.root.props.children[0], 'Content');
+    const actions = popup.props.children[0].props.children;
+    assert.equal(actions[0].props.href, undefined, 'Continue does not navigate away from the conversation');
+    assert.equal(actions[1].props.href, '/setup?targeting=1');
+    actions[0].props.onClick();
+    assert.equal(h.render().root.props.children[2].props.open, false);
+    view.root.props.onClick({ preventDefault() {}, target: { closest: () => ({ getAttribute: () => 'targeting' }) } });
+    popup = h.render().root.props.children[2];
+    popup.props.onClose();
+    assert.equal(h.render().root.props.children[2].props.open, false);
+  } finally { h.close(); }
+  const direct = await harness({ lockedPages, initialLockedPage: 'targeting' });
+  try { assert.equal(direct.render().root.props.children[2].props.open, true); } finally { direct.close(); }
+});
 
 test('sidebar toggles, restores and synchronizes its own preference without depending on storage availability', async () => {
   const h = await harness({ saved: '1' });

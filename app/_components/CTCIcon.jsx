@@ -4,6 +4,7 @@ const paths = {
   mail: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></>,
   target: <><path d="M12.2 19.3a9 9 0 1 1 7.1-7.1" /><path d="M10.7 16.1a5.6 5.6 0 1 1 5.4-5.4" /><path d="M9.7 12.9a2.5 2.5 0 1 1 3.2-3.2" /><path d="m11 11 3.2 10.3 2.1-3.1 3.2 3.2 2-2-3.2-3.2 3.1-2.1L11 11Z" /></>,
   briefcase: <><rect x="3" y="6" width="18" height="14" rx="2" /><path d="M8 6V4h8v2M3 12h18" /></>,
+  lock: <><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3" /></>,
   arrow: <><path d="M4 12h16m-6-6 6 6-6 6" /></>,
   externalLink: <><path d="M14 3h7v7m0-7L10 14" /><path d="M10 3H6a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-4" /></>,
   check: <path d="m5 12 4 4L19 6" />,

@@ -1,7 +1,10 @@
 import { sendFeedbackRequest, sendSupportRequest } from '../../../lib/support.js';
+import { sendSupportAcknowledgement } from '../../../lib/supportAcknowledgement.js';
+import { isSameOriginRequest } from '../../../lib/requestOrigin.js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 const MAX_BODY_BYTES = 10_000;
 const WINDOW_MS = 60_000;
@@ -35,6 +38,7 @@ function safeError(status = 400, type = 'support') {
 }
 
 export async function POST(req) {
+  if (!isSameOriginRequest(req)) return safeError(403);
   if (rateLimited(req)) return safeError(429);
 
   let raw = '';
@@ -64,6 +68,19 @@ export async function POST(req) {
     } else {
       await sendSupportRequest(body);
     }
+    // The staff notification must succeed first. A receipt failure must never
+    // turn an accepted report into an error or invite duplicate submissions.
+    try {
+      const acknowledgement = await sendSupportAcknowledgement(body);
+      if (acknowledgement.reason === 'missing_smtp_config') {
+        console.warn({ event: 'support_acknowledgement_skipped', reason: acknowledgement.reason, type });
+      }
+    } catch (error) {
+      console.warn({ event: 'support_acknowledgement_failed',
+        error_code: /^SUPPORT_SMTP_/.test(error?.code || '') ? error.code : undefined,
+        type,
+      });
+    }
     return Response.json({ ok: true });
   } catch (err) {
     if (err?.code === 'SUPPORT_CONFIG_MISSING') {
@@ -80,6 +97,11 @@ export async function POST(req) {
       event: 'support_request_failed',
       reason: 'send_failed',
       error_name: err?.name || 'Error',
+      error_code: /^SUPPORT_SMTP_/.test(err?.code || '') ? err.code : undefined,
+      smtp_stage: err?.smtpStage || undefined,
+      smtp_code: err?.smtpCode || undefined,
+      smtp_enhanced_code: err?.smtpEnhancedCode || undefined,
+      smtp_reason: err?.smtpReason || undefined,
       type,
     });
     return safeError(502, type);
